@@ -1,8 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak@v6.3.0/mod.ts";
 import { OAuth2Client, OAuth2ClientConfig } from "https://deno.land/x/oauth2_client/mod.ts";
-import { TraqApi, api } from "./api.ts";
-
-const baseUrl = "https://q.trap.jp/api/v3";
+import { TraqApi, api, baseUrl } from "./api.ts";
 
 const oauthConfig: OAuth2ClientConfig = {
 	clientId: "82zhMANtECcrqXjGq012B6mQrCfHpr1y4rfJ",
