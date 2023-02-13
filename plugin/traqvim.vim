@@ -5,3 +5,5 @@
 "
 " :Traq setup でdenopsのsetupAPIを叩く
 command! TraqSetup call denops#request('traqvim', 'setup', [])
+" :Traq timeline でdenopsのtimelineAPIを叩く
+command! TraqTimeline call denops#request('traqvim', 'timeline', [])
