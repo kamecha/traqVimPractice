@@ -11,6 +11,7 @@ type Params = {
 };
 
 export class Source extends BaseSource<Params> {
+	kind = "channel";
 	gather(args: {
 		denops: Denops;
 		sourceParams: Params;
@@ -21,10 +22,6 @@ export class Source extends BaseSource<Params> {
 				const items: Item<ActionData>[] = channels.map((channel) => {
 					return {
 						word: channel.path,
-						action: {
-							name: "traqvim#channel#open",
-							args: [channel.id],
-						},
 					};
 				});
 				controller.enqueue(items);
