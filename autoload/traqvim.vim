@@ -1,26 +1,7 @@
 function! traqvim#make_buffer(channelPath, option) abort
 	let buf_num = 0
-	if a:option ==# "edit"
-		noswapfile exe "edit" a:channelPath
-		let buf_num = bufnr(a:channelPath)
-	endif
-	if a:option ==# "tabnew"
-		noswapfile exe "tabnew" a:channelPath
-		let buf_num = bufnr(a:channelPath)
-	endif
-	if a:option ==# "split"
-		noswapfile exe "split" a:channelPath
-		let buf_num = bufnr(a:channelPath)
-	endif
-	if a:option ==# "vsplit"
-		noswapfile exe "vsplit" a:channelPath
-		let buf_num = bufnr(a:channelPath)
-	endif
-	if a:option ==# "hidden"
-		let buf_num = bufadd(a:channelPath)
-		call bufload(buf_num)
-	endif
-	echo buf_num
+	noswapfile exe a:option a:channelPath
+	let buf_num = bufnr(a:channelPath)
 	return buf_num
 endfunction
 
