@@ -3,8 +3,10 @@ import { baseUrl } from "./oauth.ts";
 import { Message, User, Channel } from "./type.d.ts";
 
 export type channelMessageOptions = {
+	// channelUUID
+	id?: string;
 	// #gps/time/kamecha
-	channelPath: string;
+	channelPath?: string;
 	lastMessageDate?: Date;
 }
 
@@ -41,6 +43,23 @@ function searchChannelUUID(channels: any[], channelPath: string): string {
 	return result;
 }
 
+// 自身のユーザー情報を取得する
+export const getMe = async (): Promise<any> => {
+	const me = await api.fetchWithToken("GET", "/users/me");
+	const meJson = await me.json();
+	return {
+		id: meJson.id,
+		name: meJson.name,
+		displayName: meJson.displayName,
+		homeChannel: meJson.homeChannel,
+	}
+}
+
+export const homeTimeline = async (): Promise<Message[]> => {
+	const me = await getMe();
+	return channelTimeline({ id: me.homeChannel });
+}
+
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<any> => {
 	const user = await api.fetchWithToken("GET", "/users/" + userId);
@@ -55,10 +74,16 @@ export const getUser = async (userId: string): Promise<any> => {
 export const channelTimeline = async (
 	options: channelMessageOptions,
 ): Promise<Message[]> => {
-	const channels = await api.fetchWithToken("GET", "/channels");
-	const channelsJson = await channels.json();
-	// channelPathに一致するchannelを探す
-	const channelUUID = searchChannelUUID(channelsJson.public, options.channelPath);
+	let channelUUID = "";
+	if (options.id) {
+		channelUUID = options.id;
+	} 
+	if (options.channelPath) {
+		const channels = await api.fetchWithToken("GET", "/channels");
+		const channelsJson = await channels.json();
+		// channelPathに一致するchannelを探す
+		channelUUID = searchChannelUUID(channelsJson.public, options.channelPath);
+	}
 	// 以前取得したメッセージがあれば、その日付以降のメッセージを取得する
 	const query: any = {};
 	if (options.lastMessageDate) {
