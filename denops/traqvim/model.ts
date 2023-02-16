@@ -1,6 +1,6 @@
 import { TraqApi, api } from "./api.ts";
 import { baseUrl } from "./oauth.ts";
-import { Message, User } from "./type.d.ts";
+import { Message, User, Channel } from "./type.d.ts";
 
 export type channelMessageOptions = {
 	// #gps/time/kamecha
@@ -83,4 +83,26 @@ export const channelTimeline = async (
 		})
 	);
 	return messagesConverted;
+}
+
+// 再帰的にchannelを取得し、それぞれのchannelを記録
+// channelsを#で始まるchannelPathに変換
+export const channelsRecursive = async (
+): Promise<Channel[]> => {
+	const channels = await api.fetchWithToken("GET", "/channels");
+	const channelsJson = await channels.json();
+	const makeChannelPath = (channel: any): string => {
+		if (channel.parentId === null) {
+			return "#" + channel.name;
+		}
+		const parentChannel = channelsJson.public.find((c: any) => c.id === channel.parentId);
+		return makeChannelPath(parentChannel) + "/" + channel.name;
+	}
+	const channelsConverted: Channel[] = channelsJson.public.map((channel: any) => {
+		return {
+			id: channel.id,
+			path: makeChannelPath(channel)
+		};
+	});
+	return channelsConverted;
 }

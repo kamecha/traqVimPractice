@@ -1,4 +1,9 @@
 
+export interface Channel {
+	id: string;
+	path: string;
+}
+
 export interface Message {
 	displayName: string;
 	content: string;
