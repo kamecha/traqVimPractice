@@ -1,19 +1,19 @@
 function! traqvim#make_buffer(channelPath, option) abort
 	let buf_num = 0
-	if a:option ==# "open"
-		exe "edit" a:channelPath
+	if a:option ==# "edit"
+		noswapfile exe "edit" a:channelPath
 		let buf_num = bufnr(a:channelPath)
 	endif
-	if a:option ==# "tab"
-		exe "tabnew" a:channelPath
+	if a:option ==# "tabnew"
+		noswapfile exe "tabnew" a:channelPath
 		let buf_num = bufnr(a:channelPath)
 	endif
 	if a:option ==# "split"
-		exe "split" a:channelPath
+		noswapfile exe "split" a:channelPath
 		let buf_num = bufnr(a:channelPath)
 	endif
 	if a:option ==# "vsplit"
-		exe "vsplit" a:channelPath
+		noswapfile exe "vsplit" a:channelPath
 		let buf_num = bufnr(a:channelPath)
 	endif
 	if a:option ==# "hidden"
@@ -27,13 +27,13 @@ endfunction
 function! traqvim#draw_timeline(bufNum, channelTimeline) abort
 	setlocal modifiable
 	let start = 1
-	" let wininfo = getwininfo(win_getid())[0]
-	" let width = winwidth(0)
-	" if has_key(wininfo, 'textoff')
-	" 	let width -= wininfo.textoff
-	" endif
+	let wininfo = getwininfo(win_getid())[0]
+	let width = winwidth(0)
+	if has_key(wininfo, 'textoff')
+		let width -= wininfo.textoff
+	endif
 	for message in a:channelTimeline
-		let body = traqvim#make_message_body(message, 8)
+		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body)
 		call setbufline(a:bufNum, start, body)
 		let start = end

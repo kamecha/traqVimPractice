@@ -18,12 +18,19 @@ export type ActionData = {
 
 type Params = Record<never, never>;
 
+type OpenParams = {
+	command: string;
+};
+
 export class Kind extends BaseKind<Params> {
 	actions: Actions<Params> = {
 		open: async (args: {
 			denops: Denops;
+			actionParams: unknown;
 			items: DduItem[];
 		}) => {
+			const params = args.actionParams as OpenParams;
+			const openCommand = params.command ?? "edit";
 			// ↓ここ配列の先頭しか見ていないので、複数選択されたときにはバグる
 			const channelPath: string = args.items[0].word;
 			const timelineOption: channelMessageOptions = {
@@ -34,13 +41,21 @@ export class Kind extends BaseKind<Params> {
 			const bufNum = await args.denops.call(
 				"traqvim#make_buffer",
 				escapedChannelPath,
-				"tab",
+				openCommand,
 			);
-			// await vars.buffers.set(args.denops, "channelTimeline", timeline);
 			await args.denops.cmd(
 				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
 			);
-			await args.denops.call("traqvim#draw_timeline", bufNum, timeline);
+			await args.denops.call(
+				"traqvim#draw_timeline",
+				bufNum,
+				timeline.map((message: Message) => {
+					return {
+						displayName: message.displayName,
+						content: message.content,
+						createdAt: message.createdAt.toLocaleTimeString(),
+					};
+				}));
 			return ActionFlags.None;
 		},
 	};
@@ -60,7 +75,6 @@ export class Kind extends BaseKind<Params> {
 		// sighnColumnやfoldColumn等のtextoff関連を考慮する
 		// 今回は確認が面倒なので、とりあえず2を引いている
 		previewWidth -= 2;
-		console.log("previewWidth: " + previewWidth);
 		const timeline: Message[] = await channelTimeline(timelineOption);
 		const timelinePreviewArray: string[][] = await Promise.all(
 			timeline.map(async (message: Message) => {
@@ -71,10 +85,11 @@ export class Kind extends BaseKind<Params> {
 						content: message.content,
 						createdAt: message.createdAt.toLocaleTimeString(),
 					},
-					previewWidth);
+					previewWidth,
+				);
 				return ret;
-			})
-		)
+			}),
+		);
 		const timelinePreview: string[] = timelinePreviewArray.flat();
 		return {
 			kind: "nofile",
