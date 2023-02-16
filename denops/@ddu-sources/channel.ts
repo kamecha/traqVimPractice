@@ -3,7 +3,7 @@ import {
 	Item,
 } from "https://deno.land/x/ddu_vim@v1.13.0/types.ts";
 import type { Denops } from "https://deno.land/x/ddu_vim@v1.13.0/deps.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.3.2/file.ts";
+import { ActionData } from "../@ddu-kinds/channel.ts";
 import { channelsRecursive } from "../traqvim/model.ts";
 
 type Params = {
