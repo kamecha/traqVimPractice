@@ -32,30 +32,32 @@ export class Kind extends BaseKind<Params> {
 			const params = args.actionParams as OpenParams;
 			const openCommand = params.command ?? "edit";
 			// ↓ここ配列の先頭しか見ていないので、複数選択されたときにはバグる
-			const channelPath: string = args.items[0].word;
-			const timelineOption: channelMessageOptions = {
-				channelPath: channelPath,
-			};
-			const timeline = await channelTimeline(timelineOption);
-			const escapedChannelPath = channelPath.replace("#", "\\#");
-			const bufNum = await args.denops.call(
-				"traqvim#make_buffer",
-				escapedChannelPath,
-				openCommand,
-			);
-			await args.denops.cmd(
-				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-			);
-			await args.denops.call(
-				"traqvim#draw_timeline",
-				bufNum,
-				timeline.map((message: Message) => {
-					return {
-						displayName: message.displayName,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleTimeString(),
-					};
-				}));
+			for (const item of args.items) {
+				const channelPath: string = item.word;
+				const timelineOption: channelMessageOptions = {
+					channelPath: channelPath,
+				};
+				const timeline = await channelTimeline(timelineOption);
+				const escapedChannelPath = channelPath.replace("#", "\\#");
+				const bufNum = await args.denops.call(
+					"traqvim#make_buffer",
+					escapedChannelPath,
+					openCommand,
+				);
+				await args.denops.cmd(
+					"setlocal buftype=nofile ft=traqvim nonumber breakindent",
+				);
+				await args.denops.call(
+					"traqvim#draw_timeline",
+					bufNum,
+					timeline.map((message: Message) => {
+						return {
+							displayName: message.displayName,
+							content: message.content,
+							createdAt: message.createdAt.toLocaleTimeString(),
+						};
+					}));
+			}
 			return ActionFlags.None;
 		},
 	};
