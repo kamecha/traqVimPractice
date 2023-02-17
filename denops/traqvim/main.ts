@@ -4,10 +4,14 @@ import { setupOAuth } from "./oauth.ts";
 import {
 	channelTimeline,
 	channelMessageOptions,
+	homeChannelPath,
 	homeTimeline,
 } from "./model.ts";
 import { Message } from "./type.d.ts";
-import { ensureString } from "https://deno.land/x/unknownutil@v1.0.0/mod.ts";
+import { 
+	ensureString,
+	ensureNumber,
+} from "https://deno.land/x/unknownutil@v1.0.0/mod.ts";
 
 export async function main(denops: Denops): Promise<void> {
 	// ここにプラグインの処理を記載する
@@ -18,8 +22,10 @@ export async function main(denops: Denops): Promise<void> {
 			return setupOAuth();
 		},
 		async home(): Promise<unknown> {
+			const homePath = await homeChannelPath();
+			const escapedHomePath = homePath.replace("#", "\\#");
 			const home = await homeTimeline();
-			const bufNum = await denops.call("traqvim#make_buffer", "home", "edit");
+			const bufNum = await denops.call("traqvim#make_buffer", escapedHomePath, "edit");
 			await denops.cmd(
 				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
 			);
@@ -59,6 +65,32 @@ export async function main(denops: Denops): Promise<void> {
 					}
 				}));
 			return;
-		}
+		},
+		async reload(bufNum: unknown, bufName: unknown): Promise<unknown> {
+			// バッファ番号は被らないが、バッファ名は被る可能性がある
+			ensureNumber(bufNum);
+			ensureString(bufName);
+			const timelineOption: channelMessageOptions = {
+				channelPath: bufName
+			}
+			const timeline = await channelTimeline(timelineOption);
+			// #gps/times/kamecha → \#gps/times/kamecha
+			// const escapedChannelName = timelineOption.channelPath.replace("#", "\\#");
+			// await vars.buffers.set(denops, "channelTimeline", timeline);
+			await denops.cmd(
+				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
+			);
+			await denops.call(
+				"traqvim#draw_timeline",
+				bufNum,
+				timeline.map((message: Message) => {
+					return {
+						displayName: message.displayName,
+						content: message.content,
+						createdAt: message.createdAt.toLocaleDateString(),
+					}
+				}));
+			return;
+		},
 	}
 };

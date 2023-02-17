@@ -43,6 +43,21 @@ function searchChannelUUID(channels: any[], channelPath: string): string {
 	return result;
 }
 
+// channelUUIDに対応するchannelPathを生成する
+export const channelPath = async (channelUUID: string): Promise<string> => {
+	const channels = await api.fetchWithToken("GET", "/channels");
+	const channelsJson = await channels.json();
+	const makeChannelPath = (channel: any): string => {
+		if (channel.parentId === null) {
+			return "#" + channel.name;
+		}
+		const parentChannel = channelsJson.public.find((c: any) => c.id === channel.parentId);
+		return makeChannelPath(parentChannel) + "/" + channel.name;
+	}
+	const channel = channelsJson.public.find((c: any) => c.id === channelUUID);
+	return makeChannelPath(channel);
+}
+
 // 自身のユーザー情報を取得する
 export const getMe = async (): Promise<any> => {
 	const me = await api.fetchWithToken("GET", "/users/me");
@@ -53,6 +68,11 @@ export const getMe = async (): Promise<any> => {
 		displayName: meJson.displayName,
 		homeChannel: meJson.homeChannel,
 	}
+}
+
+export const homeChannelPath = async (): Promise<string> => {
+	const me = await getMe();
+	return channelPath(me.homeChannel);
 }
 
 export const homeTimeline = async (): Promise<Message[]> => {
