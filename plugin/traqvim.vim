@@ -5,5 +5,11 @@
 "
 " :Traq setup でdenopsのsetupAPIを叩く
 command! TraqSetup call denops#request('traqvim', 'setup', [])
+" homeChannelを開く
+command! TraqHome call denops#request('traqvim', 'home', [])
 " :Traq timeline でdenopsのtimelineAPIを叩く
-command! TraqTimeline call denops#request('traqvim', 'timeline', [])
+command! -nargs=1 TraqTimeline call denops#request('traqvim', 'timeline', [<q-args>])
+" activity
+command! TraqActivity call denops#request('traqvim', 'activity', [])
+" reload
+command! TraqReload call denops#request('traqvim', 'reload', [bufnr(), bufname()])
