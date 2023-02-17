@@ -9,5 +9,7 @@ command! TraqSetup call denops#request('traqvim', 'setup', [])
 command! TraqHome call denops#request('traqvim', 'home', [])
 " :Traq timeline でdenopsのtimelineAPIを叩く
 command! -nargs=1 TraqTimeline call denops#request('traqvim', 'timeline', [<q-args>])
+" activity
+command! TraqActivity call denops#request('traqvim', 'activity', [])
 " reload
 command! TraqReload call denops#request('traqvim', 'reload', [bufnr(), bufname()])

@@ -97,7 +97,7 @@ export const channelTimeline = async (
 	let channelUUID = "";
 	if (options.id) {
 		channelUUID = options.id;
-	} 
+	}
 	if (options.channelPath) {
 		const channels = await api.fetchWithToken("GET", "/channels");
 		const channelsJson = await channels.json();
@@ -150,4 +150,24 @@ export const channelsRecursive = async (
 		};
 	});
 	return channelsConverted;
+}
+
+// activityを取得する
+export const activity = async (): Promise<Message[]> => {
+	const activities = await api.fetchWithToken("GET", "/activity/timeline");
+	const activitiesJson = await activities.json();
+	const activitiesConverted: Message[] = await Promise.all(
+		activitiesJson.map(async (activity: any) => {
+			const displayNameJson = await getUser(activity.userId);
+			const displayName = displayNameJson.displayName;
+			const content = activity.content;
+			const createdAt = new Date(activity.createdAt);
+			return {
+				displayName: displayName,
+				content: content,
+				createdAt: createdAt
+			}
+		})
+	);
+	return activitiesConverted;
 }
