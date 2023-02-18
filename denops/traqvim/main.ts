@@ -2,11 +2,13 @@ import { Denops } from "https://deno.land/x/denops_std@v1.0.0/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v4.0.0/variable/mod.ts";
 import { setupOAuth } from "./oauth.ts";
 import {
+	searchChannelUUID,
 	channelTimeline,
 	channelMessageOptions,
 	homeChannelPath,
 	homeTimeline,
 	activity,
+	sendMessage,
 } from "./model.ts";
 import { Message } from "./type.d.ts";
 import {
@@ -116,5 +118,33 @@ export async function main(denops: Denops): Promise<void> {
 				}));
 			return;
 		},
+		async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
+			ensureNumber(bufNum);
+			ensureString(bufName);
+			// bufNameの先頭に#がついていなければ、何もしない
+			if (bufName[0] !== "#") {
+				return;
+			}
+			const messageBufName = "Message" + bufName.replace("#", "\\#");
+			await denops.call("traqvim#make_buffer", messageBufName, "new");
+			await denops.cmd(
+				"setlocal buftype=nofile ft=traqvim-message nonumber breakindent",
+			);
+			return;
+		},
+		async messageSend(bufName: unknown, contents: unknown): Promise<unknown> {
+			ensureString(bufName);
+			console.log("bufName: " + bufName);
+			const content = ( contents as string[] ).join("\n");
+			console.log("content: " + content);
+			// Message\#gps/times/kamecha → #gps/times/kamecha
+			const channelPath = bufName.replace("Message#", "#");
+			console.log("channelPath: " + channelPath);
+			const channelUUID = await searchChannelUUID(channelPath);
+			console.log("channelUUID: " + channelUUID);
+			await sendMessage(channelUUID, content);
+			await denops.cmd(":bdelete");
+			return;
+		}
 	}
 };

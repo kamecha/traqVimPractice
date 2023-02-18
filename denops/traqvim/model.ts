@@ -12,7 +12,7 @@ export type channelMessageOptions = {
 
 // channelPathに一致するchannelのUUIDを返す
 // channelPathは#で始まる
-function searchChannelUUID(channels: any[], channelPath: string): string {
+export async function searchChannelUUID(channelPath: string): Promise<string> {
 	// channelPathの先頭が#で始まっているかのチェック
 	if (!channelPath.startsWith("#")) {
 		throw new Error("channelPath must start with #");
@@ -21,6 +21,9 @@ function searchChannelUUID(channels: any[], channelPath: string): string {
 	const channelPathWituoutSharp = channelPath.slice(1);
 	// channelPathの先頭の#を削除したものを/で分割
 	const channelPathSplited = channelPathWituoutSharp.split("/");
+	const channelsPromise = await api.fetchWithToken("GET", "/channels");
+	const channelsJson = await channelsPromise.json();
+	const channels = channelsJson.public;
 	let channelUUID = "";
 	const searchDFS = (baseChannels: any[], name: string[]): string | undefined => {
 		if (name.length === 0) {
@@ -99,10 +102,8 @@ export const channelTimeline = async (
 		channelUUID = options.id;
 	}
 	if (options.channelPath) {
-		const channels = await api.fetchWithToken("GET", "/channels");
-		const channelsJson = await channels.json();
 		// channelPathに一致するchannelを探す
-		channelUUID = searchChannelUUID(channelsJson.public, options.channelPath);
+		channelUUID = await searchChannelUUID(options.channelPath);
 	}
 	// 以前取得したメッセージがあれば、その日付以降のメッセージを取得する
 	const query: any = {};
@@ -170,4 +171,22 @@ export const activity = async (): Promise<Message[]> => {
 		})
 	);
 	return activitiesConverted;
+}
+
+// messageの送信
+export const sendMessage = async (
+	channelUUID: string,
+	content: string,
+): Promise<void> => {
+	const message = {
+		content: content,
+		embed: false,
+	}
+	const messagesJson = JSON.stringify(message);
+	console.log(messagesJson);
+	try {
+		await api.fetchWithToken("POST", "/channels/" + channelUUID + "/messages", {}, messagesJson);
+	} catch (e) {
+		console.log(e);
+	}
 }
