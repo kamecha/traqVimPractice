@@ -1,6 +1,8 @@
+import { Denops } from "https://deno.land/x/denops_std@v1.0.0/mod.ts";
 import { Application, Router } from "https://deno.land/x/oak@v6.3.0/mod.ts";
 import { OAuth2Client, OAuth2ClientConfig } from "https://deno.land/x/oauth2_client/mod.ts";
 import { TraqApi, api, baseUrl } from "./api.ts";
+import * as fn from "https://deno.land/x/denops_std@v3.3.2/function/mod.ts";
 
 const oauthConfig: OAuth2ClientConfig = {
 	clientId: "0mlxIRl4fHJTvBYS2DlHIa1H9MdxL4Xsj3au",
@@ -14,7 +16,17 @@ const app = new Application();
 const controller = new AbortController();
 const { signal } = controller;
 
-export const setupOAuth = async (): Promise<unknown> => {
+async function openBrowserWithPlugin(denops: Denops, url: string): Promise<unknown> {
+	if (
+		await fn.exists(denops, "g:loaded_openbrowser") ||
+		await fn.exists(denops, "*openbrowser#open")
+	) {
+		return denops.call("openbrowser#open", url);
+	}
+	return;
+}
+
+export const setupOAuth = async (denops: Denops): Promise<unknown> => {
 	const router = new Router();
 	router.get("/oauth2", async (ctx) => {
 		ctx.response.redirect(
@@ -36,6 +48,7 @@ export const setupOAuth = async (): Promise<unknown> => {
 	});
 	app.use(router.routes());
 	app.use(router.allowedMethods());
-	const server = await app.listen({ port: 8000, signal });
-	return await server;
+	await openBrowserWithPlugin(denops, "http://localhost:8000/oauth2");
+	await app.listen({ port: 8000, signal });
+	return;
 }

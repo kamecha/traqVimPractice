@@ -22,7 +22,7 @@ export async function main(denops: Denops): Promise<void> {
 	denops.dispatcher = {
 		async setup(): Promise<unknown> {
 			console.log("setup...");
-			return setupOAuth();
+			return setupOAuth(denops);
 		},
 		async home(): Promise<unknown> {
 			const homePath = await homeChannelPath();
