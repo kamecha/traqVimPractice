@@ -24,7 +24,7 @@ export class TraqApi {
 		const file = await Deno.readTextFile(this.tokenTmpFile);
 		this.token = JSON.parse(file);
 	}
-	async fetchWithToken(method: string, path: string, param?: Record<string, string>): Promise<Response> {
+	async fetchWithToken(method: string, path: string, param?: Record<string, string>, body?: string): Promise<Response> {
 		if(!this.token) {
 			// tokenがない場合はtokenTmpFileから読み込む
 			await this.loadToken();
@@ -37,7 +37,9 @@ export class TraqApi {
 			method: method,
 			headers: {
 				"Authorization": "Bearer " + this.token.accessToken,
-			}
+				"Content-Type": "application/json",
+			},
+			body: body,
 		});
 	}
 }

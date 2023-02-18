@@ -3,7 +3,7 @@ import { OAuth2Client, OAuth2ClientConfig } from "https://deno.land/x/oauth2_cli
 import { TraqApi, api, baseUrl } from "./api.ts";
 
 const oauthConfig: OAuth2ClientConfig = {
-	clientId: "82zhMANtECcrqXjGq012B6mQrCfHpr1y4rfJ",
+	clientId: "0mlxIRl4fHJTvBYS2DlHIa1H9MdxL4Xsj3au",
 	authorizationEndpointUri: `${baseUrl}/oauth2/authorize`,
 	tokenUri: `${baseUrl}/oauth2/token`,
 }
