@@ -155,7 +155,13 @@ export const channelsRecursive = async (
 
 // activityを取得する
 export const activity = async (): Promise<Message[]> => {
-	const activities = await api.fetchWithToken("GET", "/activity/timeline");
+	const activities = await api.fetchWithToken(
+		"GET",
+		"/activity/timeline",
+		{
+			all: true,
+		},
+	);
 	const activitiesJson = await activities.json();
 	const activitiesConverted: Message[] = await Promise.all(
 		activitiesJson.map(async (activity: any) => {
