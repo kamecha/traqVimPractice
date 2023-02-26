@@ -4,6 +4,13 @@
 
 まだ実装途中なので、後々破滅的変更が入る可能性おおいにあり
 
+## Requirements(要件)
+- [deno](https://deno.land/)
+- [denops.vim](https://github.com/vim-denops/denops.vim)
+- [ddu.vim](https://github.com/Shougo/ddu.vim) (Optional)
+- [ddc.vim](https://github.com/Shougo/ddc.vim) (Optional)
+- [open-browser.vim](https://github.com/tyru/open-browser.vim) (Optional)
+
 ## 他プラグインとの連携
 
 プラグイン本体はメッセージの受信・送信程度の簡単な事しかしないが、他プラグイン（ddc・ddu）等と連携することによってある程度便利になっています
