@@ -1,6 +1,6 @@
-import { TraqApi, api } from "./api.ts";
+import { api, TraqApi } from "./api.ts";
 import { baseUrl } from "./oauth.ts";
-import { Message, User, Channel } from "./type.d.ts";
+import { Channel, Message, User } from "./type.d.ts";
 
 export type channelMessageOptions = {
 	// channelUUID
@@ -8,7 +8,13 @@ export type channelMessageOptions = {
 	// #gps/time/kamecha
 	channelPath?: string;
 	lastMessageDate?: Date;
-}
+};
+
+export type stamp = {
+	id?: string;
+	word?: string;
+	isUnicode?: boolean;
+};
 
 // channelPathに一致するchannelのUUIDを返す
 // channelPathは#で始まる
@@ -25,20 +31,29 @@ export async function searchChannelUUID(channelPath: string): Promise<string> {
 	const channelsJson = await channelsPromise.json();
 	const channels = channelsJson.public;
 	let channelUUID = "";
-	const searchDFS = (baseChannels: any[], name: string[]): string | undefined => {
+	const searchDFS = (
+		baseChannels: any[],
+		name: string[],
+	): string | undefined => {
 		if (name.length === 0) {
 			return channelUUID;
 		}
-		const channel = baseChannels.find((channel: any) => channel.name === name[0]);
+		const channel = baseChannels.find((channel: any) =>
+			channel.name === name[0]
+		);
 		if (!channel) {
 			return undefined;
 		}
 		channelUUID = channel.id;
-		const children = channels.filter((channel: any) => channel.parentId === channelUUID);
+		const children = channels.filter((channel: any) =>
+			channel.parentId === channelUUID
+		);
 		return searchDFS(children, name.slice(1));
-	}
+	};
 	// channelsから親がいないchannelを探す
-	const rootChannels = channels.filter((channel: any) => channel.parentId === null);
+	const rootChannels = channels.filter((channel: any) =>
+		channel.parentId === null
+	);
 	const result = searchDFS(rootChannels, channelPathSplited);
 	if (!result) {
 		throw new Error("channel not found");
@@ -54,12 +69,14 @@ export const channelPath = async (channelUUID: string): Promise<string> => {
 		if (channel.parentId === null) {
 			return "#" + channel.name;
 		}
-		const parentChannel = channelsJson.public.find((c: any) => c.id === channel.parentId);
+		const parentChannel = channelsJson.public.find((c: any) =>
+			c.id === channel.parentId
+		);
 		return makeChannelPath(parentChannel) + "/" + channel.name;
-	}
+	};
 	const channel = channelsJson.public.find((c: any) => c.id === channelUUID);
 	return makeChannelPath(channel);
-}
+};
 
 // 自身のユーザー情報を取得する
 export const getMe = async (): Promise<any> => {
@@ -70,18 +87,18 @@ export const getMe = async (): Promise<any> => {
 		name: meJson.name,
 		displayName: meJson.displayName,
 		homeChannel: meJson.homeChannel,
-	}
-}
+	};
+};
 
 export const homeChannelPath = async (): Promise<string> => {
 	const me = await getMe();
 	return channelPath(me.homeChannel);
-}
+};
 
 export const homeTimeline = async (): Promise<Message[]> => {
 	const me = await getMe();
 	return channelTimeline({ id: me.homeChannel });
-}
+};
 
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<any> => {
@@ -91,8 +108,8 @@ export const getUser = async (userId: string): Promise<any> => {
 		id: userJson.id,
 		name: userJson.name,
 		displayName: userJson.displayName,
-	}
-}
+	};
+};
 
 export const channelTimeline = async (
 	options: channelMessageOptions,
@@ -115,7 +132,7 @@ export const channelTimeline = async (
 		"GET",
 		"/channels/" + channelUUID + "/messages",
 		query,
-	)
+	);
 	const messagesJson = await messages.json();
 	const messagesConverted: Message[] = await Promise.all(
 		messagesJson.map(async (message: any) => {
@@ -124,34 +141,37 @@ export const channelTimeline = async (
 			return {
 				displayName: user.displayName,
 				content: message.content,
-				createdAt: new Date(message.createdAt)
+				createdAt: new Date(message.createdAt),
 			};
-		})
+		}),
 	);
 	return messagesConverted;
-}
+};
 
 // 再帰的にchannelを取得し、それぞれのchannelを記録
 // channelsを#で始まるchannelPathに変換
-export const channelsRecursive = async (
-): Promise<Channel[]> => {
+export const channelsRecursive = async (): Promise<Channel[]> => {
 	const channels = await api.fetchWithToken("GET", "/channels");
 	const channelsJson = await channels.json();
 	const makeChannelPath = (channel: any): string => {
 		if (channel.parentId === null) {
 			return "#" + channel.name;
 		}
-		const parentChannel = channelsJson.public.find((c: any) => c.id === channel.parentId);
+		const parentChannel = channelsJson.public.find((c: any) =>
+			c.id === channel.parentId
+		);
 		return makeChannelPath(parentChannel) + "/" + channel.name;
-	}
-	const channelsConverted: Channel[] = channelsJson.public.map((channel: any) => {
-		return {
-			id: channel.id,
-			path: makeChannelPath(channel)
-		};
-	});
+	};
+	const channelsConverted: Channel[] = channelsJson.public.map(
+		(channel: any) => {
+			return {
+				id: channel.id,
+				path: makeChannelPath(channel),
+			};
+		},
+	);
 	return channelsConverted;
-}
+};
 
 // activityを取得する
 export const activity = async (): Promise<Message[]> => {
@@ -172,12 +192,12 @@ export const activity = async (): Promise<Message[]> => {
 			return {
 				displayName: displayName,
 				content: content,
-				createdAt: createdAt
-			}
-		})
+				createdAt: createdAt,
+			};
+		}),
 	);
 	return activitiesConverted;
-}
+};
 
 // messageの送信
 export const sendMessage = async (
@@ -187,12 +207,34 @@ export const sendMessage = async (
 	const message = {
 		content: content,
 		embed: false,
-	}
+	};
 	const messagesJson = JSON.stringify(message);
 	console.log(messagesJson);
 	try {
-		await api.fetchWithToken("POST", "/channels/" + channelUUID + "/messages", {}, messagesJson);
+		await api.fetchWithToken(
+			"POST",
+			"/channels/" + channelUUID + "/messages",
+			{},
+			messagesJson,
+		);
 	} catch (e) {
 		console.log(e);
 	}
-}
+};
+
+// stamp情報の取得
+export const getStamps = async (): Promise<stamp[]> => {
+	const stamps = await api.fetchWithToken(
+		"GET",
+		"/stamps",
+	);
+	const stampsJson = await stamps.json();
+	const ret: stamp[] = stampsJson.map((stamp: any) => {
+		return {
+			id: stamp.id,
+			word: stamp.name,
+			isUnicode: stamp.isUnicode,
+		};
+	});
+	return ret;
+};
