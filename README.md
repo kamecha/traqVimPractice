@@ -1,3 +1,7 @@
+
+<img src="https://user-images.githubusercontent.com/50443168/221812130-bfbd543b-7199-4999-a93d-7972ea7f4500.png" width="100px">
+↑なんちゃってロゴ
+
 # traQのvimクライアントの練習
 
 部内SNS[†traQ†](https://github.com/traPtitech/traQ)のvimクライアント
