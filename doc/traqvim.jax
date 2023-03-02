@@ -63,7 +63,7 @@ https://github.com/kamecha/traqVimPractice
 :TraqHome					*:TraqHome*
     ホームチャンネルを現在のバッファに表示します
 
-:TraqTimeline {channelPath}				*:TraqTimeline*
+:TraqTimeline {channelPath}			*:TraqTimeline*
     引数のチャンネル名のチャンネルを現在のバッファに表示します
     {channelPath}: #gps/times/kamecha
 
