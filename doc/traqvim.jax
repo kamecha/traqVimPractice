@@ -1,6 +1,5 @@
 *traqvim.txt*	日本語ヘルプ
 
-Version :
 Author  : kamecha
 License : MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -81,7 +80,7 @@ https://github.com/kamecha/traqVimPractice
     メッセージバッファにおいて有効であり、メッセージを対象チャンネルに送信します
 
 ------------------------------------------------------------------------------
-レイアウト
+レイアウト					*traqvim-channel-layout*
 
 チャンネルの表示レイアウト
 
@@ -94,7 +93,7 @@ https://github.com/kamecha/traqVimPractice
 >>
 
 ------------------------------------------------------------------------------
-バッファ
+バッファ					*traqvim-buffer*
 
 traqvim
     チャンネル、アクティビティの表示
