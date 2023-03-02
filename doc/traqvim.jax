@@ -100,21 +100,6 @@ traqvim
 
 traqvim-message
     メッセージの編集バッファ
->
-------------------------------------------------------------------------------
-関数						*traqvim-functions*
-
-						*traqvim#draw_timeline()*
-traqvim#draw_timeline({bufNum}, {channelTimeline})
-
-
-						*traqvim#make_buffer()*
-traqvim#make_buffer({channelPath}, {option})
-
-
-						*traqvim#make_message_body()*
-traqvim#make_message_body({message}, {width})
-
 
 ==============================================================================
 TODO						*traqvim-todo*
