@@ -84,13 +84,13 @@ https://github.com/kamecha/traqVimPractice
 
 チャンネルの表示レイアウト
 
->>
-亀茶 3/1/2023
+>
+    亀茶 3/1/2023
 
-ほげほげ
+    ほげほげ
 
----------
->>
+    ---------
+>
 
 ------------------------------------------------------------------------------
 バッファ					*traqvim-buffer*
@@ -100,6 +100,28 @@ traqvim
 
 traqvim-message
     メッセージの編集バッファ
+
+==============================================================================
+COMPLETION					*traqvim-completion*
+
+    |ddc|と連携したスタンプの補完環境を提供します。
+    スタンプの開始文字である`:`に反応しスタンプ候補を表示します。
+    本プラグインを使用したメッセージ送信は特殊バッファを使用するため、
+    |ddc-option-specialBufferCompletion|を設定する必要があります。
+>
+    " 例
+    call ddc#custom#patch_global('sources', ['stamp'])
+    call ddc#custom#patch_global('sourceOptions', {
+        \   'stamp': {
+        \     'mark': 'stamp'
+        \   },
+        \   '_': {
+        \     'matchers': ['matcher_head'],
+        \     'sorters': ['sorter_rank']
+        \   },
+        \ })
+    call ddc#custom#patch_filetype('traqvim-message', 'specialBufferCompletion', v:true)
+>
 
 ==============================================================================
 TODO						*traqvim-todo*
