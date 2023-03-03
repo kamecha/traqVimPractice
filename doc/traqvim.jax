@@ -124,6 +124,35 @@ COMPLETION					*traqvim-completion*
 >
 
 ==============================================================================
+FuzzyFinderSource				*traqvim-ff-source*
+
+    |ddu|と連携したチャンネル名のソースを提供します。
+    チャンネルのメッセージをプレビューとして表示します。
+
+>
+    " 例
+    call ddu#start({
+	\ 'ui': 'ff',
+	\ 'sources': [{'name': 'channel', 'params': {}}],
+	\ 'kindOptions': {
+	\	    'channel': {
+	\		'defaultAction': 'open',
+	\	    },
+	\ },
+	\ })
+<
+    
+    |ddu|におけるkindと同様にチャンネル用の|kind|も提供しています。
+
+open
+    選択されたチャンネルを開きます。
+
+    params:
+	{command}:  open command.
+		    (Default: "edit")
+
+
+==============================================================================
 TODO						*traqvim-todo*
 
 
