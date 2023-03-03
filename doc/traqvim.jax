@@ -90,7 +90,7 @@ https://github.com/kamecha/traqVimPractice
     ほげほげ
 
     ---------
->
+<
 
 ------------------------------------------------------------------------------
 バッファ					*traqvim-buffer*
@@ -121,7 +121,7 @@ COMPLETION					*traqvim-completion*
         \   },
         \ })
     call ddc#custom#patch_filetype('traqvim-message', 'specialBufferCompletion', v:true)
->
+<
 
 ==============================================================================
 FuzzyFinderSource				*traqvim-ff-source*
