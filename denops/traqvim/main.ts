@@ -28,20 +28,26 @@ export async function main(denops: Denops): Promise<void> {
 			const homePath = await homeChannelPath();
 			const escapedHomePath = homePath.replace("#", "\\#");
 			const home = await homeTimeline();
+			const convertedHome = home.map((message: Message) => {
+				return {
+					displayName: message.displayName,
+					content: message.content,
+					createdAt: message.createdAt.toLocaleDateString(),
+				}
+			});
 			const bufNum = await denops.call("traqvim#make_buffer", escapedHomePath, "edit");
+			await vars.buffers.set(
+				denops,
+				"channelTimeline",
+				convertedHome
+			);
 			await denops.cmd(
 				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
 			);
 			await denops.call(
 				"traqvim#draw_timeline",
 				bufNum,
-				home.map((message: Message) => {
-					return {
-						displayName: message.displayName,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleDateString(),
-					}
-				}));
+			);
 			return;
 		},
 		async timeline(args: unknown): Promise<unknown> {
@@ -76,20 +82,26 @@ export async function main(denops: Denops): Promise<void> {
 		},
 		async activity(): Promise<unknown> {
 			const activityList: Message[] = await activity();
+			const convertedActivity = activityList.map((message: Message) => {
+				return {
+					displayName: message.displayName,
+					content: message.content,
+					createdAt: message.createdAt.toLocaleDateString(),
+				}
+			});
 			const bufNum = await denops.call("traqvim#make_buffer", "Activity", "edit");
+			await vars.buffers.set(
+				denops,
+				"channelTimeline",
+				convertedActivity,
+			);
 			await denops.cmd(
 				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
 			);
 			await denops.call(
 				"traqvim#draw_timeline",
 				bufNum,
-				activityList.map((message: Message) => {
-					return {
-						displayName: message.displayName,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleDateString(),
-					}
-				}));
+			);
 			return;
 		},
 		async reload(bufNum: unknown, bufName: unknown): Promise<unknown> {
@@ -105,22 +117,25 @@ export async function main(denops: Denops): Promise<void> {
 				}
 				timeline = await channelTimeline(timelineOption);
 			}
-			// #gps/times/kamecha → \#gps/times/kamecha
-			// const escapedChannelName = timelineOption.channelPath.replace("#", "\\#");
-			// await vars.buffers.set(denops, "channelTimeline", timeline);
+			const convertedTimeline = timeline.map((message: Message) => {
+				return {
+					displayName: message.displayName,
+					content: message.content,
+					createdAt: message.createdAt.toLocaleDateString(),
+				}
+			});
+			await vars.buffers.set(
+				denops,
+				"channelTimeline",
+				convertedTimeline,
+			);
 			await denops.cmd(
 				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
 			);
 			await denops.call(
 				"traqvim#draw_timeline",
 				bufNum,
-				timeline.map((message: Message) => {
-					return {
-						displayName: message.displayName,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleDateString(),
-					}
-				}));
+			);
 			return;
 		},
 		async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
