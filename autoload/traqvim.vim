@@ -8,7 +8,7 @@ endfunction
 function! traqvim#draw_timeline(bufNum, channelTimeline) abort
 	setlocal modifiable
 	let start = 1
-	let wininfo = getwininfo(win_getid())[0]
+	let wininfo = getwininfo(bufwinid(a:bufNum))[0]
 	let width = winwidth(0)
 	if has_key(wininfo, 'textoff')
 		let width -= wininfo.textoff
