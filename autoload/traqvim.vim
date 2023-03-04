@@ -5,15 +5,18 @@ function! traqvim#make_buffer(channelPath, option) abort
 	return buf_num
 endfunction
 
-function! traqvim#draw_timeline(bufNum, channelTimeline) abort
+function! traqvim#draw_timeline(bufNum) abort
 	setlocal modifiable
 	let start = 1
-	let wininfo = getwininfo(bufwinid(a:bufNum))[0]
-	let width = winwidth(0)
+	echomsg "bufNum: " . a:bufNum
+	let winnr = bufwinid(a:bufNum)
+	echomsg "winnr: " . winnr
+	let wininfo = getwininfo(winnr)[0]
+	let width = winwidth(winnr)
 	if has_key(wininfo, 'textoff')
 		let width -= wininfo.textoff
 	endif
-	for message in a:channelTimeline
+	for message in b:channelTimeline
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body)
 		call setbufline(a:bufNum, start, body)
