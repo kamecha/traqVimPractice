@@ -11,6 +11,6 @@ augroup traqvim
 	autocmd!
 	autocmd WinResized *
 		\ if &ft == 'traqvim' |
-		\   call traqvim#draw_timeline(bufnr()) |
+		\   call traqvim#redraw_recursive(winlayout()) |
 		\ endif
 augroup END

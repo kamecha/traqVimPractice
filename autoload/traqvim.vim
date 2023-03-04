@@ -6,11 +6,9 @@ function! traqvim#make_buffer(channelPath, option) abort
 endfunction
 
 function! traqvim#draw_timeline(bufNum) abort
-	setlocal modifiable
+	call setbufvar(a:bufNum, "&modifiable", 1)
 	let start = 1
-	echomsg "bufNum: " . a:bufNum
 	let winnr = bufwinid(a:bufNum)
-	echomsg "winnr: " . winnr
 	let wininfo = getwininfo(winnr)[0]
 	let width = winwidth(winnr)
 	if has_key(wininfo, 'textoff')
@@ -22,7 +20,20 @@ function! traqvim#draw_timeline(bufNum) abort
 		call setbufline(a:bufNum, start, body)
 		let start = end
 	endfor
-	setlocal nomodifiable
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
+function! traqvim#redraw_recursive(layout) abort
+	for win in a:layout[1]
+		if win[0] ==# "leaf"
+			let bufNum = winbufnr(win[1])
+			if getbufvar(bufNum, "&filetype") ==# "traqvim"
+				call traqvim#draw_timeline(bufNum)
+			endif
+		else
+			call traqvim#redraw_recursive(win)
+		endif
+	endfor
 endfunction
 
 " Message { displayName, content, createdAt }
