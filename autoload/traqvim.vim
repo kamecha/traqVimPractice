@@ -1,6 +1,16 @@
+" channelPath: '\#gps/times/kamecha'
 function! traqvim#make_buffer(channelPath, option) abort
-	let buf_num = 0
-	noswapfile exe a:option a:channelPath
+	let buf_name = a:channelPath
+	let buf_offset = 1
+	while bufexists(buf_name[1:])
+		if buf_name =~# ')$'
+			let buf_offset = buf_offset + 1
+			let buf_name = buf_name[0 : strlen(buf_name) - 4] . '(' . buf_offset . ')'
+		else
+			let buf_name = buf_name . '(1)'
+		endif
+	endwhile
+	noswapfile exe a:option buf_name
 	let buf_num = bufnr(a:channelPath)
 	return buf_num
 endfunction
