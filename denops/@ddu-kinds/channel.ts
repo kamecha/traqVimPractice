@@ -38,25 +38,27 @@ export class Kind extends BaseKind<Params> {
 					channelPath: channelPath,
 				};
 				const timeline = await channelTimeline(timelineOption);
+				const convertedTimeline = timeline.map((message: Message) => {
+					return {
+						displayName: message.displayName,
+						content: message.content,
+						createdAt: message.createdAt.toLocaleTimeString(),
+					};
+				});
 				const escapedChannelPath = channelPath.replace("#", "\\#");
 				const bufNum = await args.denops.call(
 					"traqvim#make_buffer",
 					escapedChannelPath,
 					openCommand,
 				);
+				await vars.buffers.set(args.denops, "channelTimeline", convertedTimeline);
 				await args.denops.cmd(
 					"setlocal buftype=nofile ft=traqvim nonumber breakindent",
 				);
 				await args.denops.call(
 					"traqvim#draw_timeline",
 					bufNum,
-					timeline.map((message: Message) => {
-						return {
-							displayName: message.displayName,
-							content: message.content,
-							createdAt: message.createdAt.toLocaleTimeString(),
-						};
-					}));
+				);
 			}
 			return ActionFlags.None;
 		},
