@@ -34,16 +34,23 @@ function! traqvim#draw_timeline(bufNum) abort
 endfunction
 
 function! traqvim#redraw_recursive(layout) abort
-	for win in a:layout[1]
-		if win[0] ==# "leaf"
-			let bufNum = winbufnr(win[1])
-			if getbufvar(bufNum, "&filetype") ==# "traqvim"
-				call traqvim#draw_timeline(bufNum)
-			endif
-		else
-			call traqvim#redraw_recursive(win)
+	if a:layout[0] ==# "leaf"
+		let bufNum = winbufnr(a:layout[1])
+		if getbufvar(bufNum, "&filetype") ==# "traqvim"
+			call traqvim#draw_timeline(bufNum)
 		endif
-	endfor
+	else
+		for win in a:layout[1]
+			if win[0] ==# "leaf"
+				let bufNum = winbufnr(win[1])
+				if getbufvar(bufNum, "&filetype") ==# "traqvim"
+					call traqvim#draw_timeline(bufNum)
+				endif
+			else
+				call traqvim#redraw_recursive(win)
+			endif
+		endfor
+	endif
 endfunction
 
 " Message { displayName, content, createdAt }
