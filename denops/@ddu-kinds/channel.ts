@@ -43,6 +43,7 @@ export class Kind extends BaseKind<Params> {
 						displayName: message.displayName,
 						content: message.content,
 						createdAt: message.createdAt.toLocaleTimeString(),
+						quote: message.quote,
 					};
 				});
 				const escapedChannelPath = channelPath.replace("#", "\\#");

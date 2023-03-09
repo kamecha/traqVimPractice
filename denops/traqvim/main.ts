@@ -33,6 +33,7 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
+					quote: message.quote,
 				}
 			});
 			const bufNum = await denops.call("traqvim#make_buffer", escapedHomePath, "edit");
@@ -64,6 +65,7 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
+					quote: message.quote,
 				}
 			});
 			await vars.buffers.set(
@@ -87,6 +89,7 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
+					quote: message.quote,
 				}
 			});
 			const bufNum = await denops.call("traqvim#make_buffer", "Activity", "edit");
@@ -122,6 +125,7 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
+					quote: message.quote,
 				}
 			});
 			await vars.buffers.set(
