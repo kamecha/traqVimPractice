@@ -59,8 +59,10 @@ export async function main(denops: Denops): Promise<void> {
 		},
 		async timeline(args: unknown): Promise<unknown> {
 			ensureString(args);
+			// argsが"#gps/times/kamecha(1)"のようになっていた場合"(1)"を削除する
+			const channelPath = args.replace(/\(\d+\)$/, "");
 			const timelineOption: channelMessageOptions = {
-				channelPath: args
+				channelPath: channelPath
 			}
 			const timeline = await channelTimeline(timelineOption);
 			// #gps/times/kamecha → \#gps/times/kamecha
@@ -133,8 +135,11 @@ export async function main(denops: Denops): Promise<void> {
 			if (bufName === "Activity") {
 				timeline = await activity();
 			} else {
+				// バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
+				// それを削除する
+				const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
 				const timelineOption: channelMessageOptions = {
-					channelPath: bufName
+					channelPath: bufNameWithoutNumber
 				}
 				timeline = await channelTimeline(timelineOption);
 			}
@@ -186,7 +191,9 @@ export async function main(denops: Denops): Promise<void> {
 			const content = (contents as string[]).join("\n");
 			console.log("content: " + content);
 			// Message\#gps/times/kamecha → #gps/times/kamecha
-			const channelPath = bufName.replace("Message#", "#");
+			let channelPath = bufName.replace("Message#", "#");
+			// #gps/times/kamecha(1) → #gps/times/kamecha
+			channelPath = channelPath.replace(/\(\d+\)$/, "");
 			console.log("channelPath: " + channelPath);
 			const channelUUID = await searchChannelUUID(channelPath);
 			console.log("channelUUID: " + channelUUID);
