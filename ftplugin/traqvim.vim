@@ -1,5 +1,6 @@
 
 setlocal noswapfile
+setlocal signcolumn=no
 nnoremap <buffer><silent> r
 			\ :TraqReload<CR>
 nnoremap <buffer><silent> o

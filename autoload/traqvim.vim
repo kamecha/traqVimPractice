@@ -19,11 +19,7 @@ function! traqvim#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
-	let wininfo = getwininfo(winnr)[0]
 	let width = winwidth(winnr)
-	if has_key(wininfo, 'textoff')
-		let width -= wininfo.textoff
-	endif
 	for message in getbufvar(a:bufNum, "channelTimeline")
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body)
