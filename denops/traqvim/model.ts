@@ -138,10 +138,38 @@ export const channelTimeline = async (
 		messagesJson.map(async (message: any) => {
 			// userIdからユーザー情報を取得する
 			const user = await getUser(message.userId);
+			// contentのうち引用してる箇所を判定し、対応するUUIDを記録する
+			// 引用URLはhttps://q.trap.jp/messages/UUIDの形式である
+			const quotedMessageUUIDs: string[] = message.content.match(
+				/https:\/\/q.trap.jp\/messages\/[0-9a-f-]+/g,
+			)?.map((url: string) => {
+				return url.split("/").slice(-1)[0];
+			});
+			// quotedMessageUUIDsが存在しなかった場合はundefinedを返す
+			let quotedMessages: Message[] | undefined = undefined;
+			if (quotedMessageUUIDs) {
+				quotedMessages = await Promise.all(
+					quotedMessageUUIDs?.map(async (uuid: string) => {
+						const quotedMessage = await api.fetchWithToken(
+							"GET",
+							"/messages/" + uuid,
+						);
+						const quotedMessageJson = await quotedMessage.json();
+						// userIdからユーザー情報を取得する
+						const user = await getUser(quotedMessageJson.userId);
+						return {
+							displayName: user.displayName,
+							content: quotedMessageJson.content,
+							createdAt: new Date(quotedMessageJson.createdAt),
+						}
+					})
+				)
+			}
 			return {
 				displayName: user.displayName,
 				content: message.content,
 				createdAt: new Date(message.createdAt),
+				quote: quotedMessages,
 			};
 		}),
 	);
