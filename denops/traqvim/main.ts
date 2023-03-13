@@ -33,7 +33,13 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
-					quote: message.quote,
+					quote: message.quote?.map((quote: Message) => {
+						return {
+							displayName: quote.displayName,
+							content: quote.content,
+							createdAt: quote.createdAt.toLocaleDateString(),
+						}
+					})
 				}
 			});
 			const bufNum = await denops.call("traqvim#make_buffer", escapedHomePath, "edit");
@@ -65,7 +71,13 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
-					quote: message.quote,
+					quote: message.quote?.map((quote: Message) => {
+						return {
+							displayName: quote.displayName,
+							content: quote.content,
+							createdAt: quote.createdAt.toLocaleDateString(),
+						}
+					})
 				}
 			});
 			await vars.buffers.set(
@@ -89,7 +101,13 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
-					quote: message.quote,
+					quote: message.quote?.map((quote: Message) => {
+						return {
+							displayName: quote.displayName,
+							content: quote.content,
+							createdAt: quote.createdAt.toLocaleDateString(),
+						}
+					})
 				}
 			});
 			const bufNum = await denops.call("traqvim#make_buffer", "Activity", "edit");
@@ -125,7 +143,13 @@ export async function main(denops: Denops): Promise<void> {
 					displayName: message.displayName,
 					content: message.content,
 					createdAt: message.createdAt.toLocaleDateString(),
-					quote: message.quote,
+					quote: message.quote?.map((quote: Message) => {
+						return {
+							displayName: quote.displayName,
+							content: quote.content,
+							createdAt: quote.createdAt.toLocaleDateString(),
+						}
+					})
 				}
 			});
 			await vars.buffers.set(
