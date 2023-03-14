@@ -124,7 +124,7 @@ COMPLETION					*traqvim-completion*
 <
 
 ==============================================================================
-FuzzyFinderSource				*traqvim-ff-source*
+FuzzyFinderSource				*ddu-source-traqvim*
 
     |ddu|と連携したチャンネル名のソースを提供します。
     チャンネルのメッセージをプレビューとして表示します。
@@ -133,7 +133,7 @@ FuzzyFinderSource				*traqvim-ff-source*
     " 例
     call ddu#start({
 	\ 'ui': 'ff',
-	\ 'sources': [{'name': 'channel', 'params': {}}],
+	\ 'sources': [{'name': 'channel', 'params': {'type': 'unread'}}],
 	\ 'kindOptions': {
 	\	    'channel': {
 	\		'defaultAction': 'open',
@@ -150,6 +150,20 @@ open
     params:
 	{command}:  open command.
 		    (Default: "edit")
+
+
+==============================================================================
+PARAMS						*ddu-source-traqvim-params*
+
+				*ddu-source-traqvim-param-type*
+type		(string)
+    チャンネルの種類を選択します。
+
+    "all": 全てのチャンネル
+    "subscribed": 購読チャンネル
+    "unread": 未読チャンネル
+
+    Default: "all"
 
 
 ==============================================================================
