@@ -201,6 +201,32 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
 	return channelsConverted;
 };
 
+// 購読チャンネルの取得
+export const getSubscribedChannels = async (): Promise<Channel[]> => {
+	const subscribedChannels = await api.fetchWithToken("GET", "/users/me/subscriptions");
+	const subscribedChannelsJson = await subscribedChannels.json();
+	const subscribedChannelsConverted: Channel[] = subscribedChannelsJson.map((channel: any) => {
+		return {
+			id: channel.channelId,
+			path: "",
+		};
+	})
+	return subscribedChannelsConverted;
+}
+
+// 未読チャンネルの取得
+export const getUnreadChannels = async (): Promise<Channel[]> => {
+	const unreadChannels = await api.fetchWithToken("GET", "/users/me/unread");
+	const unreadChannelsJson = await unreadChannels.json();
+	const unreadChannelsConverted: Channel[] = unreadChannelsJson.map((channel: any) => {
+		return {
+			id: channel.channelId,
+			path: "",
+		};
+	})
+	return unreadChannelsConverted;
+}
+
 // activityを取得する
 export const activity = async (): Promise<Message[]> => {
 	const activities = await api.fetchWithToken(
