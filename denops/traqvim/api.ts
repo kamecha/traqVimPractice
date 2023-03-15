@@ -1,6 +1,7 @@
-import { Tokens } from "https://deno.land/x/oauth2@v0.2.6/mod.ts";
-import * as path from "https://deno.land/std@0.177.0/path/mod.ts";
-// import { baseUrl } from "./oauth.ts";
+import {
+	Tokens,
+	path
+} from "./deps.ts";
 
 export const baseUrl = "https://q.trap.jp/api/v3";
 

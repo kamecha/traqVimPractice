@@ -1,5 +1,3 @@
-import { Denops } from "https://deno.land/x/denops_std@v1.0.0/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v4.0.0/variable/mod.ts";
 import { setupOAuth } from "./oauth.ts";
 import {
 	searchChannelUUID,
@@ -12,9 +10,11 @@ import {
 } from "./model.ts";
 import { Message } from "./type.d.ts";
 import {
+	Denops,
+	vars,
 	ensureString,
-	ensureNumber,
-} from "https://deno.land/x/unknownutil@v1.0.0/mod.ts";
+	ensureNumber
+} from "./deps.ts";
 
 export async function main(denops: Denops): Promise<void> {
 	// ここにプラグインの処理を記載する
