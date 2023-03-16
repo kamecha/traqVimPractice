@@ -1,14 +1,8 @@
 import {
-	ActionFlags,
-	Actions,
-	BaseKind,
-	DduItem,
-	GetPreviewerArguments,
-	PreviewContext,
-	Previewer,
-} from "https://deno.land/x/ddu_vim@v1.8.7/types.ts";
-import * as vars from "https://deno.land/x/denops_std@v4.0.0/variable/mod.ts";
-import { Denops } from "https://deno.land/x/ddu_vim@v2.0.0/deps.ts";
+	Denops,
+	vars,
+	dduVim,
+} from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { Message } from "../traqvim/type.d.ts";
 
@@ -22,12 +16,12 @@ type OpenParams = {
 	command: string;
 };
 
-export class Kind extends BaseKind<Params> {
-	actions: Actions<Params> = {
+export class Kind extends dduVim.BaseKind<Params> {
+	actions: dduVim.Actions<Params> = {
 		open: async (args: {
 			denops: Denops;
 			actionParams: unknown;
-			items: DduItem[];
+			items: dduVim.DduItem[];
 		}) => {
 			const params = args.actionParams as OpenParams;
 			const openCommand = params.command ?? "edit";
@@ -67,13 +61,13 @@ export class Kind extends BaseKind<Params> {
 					bufNum,
 				);
 			}
-			return ActionFlags.None;
+			return dduVim.ActionFlags.None;
 		},
 	};
 
 	async getPreviewer(
-		args: GetPreviewerArguments,
-	): Promise<Previewer | undefined> {
+		args: dduVim.GetPreviewerArguments,
+	): Promise<dduVim.Previewer | undefined> {
 		const action = args.item as ActionData;
 		if (!action) {
 			return undefined;

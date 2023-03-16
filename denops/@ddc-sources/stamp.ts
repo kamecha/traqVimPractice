@@ -1,36 +1,31 @@
-import {
-	BaseSource,
-	DdcOptions,
-	Item,
-	SourceOptions,
-	Context,
-} from "https://deno.land/x/ddc_vim@v3.4.0/types.ts";
+import { ddcVim } from "../traqvim/deps.ts";
+
 import { Denops } from "https://deno.land/x/ddc_vim@v3.4.0/deps.ts";
 import { getStamps, stamp } from "../traqvim/model.ts";
 
 type Params = Record<never, never>;
 
-export class Source extends BaseSource<Params> {
+export class Source extends ddcVim.BaseSource<Params> {
 	override async gather(args: {
 		denops: Denops;
-		options: DdcOptions;
-		sourceOptions: SourceOptions;
+		options: ddcVim.DdcOptions;
+		sourceOptions: ddcVim.SourceOptions;
 		sourceParams: Params;
 		completeStr: string;
-	}): Promise<Item[]> {
+	}): Promise<ddcVim.Item[]> {
 		const stamps: stamp[] = await getStamps();
 		return stamps
 			.filter((stamp) => stamp.word)
 			.map((stamp) => {
 				return {
 					word: ":" + stamp.word + ":",
-				} as Item;
+				} as ddcVim.Item;
 			});
 	}
 
 	override getCompletePosition(args: {
 		denops: Denops;
-		context: Context;
+		context: ddcVim.Context;
 	}): Promise<number> {
 		const matchPos = args.context.input.search(
 			new RegExp("(?:" + ":\\w*" + ")$"),
