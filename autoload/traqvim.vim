@@ -64,7 +64,7 @@ function! traqvim#make_message_body(message, width) abort
 			endfor
 		endif
 	endif
-	let footer = [ "", repeat("-", a:width) ]
+	let footer = [ "", repeat("─", a:width) ]
 	let messageBody = header + rows + quote + footer
 	return messageBody
 endfunction
