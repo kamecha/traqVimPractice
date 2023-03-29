@@ -101,7 +101,7 @@ export const homeTimeline = async (): Promise<Message[]> => {
 };
 
 // userIdからユーザー情報を取得する
-export const getUser = async (userId: string): Promise<any> => {
+export const getUser = async (userId: string): Promise<User> => {
 	const user = await api.fetchWithToken("GET", "/users/" + userId);
 	const userJson = await user.json();
 	return {
@@ -158,7 +158,7 @@ export const channelTimeline = async (
 						// userIdからユーザー情報を取得する
 						const user = await getUser(quotedMessageJson.userId);
 						return {
-							displayName: user.displayName,
+							user: user,
 							content: quotedMessageJson.content,
 							createdAt: new Date(quotedMessageJson.createdAt),
 						}
@@ -166,7 +166,7 @@ export const channelTimeline = async (
 				)
 			}
 			return {
-				displayName: user.displayName,
+				user: user,
 				content: message.content,
 				createdAt: new Date(message.createdAt),
 				quote: quotedMessages,
@@ -239,12 +239,11 @@ export const activity = async (): Promise<Message[]> => {
 	const activitiesJson = await activities.json();
 	const activitiesConverted: Message[] = await Promise.all(
 		activitiesJson.map(async (activity: any) => {
-			const displayNameJson = await getUser(activity.userId);
-			const displayName = displayNameJson.displayName;
+			const user = await getUser(activity.userId);
 			const content = activity.content;
 			const createdAt = new Date(activity.createdAt);
 			return {
-				displayName: displayName,
+				user: user,
 				content: content,
 				createdAt: createdAt,
 			};

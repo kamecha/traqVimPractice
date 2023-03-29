@@ -49,22 +49,22 @@ function! traqvim#redraw_recursive(layout) abort
 	endif
 endfunction
 
-" Message { displayName, content, createdAt }
+" Message { user : {id, name, displayName}, content, createdAt }
 function! traqvim#make_message_body(message, width) abort
-	let header = [ a:message["displayName"] . " " . a:message["createdAt"], "" ]
+	let header = [ a:message["user"]["displayName"] . " @" . a:message["user"]["name"] . " " . a:message["createdAt"], "" ]
 	let rows = split(a:message["content"], "\n")
 	let quote = []
 	if a:message->has_key("quote")
 		if type(a:message["quote"]) == type([])
 			for q in a:message["quote"]
 				let quote += [ "", ">"]
-				let quote += [ "\t". q["displayName"] . " " . q["createdAt"], "" ]
+				let quote += [ "\t". q["user"]["displayName"] . " @" . q["user"]["name"] . " " . q["createdAt"], "" ]
 				let quote += map(split(q["content"], "\n"), { _, v -> "\t" . v })
 				let quote += [ "", "<"]
 			endfor
 		endif
 	endif
-	let footer = [ "", repeat("-", a:width) ]
+	let footer = [ "", repeat("─", a:width) ]
 	let messageBody = header + rows + quote + footer
 	return messageBody
 endfunction

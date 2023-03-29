@@ -30,14 +30,14 @@ export async function main(denops: Denops): Promise<void> {
 			const home = await homeTimeline();
 			const convertedHome = home.map((message: Message) => {
 				return {
-					displayName: message.displayName,
+					user: message.user,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
-							displayName: quote.displayName,
+							user: quote.user,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
@@ -70,14 +70,14 @@ export async function main(denops: Denops): Promise<void> {
 			const bufNum = await denops.call("traqvim#make_buffer", escapedChannelName, "edit");
 			const convertedTimeline = timeline.map((message: Message) => {
 				return {
-					displayName: message.displayName,
+					user: message.user,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
-							displayName: quote.displayName,
+							user: quote.user,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
@@ -100,14 +100,15 @@ export async function main(denops: Denops): Promise<void> {
 			const activityList: Message[] = await activity();
 			const convertedActivity = activityList.map((message: Message) => {
 				return {
-					displayName: message.displayName,
+					user: message.user,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					// TODO: DateStringかTimeStringに揃える
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
-							displayName: quote.displayName,
+							user: quote.user,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
@@ -145,14 +146,14 @@ export async function main(denops: Denops): Promise<void> {
 			}
 			const convertedTimeline = timeline.map((message: Message) => {
 				return {
-					displayName: message.displayName,
+					user: message.user,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
-							displayName: quote.displayName,
+							user: quote.user,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}

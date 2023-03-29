@@ -5,7 +5,7 @@ export interface Channel {
 }
 
 export interface Message {
-	displayName: string;
+	user: User;
 	content: string;
 	createdAt: Date;
 	quote?: Message[];
