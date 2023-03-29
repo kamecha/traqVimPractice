@@ -32,12 +32,12 @@ export async function main(denops: Denops): Promise<void> {
 				return {
 					displayName: message.displayName,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
 							displayName: quote.displayName,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
@@ -72,12 +72,12 @@ export async function main(denops: Denops): Promise<void> {
 				return {
 					displayName: message.displayName,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
 							displayName: quote.displayName,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
@@ -102,12 +102,13 @@ export async function main(denops: Denops): Promise<void> {
 				return {
 					displayName: message.displayName,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					// TODO: DateStringかTimeStringに揃える
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
 							displayName: quote.displayName,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
@@ -147,12 +148,12 @@ export async function main(denops: Denops): Promise<void> {
 				return {
 					displayName: message.displayName,
 					content: message.content,
-					createdAt: message.createdAt.toLocaleDateString(),
+					createdAt: message.createdAt.toLocaleString("ja-JP"),
 					quote: message.quote?.map((quote: Message) => {
 						return {
 							displayName: quote.displayName,
 							content: quote.content,
-							createdAt: quote.createdAt.toLocaleDateString(),
+							createdAt: quote.createdAt.toLocaleString("ja-JP"),
 						}
 					})
 				}
