@@ -34,12 +34,12 @@ export class Kind extends dduVim.BaseKind<Params> {
 				const timeline = await channelTimeline(timelineOption);
 				const convertedTimeline = timeline.map((message: Message) => {
 					return {
-						displayName: message.displayName,
+						user: message.user,
 						content: message.content,
 						createdAt: message.createdAt.toLocaleString("ja-JP"),
 						quote: message.quote?.map((quote: Message) => {
 							return {
-								displayName: quote.displayName,
+								user: quote.user,
 								content: quote.content,
 								createdAt: quote.createdAt.toLocaleString("ja-JP"),
 							}
@@ -86,7 +86,7 @@ export class Kind extends dduVim.BaseKind<Params> {
 				const ret: string[] = await args.denops.call(
 					"traqvim#make_message_body",
 					{
-						displayName: message.displayName,
+						user: message.user,
 						content: message.content,
 						createdAt: message.createdAt.toLocaleString("ja-JP"),
 					},
