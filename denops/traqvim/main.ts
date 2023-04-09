@@ -1,21 +1,17 @@
 import { setupOAuth } from "./oauth.ts";
 import {
 	searchChannelUUID,
-	channelTimeline,
 	channelMessageOptions,
 	homeChannelPath,
-	homeTimeline,
-	activity,
 	sendMessage,
 } from "./model.ts";
 import { Message } from "./type.d.ts";
 import {
 	Denops,
-	vars,
 	ensureString,
 	ensureNumber
 } from "./deps.ts";
-import { actionOpenChannel } from "./action.ts";
+import { actionOpenChannel, actionOpenActivity } from "./action.ts";
 
 export async function main(denops: Denops): Promise<void> {
 	// ここにプラグインの処理を記載する
@@ -44,44 +40,15 @@ export async function main(denops: Denops): Promise<void> {
 			return;
 		},
 		async activity(): Promise<unknown> {
-			const activityList: Message[] = await activity();
-			const convertedActivity = activityList.map((message: Message) => {
-				return {
-					user: message.user,
-					content: message.content,
-					// TODO: DateStringかTimeStringに揃える
-					createdAt: message.createdAt.toLocaleString("ja-JP"),
-					quote: message.quote?.map((quote: Message) => {
-						return {
-							user: quote.user,
-							content: quote.content,
-							createdAt: quote.createdAt.toLocaleString("ja-JP"),
-						}
-					})
-				}
-			});
-			const bufNum = await denops.call("traqvim#make_buffer", "Activity", "edit");
-			await vars.buffers.set(
-				denops,
-				"channelTimeline",
-				convertedActivity,
-			);
-			await denops.cmd(
-				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-			);
-			await denops.call(
-				"traqvim#draw_timeline",
-				bufNum,
-			);
+			await actionOpenActivity(denops);
 			return;
 		},
 		async reload(bufNum: unknown, bufName: unknown): Promise<unknown> {
 			// バッファ番号は被らないが、バッファ名は被る可能性がある
 			ensureNumber(bufNum);
 			ensureString(bufName);
-			let timeline: Message[];
 			if (bufName === "Activity") {
-				timeline = await activity();
+				actionOpenActivity(denops, bufNum);
 			} else {
 				// バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
 				// それを削除する
@@ -89,34 +56,8 @@ export async function main(denops: Denops): Promise<void> {
 				const timelineOption: channelMessageOptions = {
 					channelPath: bufNameWithoutNumber
 				}
-				timeline = await channelTimeline(timelineOption);
+				actionOpenChannel(denops, timelineOption, undefined, bufNum);
 			}
-			const convertedTimeline = timeline.map((message: Message) => {
-				return {
-					user: message.user,
-					content: message.content,
-					createdAt: message.createdAt.toLocaleString("ja-JP"),
-					quote: message.quote?.map((quote: Message) => {
-						return {
-							user: quote.user,
-							content: quote.content,
-							createdAt: quote.createdAt.toLocaleString("ja-JP"),
-						}
-					})
-				}
-			});
-			await vars.buffers.set(
-				denops,
-				"channelTimeline",
-				convertedTimeline,
-			);
-			await denops.cmd(
-				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-			);
-			await denops.call(
-				"traqvim#draw_timeline",
-				bufNum,
-			);
 			return;
 		},
 		async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
