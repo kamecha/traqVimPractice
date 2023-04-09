@@ -15,6 +15,7 @@ import {
 	ensureString,
 	ensureNumber
 } from "./deps.ts";
+import { actionOpenChannel } from "./action.ts";
 
 export async function main(denops: Denops): Promise<void> {
 	// ここにプラグインの処理を記載する
@@ -26,35 +27,10 @@ export async function main(denops: Denops): Promise<void> {
 		},
 		async home(): Promise<unknown> {
 			const homePath = await homeChannelPath();
-			const escapedHomePath = homePath.replace("#", "\\#");
-			const home = await homeTimeline();
-			const convertedHome = home.map((message: Message) => {
-				return {
-					user: message.user,
-					content: message.content,
-					createdAt: message.createdAt.toLocaleString("ja-JP"),
-					quote: message.quote?.map((quote: Message) => {
-						return {
-							user: quote.user,
-							content: quote.content,
-							createdAt: quote.createdAt.toLocaleString("ja-JP"),
-						}
-					})
-				}
-			});
-			const bufNum = await denops.call("traqvim#make_buffer", escapedHomePath, "edit");
-			await vars.buffers.set(
-				denops,
-				"channelTimeline",
-				convertedHome
-			);
-			await denops.cmd(
-				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-			);
-			await denops.call(
-				"traqvim#draw_timeline",
-				bufNum,
-			);
+			const timelineOption: channelMessageOptions = {
+				channelPath: homePath
+			};
+			await actionOpenChannel(denops, timelineOption);
 			return;
 		},
 		async timeline(args: unknown): Promise<unknown> {
@@ -64,36 +40,7 @@ export async function main(denops: Denops): Promise<void> {
 			const timelineOption: channelMessageOptions = {
 				channelPath: channelPath
 			}
-			const timeline = await channelTimeline(timelineOption);
-			// #gps/times/kamecha → \#gps/times/kamecha
-			const escapedChannelName = timelineOption.channelPath.replace("#", "\\#");
-			const bufNum = await denops.call("traqvim#make_buffer", escapedChannelName, "edit");
-			const convertedTimeline = timeline.map((message: Message) => {
-				return {
-					user: message.user,
-					content: message.content,
-					createdAt: message.createdAt.toLocaleString("ja-JP"),
-					quote: message.quote?.map((quote: Message) => {
-						return {
-							user: quote.user,
-							content: quote.content,
-							createdAt: quote.createdAt.toLocaleString("ja-JP"),
-						}
-					})
-				}
-			});
-			await vars.buffers.set(
-				denops,
-				"channelTimeline",
-				convertedTimeline,
-			);
-			await denops.cmd(
-				"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-			);
-			await denops.call(
-				"traqvim#draw_timeline",
-				bufNum,
-			);
+			await actionOpenChannel(denops, timelineOption);
 			return;
 		},
 		async activity(): Promise<unknown> {

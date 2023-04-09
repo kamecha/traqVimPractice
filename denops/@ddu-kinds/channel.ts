@@ -5,6 +5,7 @@ import {
 } from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { Message } from "../traqvim/type.d.ts";
+import { actionOpenChannel } from "../traqvim/action.ts";
 
 export type ActionData = {
 	word: string;
@@ -31,35 +32,7 @@ export class Kind extends dduVim.BaseKind<Params> {
 				const timelineOption: channelMessageOptions = {
 					channelPath: channelPath,
 				};
-				const timeline = await channelTimeline(timelineOption);
-				const convertedTimeline = timeline.map((message: Message) => {
-					return {
-						user: message.user,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleString("ja-JP"),
-						quote: message.quote?.map((quote: Message) => {
-							return {
-								user: quote.user,
-								content: quote.content,
-								createdAt: quote.createdAt.toLocaleString("ja-JP"),
-							}
-						})
-					};
-				});
-				const escapedChannelPath = channelPath.replace("#", "\\#");
-				const bufNum = await args.denops.call(
-					"traqvim#make_buffer",
-					escapedChannelPath,
-					openCommand,
-				);
-				await vars.buffers.set(args.denops, "channelTimeline", convertedTimeline);
-				await args.denops.cmd(
-					"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-				);
-				await args.denops.call(
-					"traqvim#draw_timeline",
-					bufNum,
-				);
+				await actionOpenChannel(args.denops, timelineOption, openCommand);
 			}
 			return dduVim.ActionFlags.None;
 		},
