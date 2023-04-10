@@ -3,6 +3,7 @@ import {
 	searchChannelUUID,
 	channelMessageOptions,
 	homeChannelPath,
+	homeChannelId,
 	sendMessage,
 } from "./model.ts";
 import { Message } from "./type.d.ts";
@@ -23,7 +24,9 @@ export async function main(denops: Denops): Promise<void> {
 		},
 		async home(): Promise<unknown> {
 			const homePath = await homeChannelPath();
+			const homeId = await homeChannelId();
 			const timelineOption: channelMessageOptions = {
+				id: homeId,
 				channelPath: homePath
 			};
 			await actionOpenChannel(denops, timelineOption);
@@ -33,7 +36,9 @@ export async function main(denops: Denops): Promise<void> {
 			ensureString(args);
 			// argsが"#gps/times/kamecha(1)"のようになっていた場合"(1)"を削除する
 			const channelPath = args.replace(/\(\d+\)$/, "");
+			const channelUUID = await searchChannelUUID(channelPath);
 			const timelineOption: channelMessageOptions = {
+				id: channelUUID,
 				channelPath: channelPath
 			}
 			await actionOpenChannel(denops, timelineOption);
@@ -53,7 +58,9 @@ export async function main(denops: Denops): Promise<void> {
 				// バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
 				// それを削除する
 				const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
+				const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
 				const timelineOption: channelMessageOptions = {
+					id: channelUUID,
 					channelPath: bufNameWithoutNumber
 				}
 				actionOpenChannel(denops, timelineOption, undefined, bufNum);

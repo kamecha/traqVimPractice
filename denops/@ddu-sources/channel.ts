@@ -22,7 +22,6 @@ export class Source extends dduVim.BaseSource<Params> {
 				const channels: Channel[] = await channelsRecursive();
 				const subscribedChannels: Channel[] = await getSubscribedChannels();
 				const unreadChannels: Channel[] = await getUnreadChannels();
-				console.log(subscribedChannels);
 				const items: dduVim.Item<ActionData>[] = channels
 					.filter((channel) => {
 						switch (args.sourceParams.type) {
@@ -37,6 +36,9 @@ export class Source extends dduVim.BaseSource<Params> {
 					.map((channel) => {
 						return {
 							word: channel.path,
+							action: {
+								id: channel.id,
+							}
 						};
 					});
 				controller.enqueue(items);

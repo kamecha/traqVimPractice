@@ -7,9 +7,10 @@ import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { Message } from "../traqvim/type.d.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
 
-export type ActionData = {
-	word: string;
-};
+export interface ActionData {
+	id: string;
+	// word: string;
+}
 
 type Params = Record<never, never>;
 
@@ -28,8 +29,11 @@ export class Kind extends dduVim.BaseKind<Params> {
 			const openCommand = params.command ?? "edit";
 			// ↓ここ配列の先頭しか見ていないので、複数選択されたときにはバグる
 			for (const item of args.items) {
+				const action = item?.action as ActionData | undefined;
 				const channelPath: string = item.word;
+				const channelID: string = action.id;
 				const timelineOption: channelMessageOptions = {
+					id: channelID,
 					channelPath: channelPath,
 				};
 				await actionOpenChannel(args.denops, timelineOption, openCommand);

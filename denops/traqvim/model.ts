@@ -4,7 +4,7 @@ import { Channel, Message, User } from "./type.d.ts";
 
 export type channelMessageOptions = {
 	// channelUUID
-	id?: string;
+	id: string;
 	// #gps/time/kamecha
 	channelPath?: string;
 	lastMessageDate?: Date;
@@ -95,6 +95,11 @@ export const homeChannelPath = async (): Promise<string> => {
 	return channelPath(me.homeChannel);
 };
 
+export const homeChannelId = async (): Promise<string> => {
+	const me = await getMe();
+	return me.homeChannel as string;
+};
+
 export const homeTimeline = async (): Promise<Message[]> => {
 	const me = await getMe();
 	return channelTimeline({ id: me.homeChannel });
@@ -114,14 +119,7 @@ export const getUser = async (userId: string): Promise<User> => {
 export const channelTimeline = async (
 	options: channelMessageOptions,
 ): Promise<Message[]> => {
-	let channelUUID = "";
-	if (options.id) {
-		channelUUID = options.id;
-	}
-	if (options.channelPath) {
-		// channelPathに一致するchannelを探す
-		channelUUID = await searchChannelUUID(options.channelPath);
-	}
+	const channelUUID = options.id;
 	// 以前取得したメッセージがあれば、その日付以降のメッセージを取得する
 	const query: any = {};
 	if (options.lastMessageDate) {
