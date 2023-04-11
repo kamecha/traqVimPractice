@@ -1,7 +1,7 @@
 import { api, TraqApi } from "./api.ts";
 import { baseUrl } from "./oauth.ts";
 import { Channel, Message, User } from "./type.d.ts";
-import { traq, AxiosRequestConfig } from "./deps.ts";
+import { traq } from "./deps.ts";
 
 export type channelMessageOptions = {
 	// channelUUID
@@ -217,40 +217,33 @@ export const activity = async (): Promise<Message[]> => {
 	return activitiesConverted;
 };
 
-// messageの送信
-export const sendMessage = async (
-	channelUUID: string,
-	content: string,
-): Promise<void> => {
-	console.log("channelUUID", channelUUID);
-	const message: traq.PostMessageRequest = {
-		content: content,
-		// embed: false,
-	}
-	// const config: AxiosRequestConfig = {
-	// 	headers: {
-	// 		'Content-Type': 'application/json',
-	// 		// messageのバイト数を設定
-	// 		'Content-Length': new TextEncoder().encode(JSON.stringify(message)).length,
-	// 	}
-	// }
-	const messagesJson = JSON.stringify(message);
-	try {
-		await api.fetchWithToken(
-			"POST",
-			"/channels/" + channelUUID + "/messages",
-			{},
-			messagesJson,
-		);
-		// await api.api.postMessage(channelUUID, message, config);
-	} catch (e) {
-		console.log(e.response);
-	}
-};
-
 // stamp情報の取得
 export const getStamps = async (): Promise<traq.Stamp[]> => {
 	const stampsRes = await api.api.getStamps();
 	const stamps = stampsRes.data;
 	return stamps;
 };
+
+export const sendMessage = async (
+	channelUUID: string,
+	content: string,
+): Promise<void> => {
+	const message: traq.PostMessageRequest = {
+		content: content,
+		embed: false,
+	}
+	const messagesJson = JSON.stringify(message);
+	try {
+		// POSTに関しては、deno&npm経由だとcontent-length等々がうまくいかないらしく、
+		// APIを直打ちする必要がある
+		await api.fetchWithToken(
+			"POST",
+			"/channels/" + channelUUID + "/messages",
+			{},
+			messagesJson,
+		);
+	} catch (e) {
+		console.log(e.response);
+	}
+};
+
