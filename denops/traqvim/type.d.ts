@@ -1,18 +1,13 @@
+import { traq } from "./deps.ts";
 
-export interface Channel {
-	id: string;
+export interface Channel extends traq.Channel {
 	path: string;
 }
 
-export interface Message {
+export interface Message extends traq.Message {
 	user: User;
-	content: string;
-	createdAt: Date;
 	quote?: Message[];
 }
 
-export interface User {
-	id: string;
-	name: string;
-	displayName: string;
+export interface User extends traq.User {
 }

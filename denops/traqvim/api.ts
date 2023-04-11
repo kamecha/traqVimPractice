@@ -1,6 +1,7 @@
 import {
 	Tokens,
-	path
+	path,
+	traq,
 } from "./deps.ts";
 
 export const baseUrl = "https://q.trap.jp/api/v3";
@@ -9,6 +10,8 @@ export class TraqApi {
 	private prefix: URL;
 	private token: Tokens | undefined;
 	private tokenFilePath: string;
+	private config: traq.Configuration;
+	public api: traq.Apis;
 
 	constructor(prefix: URL) {
 		this.prefix = prefix;
@@ -16,6 +19,11 @@ export class TraqApi {
 		this.tokenFilePath = path.join(Deno.env.get("HOME") || "", ".config", "traq", "token.json");
 		// tokenFilePathが存在しない場合は作成
 		Deno.mkdir(path.dirname(this.tokenFilePath), { recursive: true });
+		// 既にtokenが記録されているならそれを読み込む
+		if(Deno.statSync(this.tokenFilePath).isFile) {
+			console.log("token file exists");
+			this.loadToken();
+		}
 	}
 	setToken(token: Tokens) {
 		this.token = token;
@@ -27,6 +35,11 @@ export class TraqApi {
 			throw new Error("Token file is not set");
 		const file = await Deno.readTextFile(this.tokenFilePath);
 		this.token = JSON.parse(file);
+		this.config = new traq.Configuration({
+			accessToken: this.token.accessToken,
+			})
+		this.api = new traq.Apis(this.config);
+		console.log("api loaded");
 	}
 	async fetchWithToken(method: string, path: string, param?: Record<string, string | boolean>, body?: string): Promise<Response> {
 		if(!this.token) {

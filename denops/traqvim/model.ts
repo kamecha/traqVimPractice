@@ -1,6 +1,7 @@
 import { api, TraqApi } from "./api.ts";
 import { baseUrl } from "./oauth.ts";
 import { Channel, Message, User } from "./type.d.ts";
+import { traq, AxiosRequestConfig } from "./deps.ts";
 
 export type channelMessageOptions = {
 	// channelUUID
@@ -8,12 +9,6 @@ export type channelMessageOptions = {
 	// #gps/time/kamecha
 	channelPath?: string;
 	lastMessageDate?: Date;
-};
-
-export type stamp = {
-	id?: string;
-	word?: string;
-	isUnicode?: boolean;
 };
 
 // channelPathに一致するchannelのUUIDを返す
@@ -27,9 +22,9 @@ export async function searchChannelUUID(channelPath: string): Promise<string> {
 	const channelPathWituoutSharp = channelPath.slice(1);
 	// channelPathの先頭の#を削除したものを/で分割
 	const channelPathSplited = channelPathWituoutSharp.split("/");
-	const channelsPromise = await api.fetchWithToken("GET", "/channels");
-	const channelsJson = await channelsPromise.json();
-	const channels = channelsJson.public;
+	const channelsRes = await api.api.getChannels();
+	// const channelsJson = await channelsPromise.json();
+	const channels = channelsRes.data.public;
 	let channelUUID = "";
 	const searchDFS = (
 		baseChannels: any[],
@@ -63,57 +58,48 @@ export async function searchChannelUUID(channelPath: string): Promise<string> {
 
 // channelUUIDに対応するchannelPathを生成する
 export const channelPath = async (channelUUID: string): Promise<string> => {
-	const channels = await api.fetchWithToken("GET", "/channels");
-	const channelsJson = await channels.json();
+	const channelsRes = await api.api.getChannels();
+	const publicChannels = channelsRes.data.public;
 	const makeChannelPath = (channel: any): string => {
 		if (channel.parentId === null) {
 			return "#" + channel.name;
 		}
-		const parentChannel = channelsJson.public.find((c: any) =>
+		const parentChannel = publicChannels.find((c: any) =>
 			c.id === channel.parentId
 		);
 		return makeChannelPath(parentChannel) + "/" + channel.name;
 	};
-	const channel = channelsJson.public.find((c: any) => c.id === channelUUID);
+	const channel = publicChannels.find((c: any) => c.id === channelUUID);
 	return makeChannelPath(channel);
 };
 
 // 自身のユーザー情報を取得する
-export const getMe = async (): Promise<any> => {
-	const me = await api.fetchWithToken("GET", "/users/me");
-	const meJson = await me.json();
+export const getMeInfo = async (): Promise<any> => {
+	const meRes = await api.api.getMe();
+	const me: traq.MyUserDetail = meRes.data;
 	return {
-		id: meJson.id,
-		name: meJson.name,
-		displayName: meJson.displayName,
-		homeChannel: meJson.homeChannel,
+		id: me.id,
+		name: me.name,
+		displayName: me.displayName,
+		homeChannel: me.homeChannel,
 	};
 };
 
 export const homeChannelPath = async (): Promise<string> => {
-	const me = await getMe();
+	const me = await getMeInfo();
 	return channelPath(me.homeChannel);
 };
 
 export const homeChannelId = async (): Promise<string> => {
-	const me = await getMe();
+	const me = await getMeInfo();
 	return me.homeChannel as string;
-};
-
-export const homeTimeline = async (): Promise<Message[]> => {
-	const me = await getMe();
-	return channelTimeline({ id: me.homeChannel });
 };
 
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<User> => {
-	const user = await api.fetchWithToken("GET", "/users/" + userId);
-	const userJson = await user.json();
-	return {
-		id: userJson.id,
-		name: userJson.name,
-		displayName: userJson.displayName,
-	};
+	const userRes = await api.api.getUser(userId);
+	const user = userRes.data;
+	return user;
 };
 
 export const channelTimeline = async (
@@ -125,20 +111,18 @@ export const channelTimeline = async (
 	if (options.lastMessageDate) {
 		query.until = options.lastMessageDate;
 	}
-	// UUIDを使ってメッセージを取得する
-	const messages = await api.fetchWithToken(
-		"GET",
-		"/channels/" + channelUUID + "/messages",
-		query,
-	);
-	const messagesJson = await messages.json();
+	const messagesRes = await api.api.getMessages(channelUUID);
+	// messageResからメッセージを取り出す
+	const messages = messagesRes.data;
+	// const messagesJson = await messages.json();
 	const messagesConverted: Message[] = await Promise.all(
-		messagesJson.map(async (message: any) => {
+		messages.map(async (message: traq.Message) => {
 			// userIdからユーザー情報を取得する
 			const user = await getUser(message.userId);
 			// contentのうち引用してる箇所を判定し、対応するUUIDを記録する
 			// 引用URLはhttps://q.trap.jp/messages/UUIDの形式である
-			const quotedMessageUUIDs: string[] = message.content.match(
+
+			const quotedMessageUUIDs: string[] | undefined = message.content.match(
 				/https:\/\/q.trap.jp\/messages\/[0-9a-f-]+/g,
 			)?.map((url: string) => {
 				return url.split("/").slice(-1)[0];
@@ -148,25 +132,24 @@ export const channelTimeline = async (
 			if (quotedMessageUUIDs) {
 				quotedMessages = await Promise.all(
 					quotedMessageUUIDs?.map(async (uuid: string) => {
-						const quotedMessage = await api.fetchWithToken(
-							"GET",
-							"/messages/" + uuid,
-						);
-						const quotedMessageJson = await quotedMessage.json();
+						const quotedMessageRes = await api.api.getMessage(uuid);
+						const quotedMessage = quotedMessageRes.data;
 						// userIdからユーザー情報を取得する
-						const user = await getUser(quotedMessageJson.userId);
+						const user = await getUser(quotedMessage.userId);
 						return {
 							user: user,
-							content: quotedMessageJson.content,
-							createdAt: new Date(quotedMessageJson.createdAt),
-						}
-					})
-				)
+							content: quotedMessage.content,
+							createdAt: new Date(quotedMessage.createdAt).toLocaleString(
+								"ja-JP",
+							),
+						};
+					}),
+				);
 			}
 			return {
 				user: user,
 				content: message.content,
-				createdAt: new Date(message.createdAt),
+				createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
 				quote: quotedMessages,
 			};
 		}),
@@ -177,19 +160,20 @@ export const channelTimeline = async (
 // 再帰的にchannelを取得し、それぞれのchannelを記録
 // channelsを#で始まるchannelPathに変換
 export const channelsRecursive = async (): Promise<Channel[]> => {
-	const channels = await api.fetchWithToken("GET", "/channels");
-	const channelsJson = await channels.json();
-	const makeChannelPath = (channel: any): string => {
+	console.log("channelsRecursive");
+	const channelsRes = await api.api.getChannels();
+	const publicChannels = channelsRes.data.public;
+	const makeChannelPath = (channel: traq.Channel): string => {
 		if (channel.parentId === null) {
 			return "#" + channel.name;
 		}
-		const parentChannel = channelsJson.public.find((c: any) =>
+		const parentChannel = publicChannels.find((c: traq.Channel) =>
 			c.id === channel.parentId
 		);
 		return makeChannelPath(parentChannel) + "/" + channel.name;
 	};
-	const channelsConverted: Channel[] = channelsJson.public.map(
-		(channel: any) => {
+	const channelsConverted: Channel[] = publicChannels.map(
+		(channel: traq.Channel) => {
 			return {
 				id: channel.id,
 				path: makeChannelPath(channel),
@@ -199,51 +183,34 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
 	return channelsConverted;
 };
 
-// 購読チャンネルの取得
-export const getSubscribedChannels = async (): Promise<Channel[]> => {
-	const subscribedChannels = await api.fetchWithToken("GET", "/users/me/subscriptions");
-	const subscribedChannelsJson = await subscribedChannels.json();
-	const subscribedChannelsConverted: Channel[] = subscribedChannelsJson.map((channel: any) => {
-		return {
-			id: channel.channelId,
-			path: "",
-		};
-	})
-	return subscribedChannelsConverted;
-}
-
 // 未読チャンネルの取得
 export const getUnreadChannels = async (): Promise<Channel[]> => {
-	const unreadChannels = await api.fetchWithToken("GET", "/users/me/unread");
-	const unreadChannelsJson = await unreadChannels.json();
-	const unreadChannelsConverted: Channel[] = unreadChannelsJson.map((channel: any) => {
-		return {
-			id: channel.channelId,
-			path: "",
-		};
-	})
+	const unreadChannelsRes = await api.api.getMyUnreadChannels();
+	const unreadChannels = unreadChannelsRes.data;
+	const unreadChannelsConverted: Channel[] = Promise.all(
+		unreadChannels.map(async (channel: traq.UnreadChannel) => {
+			const path = await channelPath(channel.channelId);
+			return {
+				...channel,
+				id: channel.channelId,
+				path: path,
+			}
+		}),
+	);
 	return unreadChannelsConverted;
-}
+};
 
 // activityを取得する
 export const activity = async (): Promise<Message[]> => {
-	const activities = await api.fetchWithToken(
-		"GET",
-		"/activity/timeline",
-		{
-			all: true,
-		},
-	);
-	const activitiesJson = await activities.json();
+	const activityRes = await api.api.getActivityTimeline(undefined, true);
+	const activity: traq.ActivityTimelineMessage[] = activityRes.data;
 	const activitiesConverted: Message[] = await Promise.all(
-		activitiesJson.map(async (activity: any) => {
+		activity.map(async (activity: traq.ActivityTimelineMessage) => {
 			const user = await getUser(activity.userId);
-			const content = activity.content;
-			const createdAt = new Date(activity.createdAt);
 			return {
 				user: user,
-				content: content,
-				createdAt: createdAt,
+				content: activity.content,
+				createdAt: new Date(activity.createdAt).toLocaleString("ja-JP"),
 			};
 		}),
 	);
@@ -255,12 +222,19 @@ export const sendMessage = async (
 	channelUUID: string,
 	content: string,
 ): Promise<void> => {
-	const message = {
+	console.log("channelUUID", channelUUID);
+	const message: traq.PostMessageRequest = {
 		content: content,
-		embed: false,
-	};
+		// embed: false,
+	}
+	// const config: AxiosRequestConfig = {
+	// 	headers: {
+	// 		'Content-Type': 'application/json',
+	// 		// messageのバイト数を設定
+	// 		'Content-Length': new TextEncoder().encode(JSON.stringify(message)).length,
+	// 	}
+	// }
 	const messagesJson = JSON.stringify(message);
-	console.log(messagesJson);
 	try {
 		await api.fetchWithToken(
 			"POST",
@@ -268,24 +242,15 @@ export const sendMessage = async (
 			{},
 			messagesJson,
 		);
+		// await api.api.postMessage(channelUUID, message, config);
 	} catch (e) {
-		console.log(e);
+		console.log(e.response);
 	}
 };
 
 // stamp情報の取得
-export const getStamps = async (): Promise<stamp[]> => {
-	const stamps = await api.fetchWithToken(
-		"GET",
-		"/stamps",
-	);
-	const stampsJson = await stamps.json();
-	const ret: stamp[] = stampsJson.map((stamp: any) => {
-		return {
-			id: stamp.id,
-			word: stamp.name,
-			isUnicode: stamp.isUnicode,
-		};
-	});
-	return ret;
+export const getStamps = async (): Promise<traq.Stamp[]> => {
+	const stampsRes = await api.api.getStamps();
+	const stamps = stampsRes.data;
+	return stamps;
 };
