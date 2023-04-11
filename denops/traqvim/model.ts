@@ -1,6 +1,6 @@
 import { api, TraqApi } from "./api.ts";
 import { baseUrl } from "./oauth.ts";
-import { Channel, Message, User } from "./type.d.ts";
+import { Channel, UnreadChannel, Message, User } from "./type.d.ts";
 import { traq } from "./deps.ts";
 
 export type channelMessageOptions = {
@@ -136,19 +136,18 @@ export const channelTimeline = async (
 						const quotedMessage = quotedMessageRes.data;
 						// userIdからユーザー情報を取得する
 						const user = await getUser(quotedMessage.userId);
-						return {
+						const ret: Message = {
+							...quotedMessage,
 							user: user,
-							content: quotedMessage.content,
-							createdAt: new Date(quotedMessage.createdAt).toLocaleString(
-								"ja-JP",
-							),
-						};
+							createdAt: new Date(quotedMessage.createdAt).toLocaleString("ja-JP"),
+						}
+						return ret;
 					}),
 				);
 			}
 			return {
+				...message,
 				user: user,
-				content: message.content,
 				createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
 				quote: quotedMessages,
 			};
@@ -164,18 +163,19 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
 	const channelsRes = await api.api.getChannels();
 	const publicChannels = channelsRes.data.public;
 	const makeChannelPath = (channel: traq.Channel): string => {
-		if (channel.parentId === null) {
-			return "#" + channel.name;
-		}
 		const parentChannel = publicChannels.find((c: traq.Channel) =>
 			c.id === channel.parentId
 		);
-		return makeChannelPath(parentChannel) + "/" + channel.name;
+		if (!parentChannel) {
+			return "#" + channel.name;
+		} else {
+			return makeChannelPath(parentChannel) + "/" + channel.name;
+		}
 	};
 	const channelsConverted: Channel[] = publicChannels.map(
 		(channel: traq.Channel) => {
 			return {
-				id: channel.id,
+				...channel,
 				path: makeChannelPath(channel),
 			};
 		},
@@ -184,17 +184,16 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
 };
 
 // 未読チャンネルの取得
-export const getUnreadChannels = async (): Promise<Channel[]> => {
+export const getUnreadChannels = async (): Promise<UnreadChannel[]> => {
 	const unreadChannelsRes = await api.api.getMyUnreadChannels();
 	const unreadChannels = unreadChannelsRes.data;
-	const unreadChannelsConverted: Channel[] = Promise.all(
+	const unreadChannelsConverted: UnreadChannel[] = await Promise.all(
 		unreadChannels.map(async (channel: traq.UnreadChannel) => {
 			const path = await channelPath(channel.channelId);
 			return {
 				...channel,
-				id: channel.channelId,
 				path: path,
-			}
+			};
 		}),
 	);
 	return unreadChannelsConverted;
@@ -207,9 +206,11 @@ export const activity = async (): Promise<Message[]> => {
 	const activitiesConverted: Message[] = await Promise.all(
 		activity.map(async (activity: traq.ActivityTimelineMessage) => {
 			const user = await getUser(activity.userId);
+			const messageRes = await api.api.getMessage(activity.id);
+			const message = messageRes.data;
 			return {
+				...message,
 				user: user,
-				content: activity.content,
 				createdAt: new Date(activity.createdAt).toLocaleString("ja-JP"),
 			};
 		}),

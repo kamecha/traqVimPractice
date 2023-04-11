@@ -10,7 +10,7 @@ export class TraqApi {
 	private prefix: URL;
 	private token: Tokens | undefined;
 	private tokenFilePath: string;
-	private config: traq.Configuration;
+	private config: traq.Configuration | undefined;
 	public api: traq.Apis;
 
 	constructor(prefix: URL) {
@@ -46,7 +46,17 @@ export class TraqApi {
 			// tokenがない場合はtokenTmpFileから読み込む
 			await this.loadToken();
 		}
-		const query = new URLSearchParams(param);
+		// paramのbooleanをstringに変換
+		const paramConvert: Record<string, string> = {};
+		if(param) {
+			for(const [key, value] of Object.entries(param)) {
+				if(typeof value === "boolean")
+					paramConvert[key] = value ? "true" : "false";
+				else
+					paramConvert[key] = value;
+			}
+		}
+		const query = new URLSearchParams(paramConvert);
 		if(query.toString() !== "")
 			path += "?" + query.toString();
 		const encodedPath = encodeURI(path);
