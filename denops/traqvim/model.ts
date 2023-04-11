@@ -27,26 +27,26 @@ export async function searchChannelUUID(channelPath: string): Promise<string> {
 	const channels = channelsRes.data.public;
 	let channelUUID = "";
 	const searchDFS = (
-		baseChannels: any[],
+		baseChannels: traq.Channel[],
 		name: string[],
 	): string | undefined => {
 		if (name.length === 0) {
 			return channelUUID;
 		}
-		const channel = baseChannels.find((channel: any) =>
+		const channel = baseChannels.find((channel: traq.Channel) =>
 			channel.name === name[0]
 		);
 		if (!channel) {
 			return undefined;
 		}
 		channelUUID = channel.id;
-		const children = channels.filter((channel: any) =>
+		const children = channels.filter((channel: traq.Channel) =>
 			channel.parentId === channelUUID
 		);
 		return searchDFS(children, name.slice(1));
 	};
 	// channelsから親がいないchannelを探す
-	const rootChannels = channels.filter((channel: any) =>
+	const rootChannels = channels.filter((channel: traq.Channel) =>
 		channel.parentId === null
 	);
 	const result = searchDFS(rootChannels, channelPathSplited);
@@ -60,38 +60,44 @@ export async function searchChannelUUID(channelPath: string): Promise<string> {
 export const channelPath = async (channelUUID: string): Promise<string> => {
 	const channelsRes = await api.api.getChannels();
 	const publicChannels = channelsRes.data.public;
-	const makeChannelPath = (channel: any): string => {
-		if (channel.parentId === null) {
-			return "#" + channel.name;
-		}
-		const parentChannel = publicChannels.find((c: any) =>
+	const makeChannelPath = (channel: traq.Channel): string => {
+		const parentChannel = publicChannels.find((c: traq.Channel) =>
 			c.id === channel.parentId
 		);
-		return makeChannelPath(parentChannel) + "/" + channel.name;
+		if (!parentChannel) {
+			return "#" + channel.name;
+		} else {
+			return makeChannelPath(parentChannel) + "/" + channel.name;
+		}
 	};
-	const channel = publicChannels.find((c: any) => c.id === channelUUID);
-	return makeChannelPath(channel);
+	const channel = publicChannels.find((c: traq.Channel) => c.id === channelUUID);
+	if (!channel) {
+		return "";
+	} else {
+		return makeChannelPath(channel);
+	}
 };
 
 // 自身のユーザー情報を取得する
-export const getMeInfo = async (): Promise<any> => {
+export const getMeInfo = async (): Promise<traq.MyUserDetail> => {
 	const meRes = await api.api.getMe();
 	const me: traq.MyUserDetail = meRes.data;
-	return {
-		id: me.id,
-		name: me.name,
-		displayName: me.displayName,
-		homeChannel: me.homeChannel,
-	};
+	return me;
 };
 
 export const homeChannelPath = async (): Promise<string> => {
 	const me = await getMeInfo();
+	if ( me.homeChannel === null ) {
+		return "";
+	}
 	return channelPath(me.homeChannel);
 };
 
 export const homeChannelId = async (): Promise<string> => {
 	const me = await getMeInfo();
+	if ( me.homeChannel === null ) {
+		return "";
+	}
 	return me.homeChannel as string;
 };
 
@@ -106,11 +112,6 @@ export const channelTimeline = async (
 	options: channelMessageOptions,
 ): Promise<Message[]> => {
 	const channelUUID = options.id;
-	// 以前取得したメッセージがあれば、その日付以降のメッセージを取得する
-	const query: any = {};
-	if (options.lastMessageDate) {
-		query.until = options.lastMessageDate;
-	}
 	const messagesRes = await api.api.getMessages(channelUUID);
 	// messageResからメッセージを取り出す
 	const messages = messagesRes.data;
