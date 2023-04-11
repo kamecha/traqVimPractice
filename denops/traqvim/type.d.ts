@@ -9,9 +9,6 @@ export interface UnreadChannel extends traq.UnreadChannel {
 }
 
 export interface Message extends traq.Message {
-	user: User;
+	user: traq.User;
 	quote?: Message[];
-}
-
-export interface User extends traq.User {
 }

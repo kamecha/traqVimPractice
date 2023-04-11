@@ -1,6 +1,6 @@
 import { api, TraqApi } from "./api.ts";
 import { baseUrl } from "./oauth.ts";
-import { Channel, UnreadChannel, Message, User } from "./type.d.ts";
+import { Channel, UnreadChannel, Message } from "./type.d.ts";
 import { traq } from "./deps.ts";
 
 export type channelMessageOptions = {
@@ -102,7 +102,7 @@ export const homeChannelId = async (): Promise<string> => {
 };
 
 // userIdからユーザー情報を取得する
-export const getUser = async (userId: string): Promise<User> => {
+export const getUser = async (userId: string): Promise<traq.User> => {
 	const userRes = await api.api.getUser(userId);
 	const user = userRes.data;
 	return user;
