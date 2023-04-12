@@ -56,25 +56,26 @@ export async function searchChannelUUID(channelPath: string): Promise<string> {
 	return result;
 }
 
+const makeChannelPath = (channels: traq.Channel[], channel: traq.Channel): string => {
+	const parentChannel = channels.find((c: traq.Channel) =>
+		c.id === channel.parentId
+	);
+	if (!parentChannel) {
+		return "#" + channel.name;
+	} else {
+		return makeChannelPath(channels, parentChannel) + "/" + channel.name;
+	}
+};
+
 // channelUUIDに対応するchannelPathを生成する
 export const channelPath = async (channelUUID: string): Promise<string> => {
 	const channelsRes = await api.api.getChannels();
 	const publicChannels = channelsRes.data.public;
-	const makeChannelPath = (channel: traq.Channel): string => {
-		const parentChannel = publicChannels.find((c: traq.Channel) =>
-			c.id === channel.parentId
-		);
-		if (!parentChannel) {
-			return "#" + channel.name;
-		} else {
-			return makeChannelPath(parentChannel) + "/" + channel.name;
-		}
-	};
 	const channel = publicChannels.find((c: traq.Channel) => c.id === channelUUID);
 	if (!channel) {
 		return "";
 	} else {
-		return makeChannelPath(channel);
+		return makeChannelPath(publicChannels, channel);
 	}
 };
 
@@ -87,7 +88,7 @@ export const getMeInfo = async (): Promise<traq.MyUserDetail> => {
 
 export const homeChannelPath = async (): Promise<string> => {
 	const me = await getMeInfo();
-	if ( me.homeChannel === null ) {
+	if (me.homeChannel === null) {
 		return "";
 	}
 	return channelPath(me.homeChannel);
@@ -95,7 +96,7 @@ export const homeChannelPath = async (): Promise<string> => {
 
 export const homeChannelId = async (): Promise<string> => {
 	const me = await getMeInfo();
-	if ( me.homeChannel === null ) {
+	if (me.homeChannel === null) {
 		return "";
 	}
 	return me.homeChannel as string;
@@ -163,21 +164,11 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
 	console.log("channelsRecursive");
 	const channelsRes = await api.api.getChannels();
 	const publicChannels = channelsRes.data.public;
-	const makeChannelPath = (channel: traq.Channel): string => {
-		const parentChannel = publicChannels.find((c: traq.Channel) =>
-			c.id === channel.parentId
-		);
-		if (!parentChannel) {
-			return "#" + channel.name;
-		} else {
-			return makeChannelPath(parentChannel) + "/" + channel.name;
-		}
-	};
 	const channelsConverted: Channel[] = publicChannels.map(
 		(channel: traq.Channel) => {
 			return {
 				...channel,
-				path: makeChannelPath(channel),
+				path: makeChannelPath(publicChannels, channel),
 			};
 		},
 	);
