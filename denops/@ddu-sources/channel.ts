@@ -5,10 +5,10 @@ import {
 	getSubscribedChannels,
 	getUnreadChannels,
 } from "../traqvim/model.ts";
-import { Channel } from "../traqvim/type.d.ts";
+import { Channel, UnreadChannel } from "../traqvim/type.d.ts";
 
 type Params = {
-	type: "all" | "subscribed" | "unread";
+	type: "all" | "unread";
 };
 
 export class Source extends dduVim.BaseSource<Params> {
@@ -19,24 +19,24 @@ export class Source extends dduVim.BaseSource<Params> {
 	}): ReadableStream<dduVim.Item<ActionData>[]> {
 		return new ReadableStream({
 			async start(controller) {
+				console.log("start");
 				const channels: Channel[] = await channelsRecursive();
-				const subscribedChannels: Channel[] = await getSubscribedChannels();
-				const unreadChannels: Channel[] = await getUnreadChannels();
-				console.log(subscribedChannels);
+				const unreadChannels: UnreadChannel[] = await getUnreadChannels();
 				const items: dduVim.Item<ActionData>[] = channels
 					.filter((channel) => {
 						switch (args.sourceParams.type) {
 							case "all":
 								return true;
-							case "subscribed":
-								return subscribedChannels.some((c) => c.id === channel.id);
 							case "unread":
-								return unreadChannels.some((c) => c.id === channel.id);
+								return unreadChannels.some((c) => c.channelId === channel.id);
 						}
 					})
 					.map((channel) => {
 						return {
 							word: channel.path,
+							action: {
+								id: channel.id,
+							}
 						};
 					});
 				controller.enqueue(items);

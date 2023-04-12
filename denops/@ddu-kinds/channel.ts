@@ -5,10 +5,12 @@ import {
 } from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { Message } from "../traqvim/type.d.ts";
+import { actionOpenChannel } from "../traqvim/action.ts";
 
-export type ActionData = {
-	word: string;
-};
+export interface ActionData {
+	id: string;
+	// word: string;
+}
 
 type Params = Record<never, never>;
 
@@ -27,39 +29,14 @@ export class Kind extends dduVim.BaseKind<Params> {
 			const openCommand = params.command ?? "edit";
 			// ↓ここ配列の先頭しか見ていないので、複数選択されたときにはバグる
 			for (const item of args.items) {
+				const action = item?.action as ActionData | undefined;
 				const channelPath: string = item.word;
+				const channelID: string = action.id;
 				const timelineOption: channelMessageOptions = {
+					id: channelID,
 					channelPath: channelPath,
 				};
-				const timeline = await channelTimeline(timelineOption);
-				const convertedTimeline = timeline.map((message: Message) => {
-					return {
-						user: message.user,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleString("ja-JP"),
-						quote: message.quote?.map((quote: Message) => {
-							return {
-								user: quote.user,
-								content: quote.content,
-								createdAt: quote.createdAt.toLocaleString("ja-JP"),
-							}
-						})
-					};
-				});
-				const escapedChannelPath = channelPath.replace("#", "\\#");
-				const bufNum = await args.denops.call(
-					"traqvim#make_buffer",
-					escapedChannelPath,
-					openCommand,
-				);
-				await vars.buffers.set(args.denops, "channelTimeline", convertedTimeline);
-				await args.denops.cmd(
-					"setlocal buftype=nofile ft=traqvim nonumber breakindent",
-				);
-				await args.denops.call(
-					"traqvim#draw_timeline",
-					bufNum,
-				);
+				await actionOpenChannel(args.denops, timelineOption, openCommand);
 			}
 			return dduVim.ActionFlags.None;
 		},
@@ -68,38 +45,39 @@ export class Kind extends dduVim.BaseKind<Params> {
 	async getPreviewer(
 		args: dduVim.GetPreviewerArguments,
 	): Promise<dduVim.Previewer | undefined> {
-		const action = args.item as ActionData;
-		if (!action) {
-			return undefined;
-		}
-		const channelPath: string = action.word;
-		const timelineOption: channelMessageOptions = {
-			channelPath: channelPath,
-		};
-		let previewWidth = args.previewContext.width;
+		return undefined;
+		// const action = args.item as ActionData;
+		// if (!action) {
+		// 	return undefined;
+		// }
+		// const channelPath: string = action.word;
+		// const timelineOption: channelMessageOptions = {
+		// 	channelPath: channelPath,
+		// };
+		// let previewWidth = args.previewContext.width;
 		// sighnColumnやfoldColumn等のtextoff関連を考慮する
 		// 今回は確認が面倒なので、とりあえず2を引いている
-		previewWidth -= 2;
-		const timeline: Message[] = await channelTimeline(timelineOption);
-		const timelinePreviewArray: string[][] = await Promise.all(
-			timeline.map(async (message: Message) => {
-				const ret: string[] = await args.denops.call(
-					"traqvim#make_message_body",
-					{
-						user: message.user,
-						content: message.content,
-						createdAt: message.createdAt.toLocaleString("ja-JP"),
-					},
-					previewWidth,
-				);
-				return ret;
-			}),
-		);
-		const timelinePreview: string[] = timelinePreviewArray.flat();
-		return {
-			kind: "nofile",
-			contents: timelinePreview,
-		};
+		// previewWidth -= 2;
+		// const timeline: Message[] = await channelTimeline(timelineOption);
+		// const timelinePreviewArray: string[][] = await Promise.all(
+		// 	timeline.map(async (message: Message) => {
+		// 		const ret: string[] = await args.denops.call(
+		// 			"traqvim#make_message_body",
+		// 			{
+		// 				user: message.user,
+		// 				content: message.content,
+		// 				createdAt: message.createdAt.toLocaleString("ja-JP"),
+		// 			},
+		// 			previewWidth,
+		// 		);
+		// 		return ret;
+		// 	}),
+		// );
+		// const timelinePreview: string[] = timelinePreviewArray.flat();
+		// return {
+		// 	kind: "nofile",
+		// 	contents: timelinePreview,
+		// };
 	}
 
 	params(): Params {
