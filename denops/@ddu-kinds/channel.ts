@@ -1,10 +1,7 @@
 import {
-	Denops,
-	vars,
-	dduVim,
+	Denops, dduVim
 } from "../traqvim/deps.ts";
-import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
-import { Message } from "../traqvim/type.d.ts";
+import { channelMessageOptions } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
 
 export interface ActionData {

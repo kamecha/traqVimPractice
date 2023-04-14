@@ -6,7 +6,6 @@ import {
 	homeChannelId,
 	sendMessage,
 } from "./model.ts";
-import { Message } from "./type.d.ts";
 import {
 	Denops,
 	ensureString,

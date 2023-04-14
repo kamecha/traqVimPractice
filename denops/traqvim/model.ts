@@ -1,5 +1,4 @@
-import { api, TraqApi } from "./api.ts";
-import { baseUrl } from "./oauth.ts";
+import { api } from "./api.ts";
 import { Channel, UnreadChannel, Message } from "./type.d.ts";
 import { traq } from "./deps.ts";
 
