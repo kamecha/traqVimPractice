@@ -1,14 +1,14 @@
 import { traq } from "./deps.ts";
 
 export interface Channel extends traq.Channel {
-	path: string;
+  path: string;
 }
 
 export interface UnreadChannel extends traq.UnreadChannel {
-	path: string;
+  path: string;
 }
 
 export interface Message extends traq.Message {
-	user: traq.User;
-	quote?: Message[];
+  user: traq.User;
+  quote?: Message[];
 }
