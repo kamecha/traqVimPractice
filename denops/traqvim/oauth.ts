@@ -1,4 +1,4 @@
-import { TraqApi, api, baseUrl } from "./api.ts";
+import { api, baseUrl } from "./api.ts";
 import {
 	Denops,
 	oak,
