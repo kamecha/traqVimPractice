@@ -39,7 +39,6 @@ export class Source extends dduVim.BaseSource<Params> {
 								treePath: channel.path,
 							});
 						});
-						console.log(items);
 						return items;
 					}
 					const rootChannel: Channel = channels.find((channel: Channel) => {
@@ -61,7 +60,6 @@ export class Source extends dduVim.BaseSource<Params> {
 							treePath: childrenChannel.path,
 						});
 					});
-					console.log(items);
 					return items;
 				};
 				controller.enqueue(
