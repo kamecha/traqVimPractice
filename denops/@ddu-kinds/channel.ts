@@ -6,7 +6,6 @@ import { actionOpenChannel } from "../traqvim/action.ts";
 
 export interface ActionData {
 	id: string;
-	// word: string;
 }
 
 type Params = Record<never, never>;
