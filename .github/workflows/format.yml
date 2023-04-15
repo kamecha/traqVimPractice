@@ -31,4 +31,4 @@ jobs:
 
       # Uncomment this step to verify the use of 'deno fmt' on each commit.
       - name: Verify formatting
-        run: deno fmt
+        run: deno fmt --check
