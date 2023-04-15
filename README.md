@@ -3,6 +3,8 @@
 
 # traQのvimクライアントの練習
 
+[![Doc](https://img.shields.io/badge/doc-%3Ah%20traqvim-orange.svg)](doc/traqvim.jax)
+
 部内SNS[†traQ†](https://github.com/traPtitech/traQ)のvimクライアント
 
 まだ実装途中なので、後々破滅的変更が入る可能性おおいにあり
