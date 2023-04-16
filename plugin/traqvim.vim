@@ -19,3 +19,12 @@ command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(),
 command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufname(), getline(1, '$')])
 
 call helper#define_highlight()
+
+augroup traqvim
+	autocmd BufWinEnter *
+		\ if matchstr(bufname(), "ddu-ff:") !=# "" |
+		\   echomsg "bufname" |
+		\   call traqvim#draw_timeline(bufnr()) |
+		\   setlocal nonumber |
+		\ endif
+augroup END
