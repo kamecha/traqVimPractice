@@ -1,11 +1,7 @@
 import { dduVim, Denops } from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
-import {
-  channelsRecursive,
-  getUnreadChannels,
-  searchChannelUUID,
-} from "../traqvim/model.ts";
-import { Channel, UnreadChannel } from "../traqvim/type.d.ts";
+import { channelsRecursive, searchChannelUUID } from "../traqvim/model.ts";
+import { Channel } from "../traqvim/type.d.ts";
 
 export class Source extends dduVim.BaseSource<Params> {
   kind = "channel";
@@ -22,7 +18,7 @@ export class Source extends dduVim.BaseSource<Params> {
           rootId = await searchChannelUUID(rootPath);
         }
         const tree = async (rootId: string) => {
-          let items: dduVim.Item<ActionData>[] = [];
+          const items: dduVim.Item<ActionData>[] = [];
           const channels: Channel[] = await channelsRecursive();
           // 一番上の階層対応
           if (rootId === "VtraQ") {
