@@ -19,3 +19,15 @@ command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(),
 command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufname(), getline(1, '$')])
 
 call helper#define_highlight()
+
+augroup traqvim
+	" チャンネル名が`#`から始まるため、展開先の`ddu-ff-filter-default`を指定してあげてる
+	" チャンネル名の仕様が変わるとここも変更する
+	" あんましよくない気がするので、そのうち変えたいのだ...
+	autocmd BufWinEnter *
+		\ if matchstr(bufname(), "ddu-ff:ddu-ff-filter-default") !=# "" |
+		\   echomsg "bufname" |
+		\   call traqvim#draw_timeline(bufnr()) |
+		\   setlocal nonumber |
+		\ endif
+augroup END

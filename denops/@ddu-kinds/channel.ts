@@ -1,6 +1,7 @@
 import { dduVim, Denops } from "../traqvim/deps.ts";
-import { channelMessageOptions } from "../traqvim/model.ts";
+import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
+import { Message } from "../traqvim/type.d.ts";
 
 export interface ActionData {
   id: string;
@@ -37,41 +38,37 @@ export class Kind extends dduVim.BaseKind<Params> {
   };
 
   async getPreviewer(
-    args: dduVim.GetPreviewerArguments,
+    args: {
+      denops: Denops;
+      previewContext: dduVim.PreviewContext;
+      actionParams: unknown;
+      item: dduVim.DduItem;
+    },
   ): Promise<dduVim.Previewer | undefined> {
-    return undefined;
-    // const action = args.item as ActionData;
-    // if (!action) {
-    // 	return undefined;
-    // }
-    // const channelPath: string = action.word;
-    // const timelineOption: channelMessageOptions = {
-    // 	channelPath: channelPath,
-    // };
-    // let previewWidth = args.previewContext.width;
-    // sighnColumnやfoldColumn等のtextoff関連を考慮する
-    // 今回は確認が面倒なので、とりあえず2を引いている
-    // previewWidth -= 2;
-    // const timeline: Message[] = await channelTimeline(timelineOption);
-    // const timelinePreviewArray: string[][] = await Promise.all(
-    // 	timeline.map(async (message: Message) => {
-    // 		const ret: string[] = await args.denops.call(
-    // 			"traqvim#make_message_body",
-    // 			{
-    // 				user: message.user,
-    // 				content: message.content,
-    // 				createdAt: message.createdAt.toLocaleString("ja-JP"),
-    // 			},
-    // 			previewWidth,
-    // 		);
-    // 		return ret;
-    // 	}),
-    // );
-    // const timelinePreview: string[] = timelinePreviewArray.flat();
-    // return {
-    // 	kind: "nofile",
-    // 	contents: timelinePreview,
-    // };
+    const action = args.item.action as ActionData;
+    if (!action) {
+      return undefined;
+    }
+    const timelineOption: channelMessageOptions = {
+      id: action.id,
+    };
+    const timeline: Message[] = await channelTimeline(timelineOption);
+    const timelinePreviewArray: string[][] = await Promise.all(
+      timeline.map(async (message: Message) => {
+        const ret: string[] = await args.denops.call(
+          "traqvim#make_message_body",
+          message,
+          args.previewContext.width,
+        );
+        return ret;
+      }),
+    );
+    const timelinePreview: string[] = timelinePreviewArray.flat();
+    return {
+      kind: "nofile",
+      contents: timelinePreview,
+      syntax: "traqvim",
+    };
   }
 
   params(): Params {
