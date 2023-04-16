@@ -9,11 +9,11 @@ import {
 import { Denops, ensureNumber, ensureString } from "./deps.ts";
 import { actionOpenActivity, actionOpenChannel } from "./action.ts";
 
-export async function main(denops: Denops): Promise<void> {
+export function main(denops: Denops): Promise<void> {
   // ここにプラグインの処理を記載する
   console.log("Hello Denops!");
   denops.dispatcher = {
-    async setup(): Promise<unknown> {
+    setup(): Promise<unknown> {
       console.log("setup...");
       return setupOAuth(denops);
     },

@@ -80,4 +80,4 @@ export class TraqApi {
   }
 }
 
-export let api: TraqApi = new TraqApi(new URL(baseUrl));
+export const api: TraqApi = new TraqApi(new URL(baseUrl));
