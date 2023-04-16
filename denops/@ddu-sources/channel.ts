@@ -1,9 +1,6 @@
 import { dduVim, Denops } from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
-import {
-  channelsRecursive,
-  searchChannelUUID,
-} from "../traqvim/model.ts";
+import { channelsRecursive, searchChannelUUID } from "../traqvim/model.ts";
 import { Channel } from "../traqvim/type.d.ts";
 
 export class Source extends dduVim.BaseSource<Params> {
