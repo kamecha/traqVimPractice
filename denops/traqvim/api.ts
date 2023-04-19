@@ -21,9 +21,14 @@ export class TraqApi {
     // tokenFilePathが存在しない場合は作成
     Deno.mkdir(path.dirname(this.tokenFilePath), { recursive: true });
     // 既にtokenが記録されているならそれを読み込む
-    if (Deno.statSync(this.tokenFilePath).isFile) {
-      console.log("token file exists");
-      this.loadToken();
+    try {
+      const fileInfo = Deno.statSync(this.tokenFilePath);
+      if (fileInfo.isFile) {
+        this.loadToken();
+      }
+    } catch (e) {
+      console.log(e);
+      console.log("please Done :TraqSetup");
     }
   }
   setToken(token: Tokens) {
