@@ -1,13 +1,13 @@
-import { path, Tokens, traq } from "./deps.ts";
+import { oauth2Client, path, traq } from "./deps.ts";
 
 export const baseUrl = "https://q.trap.jp/api/v3";
 
 export class TraqApi {
   private prefix: URL;
-  private token: Tokens | undefined;
+  private token: oauth2Client.Tokens | undefined;
   private tokenFilePath: string;
   private config: traq.Configuration | undefined;
-  public api: traq.Apis;
+  public api: traq.Apis | undefined;
 
   constructor(prefix: URL) {
     this.prefix = prefix;
@@ -31,7 +31,7 @@ export class TraqApi {
       console.log("please Done :TraqSetup");
     }
   }
-  setToken(token: Tokens) {
+  setToken(token: oauth2Client.Tokens) {
     this.token = token;
     // tokenをtokenTmpFileにセット
     Deno.writeTextFile(this.tokenFilePath, JSON.stringify(token));
@@ -42,6 +42,9 @@ export class TraqApi {
     }
     const file = await Deno.readTextFile(this.tokenFilePath);
     this.token = JSON.parse(file);
+    if (!this.token) {
+      throw new Error("Token file cannot be read");
+    }
     this.config = new traq.Configuration({
       accessToken: this.token.accessToken,
     });
@@ -54,9 +57,12 @@ export class TraqApi {
     param?: Record<string, string | boolean>,
     body?: string,
   ): Promise<Response> {
-    if (!this.token) {
+    if (this.token == undefined) {
       // tokenがない場合はtokenTmpFileから読み込む
       await this.loadToken();
+      if (this.token == undefined) {
+        throw new Error("Token file cannot be read");
+      }
     }
     // paramのbooleanをstringに変換
     const paramConvert: Record<string, string> = {};
