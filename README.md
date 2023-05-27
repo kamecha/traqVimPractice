@@ -9,6 +9,8 @@
 
 まだ実装途中なので、後々破滅的変更が入る可能性おおいにあり
 
+[使い方兼紹介記事](https://trap.jp/post/1870/)
+
 ## Requirements(要件)
 
 - [deno](https://deno.land/)
