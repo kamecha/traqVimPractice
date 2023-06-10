@@ -9,7 +9,7 @@ import {
 import { Denops, ensureNumber, ensureString } from "./deps.ts";
 import { actionOpenActivity, actionOpenChannel } from "./action.ts";
 
-export function main(denops: Denops): Promise<void> {
+export function main(denops: Denops) {
   // ここにプラグインの処理を記載する
   console.log("Hello Denops!");
   denops.dispatcher = {
