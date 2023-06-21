@@ -4,7 +4,7 @@
 " let g:loaded_traq = 1
 "
 " :Traq setup でdenopsのsetupAPIを叩く
-command! TraqSetup call denops#request('traqvim', 'setup', [])
+command! TraqSetup call denops#request('traqvim', 'setupOAuth', [])
 " homeChannelを開く
 command! TraqHome call denops#request('traqvim', 'home', [])
 " :Traq timeline でdenopsのtimelineAPIを叩く
