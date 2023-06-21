@@ -1,4 +1,4 @@
-import { setupOAuth } from "./oauth.ts";
+import { OAuth } from "./oauth.ts";
 import {
   channelMessageOptions,
   homeChannelId,
@@ -10,12 +10,24 @@ import { Denops, ensureNumber, ensureString } from "./deps.ts";
 import { actionOpenActivity, actionOpenChannel } from "./action.ts";
 
 export function main(denops: Denops) {
-  // ここにプラグインの処理を記載する
+  // oauthの仮オブジェクト
+  let oauth: OAuth;
   console.log("Hello Denops!");
   denops.dispatcher = {
-    setup(): Promise<unknown> {
+    setupOAuth(): Promise<unknown> {
       console.log("setup...");
-      return setupOAuth(denops);
+      // OAuthの設定を行う
+      oauth = new OAuth(denops);
+      return oauth.setupOAuth();
+    },
+    closeOAuth(): Promise<unknown> {
+      console.log("closeOAuth...");
+      oauth.closeApp();
+      return Promise.resolve();
+    },
+    checkOAuthListen(): Promise<unknown> {
+      console.log("checkOAuthListen...");
+      return Promise.resolve(oauth.isAppListening());
     },
     async home(): Promise<unknown> {
       const homePath = await homeChannelPath();
