@@ -7,8 +7,6 @@ const oauthConfig: oauth2Client.OAuth2ClientConfig = {
   tokenUri: `${baseUrl}/oauth2/token`,
 };
 
-const oauth2client = new oauth2Client.OAuth2Client(oauthConfig);
-
 export class OAuth {
   private app: oak.Application;
   private controller: AbortController;
