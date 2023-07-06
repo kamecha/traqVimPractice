@@ -16,6 +16,7 @@ import {
   vars,
 } from "./deps.ts";
 import {
+actionBackChannelMessage,
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
@@ -122,6 +123,38 @@ export function main(denops: Denops) {
           forwardTimeline.filter((message: Message) => {
             return message.createdAt !==
               timeline[timeline.length - 1].createdAt;
+          }),
+          bufNum,
+        );
+      } catch (e) {
+        console.log(e);
+        return;
+      }
+    },
+    async messageBack(bufNum: unknown, bufName: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      ensureString(bufName);
+      // 対応するバッファのメッセージの古いメッセージの日付を取得
+      try {
+        const timeline = await vars.buffers.get(denops, "channelTimeline");
+        ensureArray<Message>(timeline);
+        const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
+        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        // 最後のメッセージの内容
+        const timelineOption: channelMessageOptions = {
+          id: channelUUID,
+          channelPath: bufNameWithoutNumber,
+          limit: 100,
+          until: new Date(timeline[0].createdAt).toISOString(),
+        };
+        const backTimeline: Message[] = await channelTimeline(
+          timelineOption,
+        );
+        await actionBackChannelMessage(
+          denops,
+          // 受け取ったメッセージの中で一番新しい重複メッセージを削除
+          backTimeline.filter((message: Message) => {
+            return message.createdAt !== timeline[0].createdAt;
           }),
           bufNum,
         );
