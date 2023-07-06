@@ -6,7 +6,7 @@ import {
   searchChannelUUID,
   sendMessage,
 } from "./model.ts";
-import { Denops, ensureNumber, ensureString } from "./deps.ts";
+import { Denops, ensureNumber, ensureString, fn } from "./deps.ts";
 import { actionOpenActivity, actionOpenChannel } from "./action.ts";
 
 export function main(denops: Denops) {
@@ -91,7 +91,10 @@ export function main(denops: Denops) {
         return;
       }
       const messageBufName = "Message" + bufName.replace("#", "\\#");
+      // bufferが下に表示されるようoptionを設定し元に戻す
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       await denops.call("traqvim#make_buffer", messageBufName, "new");
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 0);
       await denops.cmd(
         "setlocal buftype=nofile ft=traqvim-message nonumber breakindent",
       );
