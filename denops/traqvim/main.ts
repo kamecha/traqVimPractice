@@ -49,7 +49,7 @@ export function main(denops: Denops) {
       const timelineOption: channelMessageOptions = {
         id: homeId,
         channelPath: homePath,
-        limit: 100,
+        limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
         until: new Date().toISOString(),
         order: "desc",
       };
@@ -64,7 +64,7 @@ export function main(denops: Denops) {
       const timelineOption: channelMessageOptions = {
         id: channelUUID,
         channelPath: channelPath,
-        limit: 100,
+        limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
         until: new Date().toISOString(),
         order: "desc",
       };
@@ -89,7 +89,7 @@ export function main(denops: Denops) {
         const timelineOption: channelMessageOptions = {
           id: channelUUID,
           channelPath: bufNameWithoutNumber,
-          limit: 100,
+          limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
           until: new Date().toISOString(),
           order: "desc",
         };
@@ -110,7 +110,7 @@ export function main(denops: Denops) {
         const timelineOption: channelMessageOptions = {
           id: channelUUID,
           channelPath: bufNameWithoutNumber,
-          limit: 100,
+          limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
           since: new Date(timeline[timeline.length - 1].createdAt)
             .toISOString(),
         };
@@ -144,7 +144,7 @@ export function main(denops: Denops) {
         const timelineOption: channelMessageOptions = {
           id: channelUUID,
           channelPath: bufNameWithoutNumber,
-          limit: 100,
+          limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
           until: new Date(timeline[0].createdAt).toISOString(),
         };
         const backTimeline: Message[] = await channelTimeline(
