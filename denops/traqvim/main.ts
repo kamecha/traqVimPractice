@@ -1,13 +1,26 @@
 import { OAuth } from "./oauth.ts";
 import {
   channelMessageOptions,
+  channelTimeline,
   homeChannelId,
   homeChannelPath,
   searchChannelUUID,
   sendMessage,
 } from "./model.ts";
-import { Denops, ensureNumber, ensureString, fn } from "./deps.ts";
-import { actionOpenActivity, actionOpenChannel } from "./action.ts";
+import {
+  Denops,
+  ensureArray,
+  ensureNumber,
+  ensureString,
+  fn,
+  vars,
+} from "./deps.ts";
+import {
+  actionForwardChannelMessage,
+  actionOpenActivity,
+  actionOpenChannel,
+} from "./action.ts";
+import { Message } from "./type.d.ts";
 
 export function main(denops: Denops) {
   // oauthの仮オブジェクト
@@ -82,6 +95,38 @@ export function main(denops: Denops) {
         actionOpenChannel(denops, timelineOption, undefined, bufNum);
       }
       return;
+    },
+    async messageForward(bufNum: unknown, bufName: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      ensureString(bufName);
+      // 対応するバッファのメッセージの新しいメッセージの日付を取得
+      try {
+        const timeline = await vars.buffers.get(denops, "channelTimeline");
+        ensureArray<Message>(timeline);
+        const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
+        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        // 最後のメッセージの内容
+        const timelineOption: channelMessageOptions = {
+          id: channelUUID,
+          channelPath: bufNameWithoutNumber,
+          limit: 100,
+          since: new Date(timeline[timeline.length - 1].createdAt)
+            .toISOString(),
+        };
+        let forwardTimeline: Message[] = await channelTimeline(timelineOption);
+        await actionForwardChannelMessage(
+          denops,
+          // 一番古いメッセージを削除
+          forwardTimeline.filter((message: Message) => {
+            return message.createdAt !==
+              timeline[timeline.length - 1].createdAt;
+          }),
+          bufNum,
+        );
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     },
     async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
       ensureNumber(bufNum);
