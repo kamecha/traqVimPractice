@@ -154,46 +154,46 @@ export const channelTimeline = async (
     messages
       .reverse()
       .map(async (message: traq.Message) => {
-      // userIdからユーザー情報を取得する
-      const user = await getUser(message.userId);
-      // contentのうち引用してる箇所を判定し、対応するUUIDを記録する
-      // 引用URLはhttps://q.trap.jp/messages/UUIDの形式である
+        // userIdからユーザー情報を取得する
+        const user = await getUser(message.userId);
+        // contentのうち引用してる箇所を判定し、対応するUUIDを記録する
+        // 引用URLはhttps://q.trap.jp/messages/UUIDの形式である
 
-      const quotedMessageUUIDs: string[] | undefined = message.content.match(
-        /https:\/\/q.trap.jp\/messages\/[0-9a-f-]+/g,
-      )?.map((url: string) => {
-        return url.split("/").slice(-1)[0];
-      });
-      // quotedMessageUUIDsが存在しなかった場合はundefinedを返す
-      let quotedMessages: Message[] | undefined = undefined;
-      if (quotedMessageUUIDs) {
-        quotedMessages = await Promise.all(
-          quotedMessageUUIDs?.map(async (uuid: string) => {
-            if (api.api === undefined) {
-              throw new Error("api is undefined");
-            }
-            const quotedMessageRes = await api.api.getMessage(uuid);
-            const quotedMessage = quotedMessageRes.data;
-            // userIdからユーザー情報を取得する
-            const user = await getUser(quotedMessage.userId);
-            const ret: Message = {
-              ...quotedMessage,
-              user: user,
-              createdAt: new Date(quotedMessage.createdAt).toLocaleString(
-                "ja-JP",
-              ),
-            };
-            return ret;
-          }),
-        );
-      }
-      return {
-        ...message,
-        user: user,
-        createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
-        quote: quotedMessages,
-      };
-    }),
+        const quotedMessageUUIDs: string[] | undefined = message.content.match(
+          /https:\/\/q.trap.jp\/messages\/[0-9a-f-]+/g,
+        )?.map((url: string) => {
+          return url.split("/").slice(-1)[0];
+        });
+        // quotedMessageUUIDsが存在しなかった場合はundefinedを返す
+        let quotedMessages: Message[] | undefined = undefined;
+        if (quotedMessageUUIDs) {
+          quotedMessages = await Promise.all(
+            quotedMessageUUIDs?.map(async (uuid: string) => {
+              if (api.api === undefined) {
+                throw new Error("api is undefined");
+              }
+              const quotedMessageRes = await api.api.getMessage(uuid);
+              const quotedMessage = quotedMessageRes.data;
+              // userIdからユーザー情報を取得する
+              const user = await getUser(quotedMessage.userId);
+              const ret: Message = {
+                ...quotedMessage,
+                user: user,
+                createdAt: new Date(quotedMessage.createdAt).toLocaleString(
+                  "ja-JP",
+                ),
+              };
+              return ret;
+            }),
+          );
+        }
+        return {
+          ...message,
+          user: user,
+          createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
+          quote: quotedMessages,
+        };
+      }),
   );
   return messagesConverted;
 };
