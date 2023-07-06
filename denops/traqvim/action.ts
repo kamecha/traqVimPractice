@@ -34,7 +34,11 @@ export const actionForwardChannelMessage = async (
   // 既存メッセージの取得
   const timeline: Message[] = await vars.buffers.get(denops, "channelTimeline");
   // 追記したものをセット
-  await vars.buffers.set(denops, "channelTimeline", timeline.concat(forwardMessages));
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    timeline.concat(forwardMessages),
+  );
   // 描画は追記した部分だけ
   await denops.call("traqvim#draw_forward_messages", bufNum, forwardMessages);
 };
