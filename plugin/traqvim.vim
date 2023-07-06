@@ -13,6 +13,8 @@ command! -nargs=1 TraqTimeline call denops#request('traqvim', 'timeline', [<q-ar
 command! TraqActivity call denops#request('traqvim', 'activity', [])
 " reload
 command! TraqReload call denops#request('traqvim', 'reload', [bufnr(), bufname()])
+" fetch forward
+command! TraqFetchForward call denops#request('traqvim', 'messageForward', [bufnr(), bufname()])
 " messageバッファの作成
 command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(), bufname()])
 " messageの送信
