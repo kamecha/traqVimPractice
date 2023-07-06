@@ -15,6 +15,8 @@ command! TraqActivity call denops#request('traqvim', 'activity', [])
 command! TraqReload call denops#request('traqvim', 'reload', [bufnr(), bufname()])
 " fetch forward
 command! TraqFetchForward call denops#request('traqvim', 'messageForward', [bufnr(), bufname()])
+" fetch backward
+command! TraqFetchBack call denops#request('traqvim', 'messageBack', [bufnr(), bufname()])
 " messageバッファの作成
 command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(), bufname()])
 " messageの送信
