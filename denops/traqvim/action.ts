@@ -43,6 +43,24 @@ export const actionForwardChannelMessage = async (
   await denops.call("traqvim#draw_forward_messages", bufNum, forwardMessages);
 };
 
+// 後ろにメッセージを追加する
+export const actionBackChannelMessage = async (
+  denops: Denops,
+  backMessages: Message[],
+  bufNum: number,
+): Promise<void> => {
+  // 既存メッセージの取得
+  const timeline: Message[] = await vars.buffers.get(denops, "channelTimeline");
+  // 追記したものをセット
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    backMessages.concat(timeline),
+  );
+  // 一旦全部描画するようにする
+  await denops.call("traqvim#draw_timeline", bufNum);
+};
+
 export const actionOpenActivity = async (
   denops: Denops,
   bufNum?: number,
