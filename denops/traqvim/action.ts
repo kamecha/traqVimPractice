@@ -1,4 +1,4 @@
-import { Denops, vars } from "./deps.ts";
+import { Denops, fn, vars } from "./deps.ts";
 import { Message } from "./type.d.ts";
 import { activity, channelMessageOptions, channelTimeline } from "./model.ts";
 
@@ -20,6 +20,9 @@ export const actionOpenChannel = async (
   await vars.buffers.set(denops, "channelTimeline", timeline);
   await denops.cmd("setlocal buftype=nofile ft=traqvim nonumber breakindent");
   await denops.call("traqvim#draw_timeline", bufN);
+  // 最終行にカーソルを移動する
+  const lastLine = await fn.line(denops, "$");
+  await fn.cursor(denops, lastLine, 0);
 };
 
 export const actionOpenActivity = async (
