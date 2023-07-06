@@ -16,7 +16,7 @@ import {
   vars,
 } from "./deps.ts";
 import {
-actionBackChannelMessage,
+  actionBackChannelMessage,
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
