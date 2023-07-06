@@ -113,7 +113,9 @@ export function main(denops: Denops) {
           since: new Date(timeline[timeline.length - 1].createdAt)
             .toISOString(),
         };
-        const forwardTimeline: Message[] = await channelTimeline(timelineOption);
+        const forwardTimeline: Message[] = await channelTimeline(
+          timelineOption,
+        );
         await actionForwardChannelMessage(
           denops,
           // 一番古いメッセージを削除
