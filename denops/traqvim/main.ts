@@ -35,6 +35,9 @@ export function main(denops: Denops) {
       const timelineOption: channelMessageOptions = {
         id: homeId,
         channelPath: homePath,
+        limit: 100,
+        until: new Date().toISOString(),
+        order: "desc",
       };
       await actionOpenChannel(denops, timelineOption);
       return;
@@ -47,6 +50,9 @@ export function main(denops: Denops) {
       const timelineOption: channelMessageOptions = {
         id: channelUUID,
         channelPath: channelPath,
+        limit: 100,
+        until: new Date().toISOString(),
+        order: "desc",
       };
       await actionOpenChannel(denops, timelineOption);
       return;
@@ -69,6 +75,9 @@ export function main(denops: Denops) {
         const timelineOption: channelMessageOptions = {
           id: channelUUID,
           channelPath: bufNameWithoutNumber,
+          limit: 100,
+          until: new Date().toISOString(),
+          order: "desc",
         };
         actionOpenChannel(denops, timelineOption, undefined, bufNum);
       }

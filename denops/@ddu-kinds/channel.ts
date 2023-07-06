@@ -30,6 +30,9 @@ export class Kind extends dduVim.BaseKind<Params> {
         const timelineOption: channelMessageOptions = {
           id: channelID,
           channelPath: channelPath,
+          limit: 100,
+          until: new Date().toISOString(),
+          order: "desc",
         };
         await actionOpenChannel(args.denops, timelineOption, openCommand);
       }

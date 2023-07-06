@@ -7,7 +7,12 @@ export type channelMessageOptions = {
   id: string;
   // #gps/time/kamecha
   channelPath?: string;
-  lastMessageDate?: Date;
+  limit?: number;
+  offset?: number;
+  since?: string;
+  until?: string;
+  inclusive?: boolean;
+  order?: "asc" | "desc";
 };
 
 // channelPathに一致するchannelのUUIDを返す
@@ -131,13 +136,24 @@ export const channelTimeline = async (
   if (api.api === undefined) {
     throw new Error("api is undefined");
   }
-  const channelUUID = options.id;
-  const messagesRes = await api.api.getMessages(channelUUID, 200);
+  const now = new Date();
+  console.log(now.toISOString());
+  const messagesRes = await api.api.getMessages(
+    options.id,
+    options.limit,
+    options.offset,
+    options.since,
+    options.until,
+    options.inclusive,
+    options.order,
+  );
   // messageResからメッセージを取り出す
   const messages = messagesRes.data;
   // const messagesJson = await messages.json();
   const messagesConverted: Message[] = await Promise.all(
-    messages.map(async (message: traq.Message) => {
+    messages
+      .reverse()
+      .map(async (message: traq.Message) => {
       // userIdからユーザー情報を取得する
       const user = await getUser(message.userId);
       // contentのうち引用してる箇所を判定し、対応するUUIDを記録する
