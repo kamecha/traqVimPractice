@@ -29,6 +29,21 @@ function! traqvim#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+function! traqvim#draw_forward_messages(bufNum, messages) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	" startをバッファの最下値にする
+	let start = len(getbufline(a:bufNum, 1, '$')) + 1
+	let winnr = bufwinid(a:bufNum)
+	let width = winwidth(winnr)
+	for message in a:messages
+		let body = traqvim#make_message_body(message, width)
+		let end = start + len(body)
+		call setbufline(a:bufNum, start, body)
+		let start = end
+	endfor
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
 function! traqvim#redraw_recursive(layout) abort
 	if a:layout[0] ==# "leaf"
 		let bufNum = winbufnr(a:layout[1])

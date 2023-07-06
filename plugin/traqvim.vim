@@ -13,12 +13,18 @@ command! -nargs=1 TraqTimeline call denops#request('traqvim', 'timeline', [<q-ar
 command! TraqActivity call denops#request('traqvim', 'activity', [])
 " reload
 command! TraqReload call denops#request('traqvim', 'reload', [bufnr(), bufname()])
+" fetch forward
+command! TraqFetchForward call denops#request('traqvim', 'messageForward', [bufnr(), bufname()])
+" fetch backward
+command! TraqFetchBack call denops#request('traqvim', 'messageBack', [bufnr(), bufname()])
 " messageバッファの作成
 command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(), bufname()])
 " messageの送信
 command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufname(), getline(1, '$')])
 
 call helper#define_highlight()
+
+let g:traqvim#fetch_limit = 20
 
 augroup traqvim
 	" チャンネル名が`#`から始まるため、展開先の`ddu-ff-filter-default`を指定してあげてる

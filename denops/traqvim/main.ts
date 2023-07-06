@@ -1,13 +1,27 @@
 import { OAuth } from "./oauth.ts";
 import {
   channelMessageOptions,
+  channelTimeline,
   homeChannelId,
   homeChannelPath,
   searchChannelUUID,
   sendMessage,
 } from "./model.ts";
-import { Denops, ensureNumber, ensureString } from "./deps.ts";
-import { actionOpenActivity, actionOpenChannel } from "./action.ts";
+import {
+  Denops,
+  ensureArray,
+  ensureNumber,
+  ensureString,
+  fn,
+  vars,
+} from "./deps.ts";
+import {
+  actionBackChannelMessage,
+  actionForwardChannelMessage,
+  actionOpenActivity,
+  actionOpenChannel,
+} from "./action.ts";
+import { Message } from "./type.d.ts";
 
 export function main(denops: Denops) {
   // oauthの仮オブジェクト
@@ -35,6 +49,9 @@ export function main(denops: Denops) {
       const timelineOption: channelMessageOptions = {
         id: homeId,
         channelPath: homePath,
+        limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
+        until: new Date().toISOString(),
+        order: "desc",
       };
       await actionOpenChannel(denops, timelineOption);
       return;
@@ -47,6 +64,9 @@ export function main(denops: Denops) {
       const timelineOption: channelMessageOptions = {
         id: channelUUID,
         channelPath: channelPath,
+        limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
+        until: new Date().toISOString(),
+        order: "desc",
       };
       await actionOpenChannel(denops, timelineOption);
       return;
@@ -69,10 +89,79 @@ export function main(denops: Denops) {
         const timelineOption: channelMessageOptions = {
           id: channelUUID,
           channelPath: bufNameWithoutNumber,
+          limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
+          until: new Date().toISOString(),
+          order: "desc",
         };
         actionOpenChannel(denops, timelineOption, undefined, bufNum);
       }
       return;
+    },
+    async messageForward(bufNum: unknown, bufName: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      ensureString(bufName);
+      // 対応するバッファのメッセージの新しいメッセージの日付を取得
+      try {
+        const timeline = await vars.buffers.get(denops, "channelTimeline");
+        ensureArray<Message>(timeline);
+        const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
+        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        // 最後のメッセージの内容
+        const timelineOption: channelMessageOptions = {
+          id: channelUUID,
+          channelPath: bufNameWithoutNumber,
+          limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
+          since: new Date(timeline[timeline.length - 1].createdAt)
+            .toISOString(),
+        };
+        const forwardTimeline: Message[] = await channelTimeline(
+          timelineOption,
+        );
+        await actionForwardChannelMessage(
+          denops,
+          // 一番古いメッセージを削除
+          forwardTimeline.filter((message: Message) => {
+            return message.createdAt !==
+              timeline[timeline.length - 1].createdAt;
+          }),
+          bufNum,
+        );
+      } catch (e) {
+        console.log(e);
+        return;
+      }
+    },
+    async messageBack(bufNum: unknown, bufName: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      ensureString(bufName);
+      // 対応するバッファのメッセージの古いメッセージの日付を取得
+      try {
+        const timeline = await vars.buffers.get(denops, "channelTimeline");
+        ensureArray<Message>(timeline);
+        const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
+        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        // 最後のメッセージの内容
+        const timelineOption: channelMessageOptions = {
+          id: channelUUID,
+          channelPath: bufNameWithoutNumber,
+          limit: await vars.globals.get(denops, "traqvim#fetch_limit"),
+          until: new Date(timeline[0].createdAt).toISOString(),
+        };
+        const backTimeline: Message[] = await channelTimeline(
+          timelineOption,
+        );
+        await actionBackChannelMessage(
+          denops,
+          // 受け取ったメッセージの中で一番新しい重複メッセージを削除
+          backTimeline.filter((message: Message) => {
+            return message.createdAt !== timeline[0].createdAt;
+          }),
+          bufNum,
+        );
+      } catch (e) {
+        console.log(e);
+        return;
+      }
     },
     async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
       ensureNumber(bufNum);
@@ -82,7 +171,10 @@ export function main(denops: Denops) {
         return;
       }
       const messageBufName = "Message" + bufName.replace("#", "\\#");
+      // bufferが下に表示されるようoptionを設定し元に戻す
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       await denops.call("traqvim#make_buffer", messageBufName, "new");
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 0);
       await denops.cmd(
         "setlocal buftype=nofile ft=traqvim-message nonumber breakindent",
       );
