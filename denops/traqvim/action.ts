@@ -1,4 +1,4 @@
-import { Denops, fn, vars } from "./deps.ts";
+import { Denops, fn, helper, vars } from "./deps.ts";
 import { Message } from "./type.d.ts";
 import { activity, channelMessageOptions, channelTimeline } from "./model.ts";
 
@@ -8,7 +8,7 @@ export const actionOpenChannel = async (
   openCommand?: string,
   bufNum?: number,
 ): Promise<void> => {
-  console.log("actionOpenChannel");
+  helper.echo(denops, "actionOpenChannel");
   const timeline: Message[] = await channelTimeline(channelMessageOptions);
   const escapedChannelPath = channelMessageOptions.channelPath.replace(
     "#",
