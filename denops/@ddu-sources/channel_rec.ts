@@ -15,7 +15,6 @@ export class Source extends dduVim.BaseSource<Params> {
   }): ReadableStream<dduVim.Item<ActionData>[]> {
     return new ReadableStream({
       async start(controller) {
-        console.log("start");
         const channels: Channel[] = await channelsRecursive();
         const unreadChannels: UnreadChannel[] = await getUnreadChannels();
         const items: dduVim.Item<ActionData>[] = channels
@@ -35,7 +34,6 @@ export class Source extends dduVim.BaseSource<Params> {
               },
             };
           });
-        console.log(items);
         controller.enqueue(items);
         controller.close();
       },

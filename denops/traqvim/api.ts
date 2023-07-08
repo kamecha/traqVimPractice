@@ -27,8 +27,7 @@ export class TraqApi {
         this.loadToken();
       }
     } catch (e) {
-      console.log(e);
-      console.log("please Done :TraqSetup");
+      console.error(e);
     }
   }
   setToken(token: oauth2Client.Tokens) {

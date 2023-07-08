@@ -13,6 +13,7 @@ import {
   ensureNumber,
   ensureString,
   fn,
+  helper,
   vars,
 } from "./deps.ts";
 import {
@@ -26,21 +27,21 @@ import { Message } from "./type.d.ts";
 export function main(denops: Denops) {
   // oauthの仮オブジェクト
   let oauth: OAuth;
-  console.log("Hello Denops!");
+  helper.echo(denops, "Hello Denops!");
   denops.dispatcher = {
     setupOAuth(): Promise<unknown> {
-      console.log("setup...");
+      helper.echo(denops, "setup...");
       // OAuthの設定を行う
       oauth = new OAuth(denops);
       return oauth.setupOAuth();
     },
     closeOAuth(): Promise<unknown> {
-      console.log("closeOAuth...");
+      helper.echo(denops, "close...");
       oauth.closeApp();
       return Promise.resolve();
     },
     checkOAuthListen(): Promise<unknown> {
-      console.log("checkOAuthListen...");
+      helper.echo(denops, "check...");
       return Promise.resolve(oauth.isAppListening());
     },
     async home(): Promise<unknown> {
@@ -181,17 +182,14 @@ export function main(denops: Denops) {
       return;
     },
     async messageSend(bufName: unknown, contents: unknown): Promise<unknown> {
+      helper.echo(denops, "Sending...");
       ensureString(bufName);
-      console.log("bufName: " + bufName);
       const content = (contents as string[]).join("\n");
-      console.log("content: " + content);
       // Message\#gps/times/kamecha → #gps/times/kamecha
       let channelPath = bufName.replace("Message#", "#");
       // #gps/times/kamecha(1) → #gps/times/kamecha
       channelPath = channelPath.replace(/\(\d+\)$/, "");
-      console.log("channelPath: " + channelPath);
       const channelUUID = await searchChannelUUID(channelPath);
-      console.log("channelUUID: " + channelUUID);
       await sendMessage(channelUUID, content);
       await denops.cmd(":bdelete");
       return;

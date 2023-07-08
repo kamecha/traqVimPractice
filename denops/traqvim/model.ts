@@ -136,8 +136,6 @@ export const channelTimeline = async (
   if (api.api === undefined) {
     throw new Error("api is undefined");
   }
-  const now = new Date();
-  console.log(now.toISOString());
   const messagesRes = await api.api.getMessages(
     options.id,
     options.limit,
@@ -290,6 +288,6 @@ export const sendMessage = async (
       messagesJson,
     );
   } catch (e) {
-    console.log(e.response);
+    console.error(e);
   }
 };
