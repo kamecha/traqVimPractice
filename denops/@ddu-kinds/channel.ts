@@ -22,7 +22,6 @@ export class Kind extends dduVim.BaseKind<Params> {
     }) => {
       const params = args.actionParams as OpenParams;
       const openCommand = params.command ?? "edit";
-      // ↓ここ配列の先頭しか見ていないので、複数選択されたときにはバグる
       for (const item of args.items) {
         const action = item?.action as ActionData | undefined;
         const channelPath: string = item.word;
