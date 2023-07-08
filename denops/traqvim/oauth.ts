@@ -64,4 +64,10 @@ export class OAuth {
       console.error(err);
     }
   }
+  isAppListening(): boolean {
+    return !this.controller.signal.aborted;
+  }
+  closeApp(): void {
+    this.controller.abort();
+  }
 }
