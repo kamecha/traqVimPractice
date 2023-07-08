@@ -23,7 +23,10 @@ export class Kind extends dduVim.BaseKind<Params> {
       const params = args.actionParams as OpenParams;
       const openCommand = params.command ?? "edit";
       for (const item of args.items) {
-        const action = item?.action as ActionData | undefined;
+        if (!item.action) {
+          continue;
+        }
+        const action = item.action as ActionData;
         const channelPath: string = item.word;
         const channelID: string = action.id;
         const limit = await vars.globals.get(args.denops, "traqvim#fetch_limit");
