@@ -1,4 +1,4 @@
-import { ddcVim, traq, Denops } from "../traqvim/deps.ts";
+import { ddcVim, Denops, traq } from "../traqvim/deps.ts";
 
 import { getStamps } from "../traqvim/model.ts";
 
