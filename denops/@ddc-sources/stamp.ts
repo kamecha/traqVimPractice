@@ -1,6 +1,5 @@
-import { ddcVim, traq } from "../traqvim/deps.ts";
+import { ddcVim, traq, Denops } from "../traqvim/deps.ts";
 
-import { Denops } from "https://deno.land/x/ddc_vim@v3.4.0/deps.ts";
 import { getStamps } from "../traqvim/model.ts";
 
 type Params = Record<never, never>;
