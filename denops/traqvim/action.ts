@@ -10,6 +10,10 @@ export const actionOpenChannel = async (
 ): Promise<void> => {
   helper.echo(denops, "actionOpenChannel");
   const timeline: Message[] = await channelTimeline(channelMessageOptions);
+  if (channelMessageOptions.channelPath === undefined) {
+    helper.echoerr(denops, "channelPath is undefined");
+    return;
+  }
   const escapedChannelPath = channelMessageOptions.channelPath.replace(
     "#",
     "\\#",
