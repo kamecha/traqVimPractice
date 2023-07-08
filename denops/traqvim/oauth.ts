@@ -1,5 +1,5 @@
 import { api, baseUrl } from "./api.ts";
-import { Denops, fn, oak, oauth2Client } from "./deps.ts";
+import { Denops, fn, helper, oak, oauth2Client } from "./deps.ts";
 
 const oauthConfig: oauth2Client.OAuth2ClientConfig = {
   clientId: "0mlxIRl4fHJTvBYS2DlHIa1H9MdxL4Xsj3au",
@@ -54,13 +54,20 @@ export class OAuth {
     this.app.use(this.router.routes());
     this.app.use(this.router.allowedMethods());
     await this.openBrowserWithPlugin("http://localhost:8000/oauth2");
-    // listeしてなかったらlistenする
+    helper.echo(this.denops, "Listening on http://localhost:8000/oauth2");
+    // listenしてなかったらlistenする
     try {
-      if (this.controller.signal.aborted) {
+      if (!this.controller.signal.aborted) {
         this.app.listen({ port: 8000, signal: this.controller.signal });
       }
     } catch (err) {
       console.error(err);
     }
+  }
+  isAppListening(): boolean {
+    return !this.controller.signal.aborted;
+  }
+  closeApp(): void {
+    this.controller.abort();
   }
 }

@@ -1,4 +1,4 @@
-import { Denops, fn, helper, vars } from "./deps.ts";
+import { Denops, ensureArray, fn, helper, vars } from "./deps.ts";
 import { Message } from "./type.d.ts";
 import { activity, channelMessageOptions, channelTimeline } from "./model.ts";
 
@@ -10,6 +10,10 @@ export const actionOpenChannel = async (
 ): Promise<void> => {
   helper.echo(denops, "actionOpenChannel");
   const timeline: Message[] = await channelTimeline(channelMessageOptions);
+  if (channelMessageOptions.channelPath === undefined) {
+    helper.echoerr(denops, "channelPath is undefined");
+    return;
+  }
   const escapedChannelPath = channelMessageOptions.channelPath.replace(
     "#",
     "\\#",
@@ -32,7 +36,8 @@ export const actionForwardChannelMessage = async (
   bufNum: number,
 ): Promise<void> => {
   // 既存メッセージの取得
-  const timeline: Message[] = await vars.buffers.get(denops, "channelTimeline");
+  const timeline = await vars.buffers.get(denops, "channelTimeline");
+  ensureArray<Message>(timeline);
   // 追記したものをセット
   await vars.buffers.set(
     denops,
@@ -50,7 +55,8 @@ export const actionBackChannelMessage = async (
   bufNum: number,
 ): Promise<void> => {
   // 既存メッセージの取得
-  const timeline: Message[] = await vars.buffers.get(denops, "channelTimeline");
+  const timeline = await vars.buffers.get(denops, "channelTimeline");
+  ensureArray<Message>(timeline);
   // 追記したものをセット
   await vars.buffers.set(
     denops,

@@ -1,4 +1,10 @@
-import { dduVim, Denops, vars } from "../traqvim/deps.ts";
+import {
+  dduVim,
+  Denops,
+  ensureArray,
+  ensureNumber,
+  vars,
+} from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
 import { Message } from "../traqvim/type.d.ts";
@@ -22,15 +28,22 @@ export class Kind extends dduVim.BaseKind<Params> {
     }) => {
       const params = args.actionParams as OpenParams;
       const openCommand = params.command ?? "edit";
-      // ↓ここ配列の先頭しか見ていないので、複数選択されたときにはバグる
       for (const item of args.items) {
-        const action = item?.action as ActionData | undefined;
+        if (!item.action) {
+          continue;
+        }
+        const action = item.action as ActionData;
         const channelPath: string = item.word;
         const channelID: string = action.id;
+        const limit = await vars.globals.get(
+          args.denops,
+          "traqvim#fetch_limit",
+        );
+        ensureNumber(limit);
         const timelineOption: channelMessageOptions = {
           id: channelID,
           channelPath: channelPath,
-          limit: await vars.globals.get(args.denops, "traqvim#fetch_limit"),
+          limit: limit,
           until: new Date().toISOString(),
           order: "desc",
         };
@@ -58,11 +71,12 @@ export class Kind extends dduVim.BaseKind<Params> {
     const timeline: Message[] = await channelTimeline(timelineOption);
     const timelinePreviewArray: string[][] = await Promise.all(
       timeline.map(async (message: Message) => {
-        const ret: string[] = await args.denops.call(
+        const ret = await args.denops.call(
           "traqvim#make_message_body",
           message,
           args.previewContext.width,
         );
+        ensureArray<string>(ret);
         return ret;
       }),
     );

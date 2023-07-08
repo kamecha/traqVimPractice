@@ -7,10 +7,10 @@ export {
   ensureObject,
   ensureString,
 } from "https://deno.land/x/unknownutil@v1.0.0/mod.ts";
-export * as fn from "https://deno.land/x/denops_std@v3.3.2/function/mod.ts";
+export type { Denops } from "https://deno.land/x/denops_std@v4.0.0/mod.ts";
+export * as fn from "https://deno.land/x/denops_std@v4.0.0/function/mod.ts";
 export * as vars from "https://deno.land/x/denops_std@v4.0.0/variable/mod.ts";
 export * as helper from "https://deno.land/x/denops_std@v4.0.0/helper/mod.ts";
 export * as ddcVim from "https://deno.land/x/ddc_vim@v3.4.0/types.ts";
 export * as dduVim from "https://deno.land/x/ddu_vim@v1.13.0/types.ts";
-export type { Denops } from "https://deno.land/x/denops_std@v1.0.0/mod.ts";
 export * as traq from "https://esm.sh/@traptitech/traq@3.11.0-3";

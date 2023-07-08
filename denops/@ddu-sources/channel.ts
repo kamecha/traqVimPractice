@@ -1,7 +1,9 @@
-import { dduVim, Denops } from "../traqvim/deps.ts";
+import { dduVim, Denops, helper } from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
 import { channelsRecursive, searchChannelUUID } from "../traqvim/model.ts";
 import { Channel } from "../traqvim/type.d.ts";
+
+type Params = Record<never, never>;
 
 export class Source extends dduVim.BaseSource<Params> {
   kind = "channel";
@@ -37,9 +39,13 @@ export class Source extends dduVim.BaseSource<Params> {
             });
             return items;
           }
-          const rootChannel: Channel = channels.find((channel: Channel) => {
+          const rootChannel = channels.find((channel: Channel) => {
             return channel.id === rootId;
           });
+          if (rootChannel === undefined) {
+            helper.echoerr(args.denops, `Channel ${rootId} not found`);
+            return [];
+          }
           rootChannel.children.forEach((id: string) => {
             const childrenChannel = channels.find((channel: Channel) => {
               return channel.id === id;
