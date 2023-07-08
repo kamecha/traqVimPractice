@@ -182,16 +182,12 @@ export function main(denops: Denops) {
     },
     async messageSend(bufName: unknown, contents: unknown): Promise<unknown> {
       ensureString(bufName);
-      console.log("bufName: " + bufName);
       const content = (contents as string[]).join("\n");
-      console.log("content: " + content);
       // Message\#gps/times/kamecha → #gps/times/kamecha
       let channelPath = bufName.replace("Message#", "#");
       // #gps/times/kamecha(1) → #gps/times/kamecha
       channelPath = channelPath.replace(/\(\d+\)$/, "");
-      console.log("channelPath: " + channelPath);
       const channelUUID = await searchChannelUUID(channelPath);
-      console.log("channelUUID: " + channelUUID);
       await sendMessage(channelUUID, content);
       await denops.cmd(":bdelete");
       return;
