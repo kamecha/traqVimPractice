@@ -289,6 +289,6 @@ export const sendMessage = async (
       messagesJson,
     );
   } catch (e) {
-    console.log(e.response);
+    console.error(e);
   }
 };
