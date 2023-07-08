@@ -56,7 +56,7 @@ export class OAuth {
     await this.openBrowserWithPlugin("http://localhost:8000/oauth2");
     // listeしてなかったらlistenする
     try {
-      if (this.controller.signal.aborted) {
+      if (!this.controller.signal.aborted) {
         this.app.listen({ port: 8000, signal: this.controller.signal });
       }
     } catch (err) {
