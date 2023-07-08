@@ -1,4 +1,4 @@
-import { dduVim, Denops, vars } from "../traqvim/deps.ts";
+import { dduVim, Denops, ensureNumber, vars } from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
 import { Message } from "../traqvim/type.d.ts";
@@ -27,10 +27,12 @@ export class Kind extends dduVim.BaseKind<Params> {
         const action = item?.action as ActionData | undefined;
         const channelPath: string = item.word;
         const channelID: string = action.id;
+        const limit = await vars.globals.get(args.denops, "traqvim#fetch_limit");
+        ensureNumber(limit);
         const timelineOption: channelMessageOptions = {
           id: channelID,
           channelPath: channelPath,
-          limit: await vars.globals.get(args.denops, "traqvim#fetch_limit"),
+          limit: limit,
           until: new Date().toISOString(),
           order: "desc",
         };
