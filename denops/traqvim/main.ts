@@ -206,16 +206,13 @@ export function main(denops: Denops) {
       );
       return;
     },
-    async messageSend(bufName: unknown, contents: unknown): Promise<unknown> {
+    async messageSend(bufNum:unknown, contents: unknown): Promise<unknown> {
       helper.echo(denops, "Sending...");
-      ensureString(bufName);
+      ensureNumber(bufNum);
+      const channelID = await fn.getbufvar(denops, bufNum, "channelID");
+      ensureString(channelID);
       const content = (contents as string[]).join("\n");
-      // Message\#gps/times/kamecha → #gps/times/kamecha
-      let channelPath = bufName.replace("Message#", "#");
-      // #gps/times/kamecha(1) → #gps/times/kamecha
-      channelPath = channelPath.replace(/\(\d+\)$/, "");
-      const channelUUID = await searchChannelUUID(channelPath);
-      await sendMessage(channelUUID, content);
+      await sendMessage(channelID, content);
       await denops.cmd(":bdelete");
       return;
     },
