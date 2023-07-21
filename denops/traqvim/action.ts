@@ -28,7 +28,11 @@ export const actionOpenChannel = async (
     await denops.call("traqvim#make_buffer", escapedChannelPath, open);
   await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
   await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
-  await vars.buffers.set(denops, "channelTimeline", channelBufferVars.channelTimeline);
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    channelBufferVars.channelTimeline,
+  );
   await denops.cmd("setlocal buftype=nofile ft=traqvim nonumber breakindent");
   await denops.call("traqvim#draw_timeline", bufN);
   // 最終行にカーソルを移動する

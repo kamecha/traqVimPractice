@@ -206,7 +206,7 @@ export function main(denops: Denops) {
       );
       return;
     },
-    async messageSend(bufNum:unknown, contents: unknown): Promise<unknown> {
+    async messageSend(bufNum: unknown, contents: unknown): Promise<unknown> {
       helper.echo(denops, "Sending...");
       ensureNumber(bufNum);
       const channelID = await fn.getbufvar(denops, bufNum, "channelID");
