@@ -1,5 +1,5 @@
 import { Denops, ensureArray, fn, helper, vars } from "./deps.ts";
-import { Message } from "./type.d.ts";
+import { ChannelBuffer, Message } from "./type.d.ts";
 import { activity, channelMessageOptions, channelTimeline } from "./model.ts";
 
 export const actionOpenChannel = async (
@@ -18,10 +18,21 @@ export const actionOpenChannel = async (
     "#",
     "\\#",
   );
+  const channelBufferVars: ChannelBuffer = {
+    channelID: channelMessageOptions.id,
+    channelPath: escapedChannelPath,
+    channelTimeline: timeline,
+  };
   const open = openCommand ?? "edit";
   const bufN = bufNum ??
     await denops.call("traqvim#make_buffer", escapedChannelPath, open);
-  await vars.buffers.set(denops, "channelTimeline", timeline);
+  await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
+  await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    channelBufferVars.channelTimeline,
+  );
   await denops.cmd("setlocal buftype=nofile ft=traqvim nonumber breakindent");
   await denops.call("traqvim#draw_timeline", bufN);
   // 最終行にカーソルを移動する

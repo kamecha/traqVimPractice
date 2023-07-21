@@ -12,3 +12,15 @@ export interface Message extends traq.Message {
   user: traq.User;
   quote?: Message[];
 }
+
+// vimのタイムラインbufferでの持つ変数
+export interface ChannelBuffer {
+  channelID: string;
+  channelPath: string;
+  channelTimeline: Message[];
+}
+
+// vimのタイムラインにメッセージを送る時のbufferで持つ変数
+export interface ChannelMessageBuffer {
+  channelID: string;
+}

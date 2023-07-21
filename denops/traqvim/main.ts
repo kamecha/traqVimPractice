@@ -22,7 +22,7 @@ import {
   actionOpenActivity,
   actionOpenChannel,
 } from "./action.ts";
-import { Message } from "./type.d.ts";
+import { ChannelMessageBuffer, Message } from "./type.d.ts";
 
 export function main(denops: Denops) {
   // oauthの仮オブジェクト
@@ -181,26 +181,38 @@ export function main(denops: Denops) {
       if (bufName[0] !== "#") {
         return;
       }
+      const channelID = await fn.getbufvar(denops, bufNum, "channelID");
+      ensureString(channelID);
+      const channelMessageVars: ChannelMessageBuffer = {
+        channelID: channelID,
+      };
       const messageBufName = "Message" + bufName.replace("#", "\\#");
       // bufferが下に表示されるようoptionを設定し元に戻す
       await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
-      await denops.call("traqvim#make_buffer", messageBufName, "new");
+      const messageBufNum = await denops.call(
+        "traqvim#make_buffer",
+        messageBufName,
+        "new",
+      );
       await fn.setbufvar(denops, bufNum, "&splitbelow", 0);
+      await fn.setbufvar(
+        denops,
+        messageBufNum,
+        "channelID",
+        channelMessageVars.channelID,
+      );
       await denops.cmd(
         "setlocal buftype=nofile ft=traqvim-message nonumber breakindent",
       );
       return;
     },
-    async messageSend(bufName: unknown, contents: unknown): Promise<unknown> {
+    async messageSend(bufNum: unknown, contents: unknown): Promise<unknown> {
       helper.echo(denops, "Sending...");
-      ensureString(bufName);
+      ensureNumber(bufNum);
+      const channelID = await fn.getbufvar(denops, bufNum, "channelID");
+      ensureString(channelID);
       const content = (contents as string[]).join("\n");
-      // Message\#gps/times/kamecha → #gps/times/kamecha
-      let channelPath = bufName.replace("Message#", "#");
-      // #gps/times/kamecha(1) → #gps/times/kamecha
-      channelPath = channelPath.replace(/\(\d+\)$/, "");
-      const channelUUID = await searchChannelUUID(channelPath);
-      await sendMessage(channelUUID, content);
+      await sendMessage(channelID, content);
       await denops.cmd(":bdelete");
       return;
     },
