@@ -11,7 +11,7 @@ function! traqvim#make_buffer(channelPath, option) abort
 		endif
 	endwhile
 	noswapfile exe a:option buf_name
-	let buf_num = bufnr(a:channelPath)
+	let buf_num = bufnr(buf_name)
 	return buf_num
 endfunction
 
