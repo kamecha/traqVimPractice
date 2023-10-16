@@ -27,7 +27,6 @@ import { ChannelMessageBuffer, Message } from "./type.d.ts";
 export function main(denops: Denops) {
   // oauthの仮オブジェクト
   let oauth: OAuth;
-  helper.echo(denops, "Hello Denops!");
   denops.dispatcher = {
     setupOAuth(): Promise<unknown> {
       helper.echo(denops, "setup...");
