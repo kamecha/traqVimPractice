@@ -17,29 +17,37 @@ endfunction
 
 function! traqvim#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
+	let index = 0
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
 	for message in getbufvar(a:bufNum, "channelTimeline")
 		let body = traqvim#make_message_body(message, width)
-		let end = start + len(body)
+		let end = start + len(body) - 1
+		let message.position = #{ index: index, start: start, end: end }
 		call setbufline(a:bufNum, start, body)
-		let start = end
+		let start = end + 1
+		let index = index + 1
 	endfor
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
 function! traqvim#draw_forward_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
+	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
+	let index = len(timeline) - len(a:messages)
 	" startをバッファの最下値にする
 	let start = len(getbufline(a:bufNum, 1, '$')) + 1
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
 	for message in a:messages
 		let body = traqvim#make_message_body(message, width)
-		let end = start + len(body)
+		let end = start + len(body) - 1
+		let message.position = #{ index: index, start: start, end: end }
 		call setbufline(a:bufNum, start, body)
-		let start = end
+		let start = end + 1
+		let index = index + 1
 	endfor
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
@@ -82,4 +90,18 @@ function! traqvim#make_message_body(message, width) abort
 	let footer = [ "", repeat("─", a:width) ]
 	let messageBody = header + rows + quote + footer
 	return messageBody
+endfunction
+
+function! traqvim#get_message_buf(curline, bufNum) abort
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
+	let message = copy(timeline)->filter({ _, v -> v.position["start"] <= a:curline && a:curline <= v.position["end"] })
+	if len(message) == 0
+		return {}
+	endif
+	return message[0]
+endfunction
+
+function! traqvim#get_message() abort
+	let curline = line(".")
+	return traqvim#get_message_buf(curline, bufnr("%"))
 endfunction
