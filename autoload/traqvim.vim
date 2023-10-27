@@ -105,3 +105,29 @@ function! traqvim#get_message() abort
 	let curline = line(".")
 	return traqvim#get_message_buf(curline, bufnr("%"))
 endfunction
+
+function! traqvim#message_prev() abort
+	let cur = traqvim#get_message()
+	if empty(cur)
+		return
+	endif
+	let prev_index = cur.position["index"] - 1
+	if prev_index < 0
+		return
+	endif
+	let prev = b:channelTimeline[prev_index]
+	call cursor([prev.position["start"], 0])
+endfunction
+
+function! traqvim#message_next() abort
+	let cur = traqvim#get_message()
+	if empty(cur)
+		return
+	endif
+	let next_index = cur.position["index"] + 1
+	if next_index >= len(b:channelTimeline)
+		return
+	endif
+	let next = b:channelTimeline[next_index]
+	call cursor([next.position["start"], 0])
+endfunction
