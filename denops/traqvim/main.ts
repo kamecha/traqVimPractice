@@ -48,6 +48,35 @@ export async function main(denops: Denops) {
       helper.echo(denops, "check...");
       return Promise.resolve(oauth.isAppListening());
     },
+    async deleteOAuthToken(): Promise<unknown> {
+      const choice = await fn.confirm(
+        denops,
+        "Delete token file? path: " + path,
+        "&Yes\n&No",
+        "No",
+        "Warning",
+      );
+      ensureNumber(choice);
+      switch (choice) {
+        // dialogの中断
+        case 0:
+          helper.echo(denops, "make up  your mind");
+          break;
+        // Yes
+        case 1:
+          helper.echo(denops, "delete token " + path + " ...");
+          await Deno.remove(path);
+          break;
+        // No
+        case 2:
+          helper.echo(denops, "cancel");
+          break;
+        default:
+          helper.echo(denops, "choice error");
+          break;
+      }
+      return Promise.resolve();
+    },
     async home(): Promise<unknown> {
       const homePath = await homeChannelPath();
       const homeId = await homeChannelId();

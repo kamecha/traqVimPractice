@@ -5,6 +5,8 @@
 "
 " :Traq setup でdenopsのsetupAPIを叩く
 command! TraqSetup call denops#request('traqvim', 'setupOAuth', [])
+" :Traq setup でdenopsのsetupAPIを叩く
+command! TraqDeleteToken call denops#request('traqvim', 'deleteOAuthToken', [])
 " homeChannelを開く
 command! TraqHome call denops#request('traqvim', 'home', [])
 " :Traq timeline でdenopsのtimelineAPIを叩く
