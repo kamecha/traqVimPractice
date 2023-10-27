@@ -5,8 +5,8 @@ export const baseUrl = "https://q.trap.jp/api/v3";
 export class TraqApi {
   private prefix: URL;
   private token: oauth2Client.Tokens | undefined;
-  private tokenFilePath: string;
   private config: traq.Configuration | undefined;
+  public tokenFilePath: string | undefined;
   public _api: traq.Apis | undefined;
 
   get api(): traq.Apis {

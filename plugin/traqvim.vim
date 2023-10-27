@@ -25,6 +25,7 @@ command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufnr(),
 call helper#define_highlight()
 
 let g:traqvim#fetch_limit = 20
+let g:traqvim#token_file_path = expand('~/.config/traq/token.json')
 
 augroup traqvim
 	" チャンネル名が`#`から始まるため、展開先の`ddu-ff-filter-default`を指定してあげてる

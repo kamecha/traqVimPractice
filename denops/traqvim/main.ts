@@ -23,8 +23,12 @@ import {
   actionOpenChannel,
 } from "./action.ts";
 import { ChannelMessageBuffer, Message } from "./type.d.ts";
+import { api } from "./api.ts";
 
-export function main(denops: Denops) {
+export async function main(denops: Denops) {
+  const path = await vars.globals.get(denops, "traqvim#token_file_path");
+  ensureString(path);
+  api.tokenFilePath = path;
   // oauthの仮オブジェクト
   let oauth: OAuth;
   helper.echo(denops, "Hello Denops!");
