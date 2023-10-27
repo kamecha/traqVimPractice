@@ -5,6 +5,8 @@
 "
 " :Traq setup でdenopsのsetupAPIを叩く
 command! TraqSetup call denops#request('traqvim', 'setupOAuth', [])
+" :Traq setup でdenopsのsetupAPIを叩く
+command! TraqDeleteToken call denops#request('traqvim', 'deleteOAuthToken', [])
 " homeChannelを開く
 command! TraqHome call denops#request('traqvim', 'home', [])
 " :Traq timeline でdenopsのtimelineAPIを叩く
@@ -25,6 +27,7 @@ command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufnr(),
 call helper#define_highlight()
 
 let g:traqvim#fetch_limit = 20
+let g:traqvim#token_file_path = expand('~/.config/traq/token.json')
 
 augroup traqvim
 	" チャンネル名が`#`から始まるため、展開先の`ddu-ff-filter-default`を指定してあげてる

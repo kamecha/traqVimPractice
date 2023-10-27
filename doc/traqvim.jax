@@ -27,6 +27,7 @@ License : MIT license  {{{
 概要				|traqvim-introduction|
 使い方				|traqvim-usage|
 インターフェイス		|traqvim-interface|
+  変数				  |traqvim-variables|
   コマンド			  |traqvim-commands|
   関数				  |traqvim-functions|
 TODO				|traqvim-todo|
@@ -49,16 +50,27 @@ https://github.com/kamecha/traqVimPractice
 |:TraqSetup|を使用するとアプリがlocalhost:8000で待機するため、
 ブラウザ等でlocalhost:8000/oauth2へアクセスします。
 (open-browser.vimプラグインが認識されている場合自動でアクセスします)
-認証画面で認証を行うとトークンが~/.config/traqに保存されます。
+認証画面で認証を行うと、トークンがデフォルトでは~/.config/traqに保存されます。
 
 ==============================================================================
 インターフェイス				*traqvim-interface*
+
+------------------------------------------------------------------------------
+変数						*traqvim-variables*
+
+		*g:traqvim#token_file_path*
+g:traqvim#token_file_path
+	OAuth2認証の後、取得するトークンを保存するファイルへのパス
+	Default: "~/.config/traq/token.json"
 
 ------------------------------------------------------------------------------
 コマンド					*traqvim-commands*
 
 :TraqSetup					*:TraqSetup*
     認証をします
+
+:TraqDeleteToken				*:TraqDeleteToken*
+    トークンファイルを削除します
 
 :TraqHome					*:TraqHome*
     ホームチャンネルを現在のバッファに表示します
@@ -141,7 +153,7 @@ FuzzyFinderSource				*ddu-source-traqvim*
 	\ },
 	\ })
 <
-    
+
     |ddu|におけるkindと同様にチャンネル用の|kind|も提供しています。
 
 open
