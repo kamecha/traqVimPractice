@@ -45,11 +45,11 @@ export class TraqApi {
     // tokenをtokenTmpFileにセット
     Deno.writeTextFile(this.tokenFilePath, JSON.stringify(token));
   }
-  async loadToken() {
+  loadToken() {
     if (!this.tokenFilePath) {
       throw new Error("Token file is not set");
     }
-    const file = await Deno.readTextFile(this.tokenFilePath);
+    const file = Deno.readTextFileSync(this.tokenFilePath);
     this.token = JSON.parse(file);
     if (!this.token) {
       throw new Error("Token file cannot be read");
@@ -57,10 +57,10 @@ export class TraqApi {
     this.config = new traq.Configuration({
       accessToken: this.token.accessToken,
     });
-    this.api = new traq.Apis(this.config);
+    this._api = new traq.Apis(this.config);
     console.log("api loaded");
   }
-  async fetchWithToken(
+  fetchWithToken(
     method: string,
     path: string,
     param?: Record<string, string | boolean>,
@@ -68,7 +68,7 @@ export class TraqApi {
   ): Promise<Response> {
     if (this.token == undefined) {
       // tokenがない場合はtokenTmpFileから読み込む
-      await this.loadToken();
+      this.loadToken();
       if (this.token == undefined) {
         throw new Error("Token file cannot be read");
       }
