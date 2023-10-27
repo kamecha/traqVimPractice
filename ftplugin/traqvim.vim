@@ -5,6 +5,10 @@ nnoremap <buffer><silent> r
 			\ :TraqReload<CR>
 nnoremap <buffer><silent> o
 			\ :TraqMessageOpen<CR>
+nnoremap <buffer><silent> <Plug>(traqvim-next)
+			\ <Cmd>call traqvim#message_next()<CR>
+nnoremap <buffer><silent> <Plug>(traqvim-prev)
+			\ <Cmd>call traqvim#message_prev()<CR>
 
 " filetypeがtraqvimの時かつ、ウィンドウのサイズが変更された時だけ実行
 
