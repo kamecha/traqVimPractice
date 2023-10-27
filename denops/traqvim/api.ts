@@ -7,7 +7,17 @@ export class TraqApi {
   private token: oauth2Client.Tokens | undefined;
   private tokenFilePath: string;
   private config: traq.Configuration | undefined;
-  public api: traq.Apis | undefined;
+  public _api: traq.Apis | undefined;
+
+  get api(): traq.Apis {
+    if (this._api === undefined) {
+      this.loadToken();
+      if (this._api === undefined) {
+        throw new Error("API cannot be initialized");
+      }
+    }
+    return this._api;
+  }
 
   constructor(prefix: URL) {
     this.prefix = prefix;

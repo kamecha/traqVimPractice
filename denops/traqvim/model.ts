@@ -18,9 +18,6 @@ export type channelMessageOptions = {
 // channelPathに一致するchannelのUUIDを返す
 // channelPathは#で始まる
 export async function searchChannelUUID(channelPath: string): Promise<string> {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   // channelPathの先頭が#で始まっているかのチェック
   if (!channelPath.startsWith("#")) {
     throw new Error("channelPath must start with #");
@@ -79,9 +76,6 @@ const makeChannelPath = (
 
 // channelUUIDに対応するchannelPathを生成する
 export const channelPath = async (channelUUID: string): Promise<string> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const channelsRes = await api.api.getChannels();
   const publicChannels = channelsRes.data.public;
   const channel = publicChannels.find((c: traq.Channel) =>
@@ -96,9 +90,6 @@ export const channelPath = async (channelUUID: string): Promise<string> => {
 
 // 自身のユーザー情報を取得する
 export const getMeInfo = async (): Promise<traq.MyUserDetail> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const meRes = await api.api.getMe();
   const me: traq.MyUserDetail = meRes.data;
   return me;
@@ -122,9 +113,6 @@ export const homeChannelId = async (): Promise<string> => {
 
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<traq.User> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const userRes = await api.api.getUser(userId);
   const user = userRes.data;
   return user;
@@ -133,9 +121,6 @@ export const getUser = async (userId: string): Promise<traq.User> => {
 export const channelTimeline = async (
   options: channelMessageOptions,
 ): Promise<Message[]> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const messagesRes = await api.api.getMessages(
     options.id,
     options.limit,
@@ -167,9 +152,6 @@ export const channelTimeline = async (
         if (quotedMessageUUIDs) {
           quotedMessages = await Promise.all(
             quotedMessageUUIDs?.map(async (uuid: string) => {
-              if (api.api === undefined) {
-                throw new Error("api is undefined");
-              }
               const quotedMessageRes = await api.api.getMessage(uuid);
               const quotedMessage = quotedMessageRes.data;
               // userIdからユーザー情報を取得する
@@ -199,9 +181,6 @@ export const channelTimeline = async (
 // 再帰的にchannelを取得し、それぞれのchannelを記録
 // channelsを#で始まるchannelPathに変換
 export const channelsRecursive = async (): Promise<Channel[]> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const channelsRes = await api.api.getChannels();
   const publicChannels = channelsRes.data.public;
   const channelsConverted: Channel[] = publicChannels.map(
@@ -217,9 +196,6 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
 
 // 未読チャンネルの取得
 export const getUnreadChannels = async (): Promise<UnreadChannel[]> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const unreadChannelsRes = await api.api.getMyUnreadChannels();
   const unreadChannels = unreadChannelsRes.data;
   const unreadChannelsConverted: UnreadChannel[] = await Promise.all(
@@ -236,16 +212,10 @@ export const getUnreadChannels = async (): Promise<UnreadChannel[]> => {
 
 // activityを取得する
 export const activity = async (): Promise<Message[]> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const activityRes = await api.api.getActivityTimeline(undefined, true);
   const activity: traq.ActivityTimelineMessage[] = activityRes.data;
   const activitiesConverted: Message[] = await Promise.all(
     activity.map(async (activity: traq.ActivityTimelineMessage) => {
-      if (api.api === undefined) {
-        throw new Error("api is undefined");
-      }
       const user = await getUser(activity.userId);
       const messageRes = await api.api.getMessage(activity.id);
       const message = messageRes.data;
@@ -261,9 +231,6 @@ export const activity = async (): Promise<Message[]> => {
 
 // stamp情報の取得
 export const getStamps = async (): Promise<traq.Stamp[]> => {
-  if (api.api === undefined) {
-    throw new Error("api is undefined");
-  }
   const stampsRes = await api.api.getStamps();
   const stamps = stampsRes.data;
   return stamps;
