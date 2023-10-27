@@ -10,6 +10,11 @@ export interface UnreadChannel extends traq.UnreadChannel {
 
 export interface Message extends traq.Message {
   user: traq.User;
+  position?: {
+    index: number;
+    start: number;
+    end: number;
+  };
   quote?: Message[];
 }
 
