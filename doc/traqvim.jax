@@ -29,6 +29,7 @@ License : MIT license  {{{
 インターフェイス		|traqvim-interface|
   変数				  |traqvim-variables|
   コマンド			  |traqvim-commands|
+  キーマッピング		  |traqvim-keymappings|
   関数				  |traqvim-functions|
 TODO				|traqvim-todo|
 更新履歴			|traqvim-changelog|
@@ -90,6 +91,15 @@ g:traqvim#token_file_path
 
 :TraqMessageSend				*:TraqMessageSend*
     メッセージバッファにおいて有効であり、メッセージを対象チャンネルに送信します
+
+------------------------------------------------------------------------------
+キーマッピング					*traqvim-keymappings*
+
+<Plug>(traqvim-next)				    *<Plug>(traqvim-next)*
+    次のメッセージへカーソルを移動させます
+
+<Plug>(traqvim-prev)				    *<Plug>(traqvim-prev)*
+    前のメッセージへカーソルを移動させます
 
 ------------------------------------------------------------------------------
 レイアウト					*traqvim-channel-layout*
