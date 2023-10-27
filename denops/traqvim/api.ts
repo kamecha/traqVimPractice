@@ -45,7 +45,6 @@ export class TraqApi {
       accessToken: this.token.accessToken,
     });
     this._api = new traq.Apis(this.config);
-    console.log("api loaded");
   }
   fetchWithToken(
     method: string,
