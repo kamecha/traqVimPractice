@@ -21,27 +21,14 @@ export class TraqApi {
 
   constructor(prefix: URL) {
     this.prefix = prefix;
-    // tokenをLinuxでの~/.config、Windowsでの該当する箇所に保存する
-    this.tokenFilePath = path.join(
-      Deno.env.get("HOME") || "",
-      ".config",
-      "traq",
-      "token.json",
-    );
-    // tokenFilePathが存在しない場合は作成
-    Deno.mkdir(path.dirname(this.tokenFilePath), { recursive: true });
-    // 既にtokenが記録されているならそれを読み込む
-    try {
-      const fileInfo = Deno.statSync(this.tokenFilePath);
-      if (fileInfo.isFile) {
-        this.loadToken();
-      }
-    } catch (e) {
-      console.error(e);
-    }
   }
   setToken(token: oauth2Client.Tokens) {
     this.token = token;
+    if (!this.tokenFilePath) {
+      throw new Error("Token file is not set");
+    }
+    // tokenFilePathが存在しない場合は作成
+    Deno.mkdir(path.dirname(this.tokenFilePath), { recursive: true });
     // tokenをtokenTmpFileにセット
     Deno.writeTextFile(this.tokenFilePath, JSON.stringify(token));
   }
