@@ -1,4 +1,11 @@
-import { ddcVim, ddcVimSource, Denops, ensureString, traq, vars } from "../traqvim/deps.ts";
+import {
+  ddcVim,
+  ddcVimSource,
+  Denops,
+  ensureString,
+  traq,
+  vars,
+} from "../traqvim/deps.ts";
 
 import { getStamps } from "../traqvim/model.ts";
 import { api } from "../traqvim/api.ts";
