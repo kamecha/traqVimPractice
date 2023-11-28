@@ -1,10 +1,25 @@
-import { ddcVim, Denops, traq } from "../traqvim/deps.ts";
+import {
+  ddcVim,
+  ddcVimSource,
+  Denops,
+  ensureString,
+  traq,
+  vars,
+} from "../traqvim/deps.ts";
 
 import { getStamps } from "../traqvim/model.ts";
+import { api } from "../traqvim/api.ts";
 
 type Params = Record<never, never>;
 
 export class Source extends ddcVim.BaseSource<Params> {
+  async onInit(args: ddcVimSource.OnInitArguments<Params>): Promise<void> {
+    const path = await vars.globals.get(args.denops, "traqvim#token_file_path");
+    ensureString(path);
+    api.tokenFilePath = path;
+    return Promise.resolve();
+  }
+
   override async gather(): Promise<ddcVim.Item[]> {
     const stamps: traq.Stamp[] = await getStamps();
     return stamps

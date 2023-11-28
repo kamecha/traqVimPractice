@@ -1,12 +1,26 @@
-import { dduVim, Denops, helper } from "../traqvim/deps.ts";
+import {
+  dduVim,
+  dduVimSource,
+  Denops,
+  ensureString,
+  helper,
+  vars,
+} from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
 import { channelsRecursive, searchChannelUUID } from "../traqvim/model.ts";
 import { Channel } from "../traqvim/type.d.ts";
+import { api } from "../traqvim/api.ts";
 
 type Params = Record<never, never>;
 
 export class Source extends dduVim.BaseSource<Params> {
   kind = "channel";
+  async onInit(args: dduVimSource.OnInitArguments<Params>): Promise<void> {
+    const path = await vars.globals.get(args.denops, "traqvim#token_file_path");
+    ensureString(path);
+    api.tokenFilePath = path;
+    return Promise.resolve();
+  }
   override gather(args: {
     denops: Denops;
     sourceOptions: dduVim.SourceOptions;
