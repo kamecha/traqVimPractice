@@ -1,4 +1,10 @@
-import { dduVim, dduVimSource, Denops, ensureString, vars } from "../traqvim/deps.ts";
+import {
+  dduVim,
+  dduVimSource,
+  Denops,
+  ensureString,
+  vars,
+} from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
 import { channelsRecursive, getUnreadChannels } from "../traqvim/model.ts";
 import { Channel, UnreadChannel } from "../traqvim/type.d.ts";
