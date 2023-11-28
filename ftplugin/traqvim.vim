@@ -18,4 +18,6 @@ augroup traqvim
 				\ if &ft == 'traqvim' |
 				\   call traqvim#redraw_recursive(winlayout()) |
 				\ endif
+	autocmd CursorMoved *
+				\ :match VtraQMessage '\v^─*%(─%#|%#─)─*\n%(%(.*[^─].*|)\n)+─+$|^─+\n%(%(.*[^─].*|)\n)+─*%(─%#|%#─)─*$|^─+\n%(%(.*[^─].*|)\n)*%(.*[^─].*%#.*|.*%#.*[^─].*|%#)\n%(%(.*[^─].*|)\n)*─+$'
 augroup END
