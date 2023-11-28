@@ -15,7 +15,7 @@ nnoremap <buffer><silent> <Plug>(traqvim-prev)
 augroup traqvim
 	autocmd!
 	autocmd WinResized *
-		\ if &ft == 'traqvim' |
-		\   call traqvim#redraw_recursive(winlayout()) |
-		\ endif
+				\ if &ft == 'traqvim' |
+				\   call traqvim#redraw_recursive(winlayout()) |
+				\ endif
 augroup END
