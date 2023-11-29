@@ -29,6 +29,7 @@ function! traqvim#draw_timeline(bufNum) abort
 		let start = end + 1
 		let index = index + 1
 	endfor
+	call deletebufline(a:bufNum, start, '$')
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
