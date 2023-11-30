@@ -21,6 +21,7 @@ import {
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
+  actionYankMessageLink,
 } from "./action.ts";
 import { ChannelMessageBuffer, Message } from "./type.d.ts";
 import { api } from "./api.ts";
@@ -248,6 +249,11 @@ export async function main(denops: Denops) {
       await sendMessage(channelID, content);
       await denops.cmd(":bdelete");
       return;
+    },
+    async yankMessageLink(message: unknown): Promise<unknown> {
+      // ensureでの型チェックの仕方分からんから、とりあえずasで:awoo:
+      await actionYankMessageLink(denops, message as Message);
+      return Promise.resolve();
     },
   };
 }

@@ -98,3 +98,12 @@ export const actionOpenActivity = async (
     bufN,
   );
 };
+
+export const actionYankMessageLink = async (
+  denops: Denops,
+  message: Message,
+): Promise<void> => {
+  const messageLink = `https://q.trap.jp/messages/${message.id}`;
+  await fn.setreg(denops, '"', messageLink);
+  await helper.echo(denops, "Yanked message link");
+};

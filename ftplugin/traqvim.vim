@@ -10,6 +10,9 @@ nnoremap <buffer><silent> <Plug>(traqvim-next)
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
 			\ <Cmd>call traqvim#message_prev()<CR>
 
+command! -buffer -nargs=0 TraqYankMessageLink
+			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
+
 " filetypeがtraqvimの時かつ、ウィンドウのサイズが変更された時だけ実行
 
 augroup traqvim
