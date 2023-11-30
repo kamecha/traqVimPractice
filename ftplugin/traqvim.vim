@@ -12,6 +12,8 @@ nnoremap <buffer><silent> <Plug>(traqvim-prev)
 
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
+command! -buffer -nargs=0 TraqYankMessageMarkdown
+			\ call denops#request('traqvim', 'yankMessageMarkdown', [traqvim#get_message()])
 
 " filetypeがtraqvimの時かつ、ウィンドウのサイズが変更された時だけ実行
 

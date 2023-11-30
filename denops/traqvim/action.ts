@@ -107,3 +107,11 @@ export const actionYankMessageLink = async (
   await fn.setreg(denops, '"', messageLink);
   await helper.echo(denops, "Yanked message link");
 };
+
+export const actionYankMessageMarkdown = async (
+  denops: Denops,
+  message: Message,
+): Promise<void> => {
+  await fn.setreg(denops, '"', message.content);
+  await helper.echo(denops, "Yanked message markdown");
+};

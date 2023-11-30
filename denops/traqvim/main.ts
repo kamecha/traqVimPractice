@@ -22,6 +22,7 @@ import {
   actionOpenActivity,
   actionOpenChannel,
   actionYankMessageLink,
+  actionYankMessageMarkdown,
 } from "./action.ts";
 import { ChannelMessageBuffer, Message } from "./type.d.ts";
 import { api } from "./api.ts";
@@ -253,6 +254,10 @@ export async function main(denops: Denops) {
     async yankMessageLink(message: unknown): Promise<unknown> {
       // ensureでの型チェックの仕方分からんから、とりあえずasで:awoo:
       await actionYankMessageLink(denops, message as Message);
+      return Promise.resolve();
+    },
+    async yankMessageMarkdown(message: unknown): Promise<unknown> {
+      await actionYankMessageMarkdown(denops, message as Message);
       return Promise.resolve();
     },
   };
