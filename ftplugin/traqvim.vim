@@ -14,7 +14,7 @@ nnoremap <buffer><silent> <Plug>(traqvim-prev)
 " 			\ "<Cmd><SID>let &opfunc=function('s:registerYankMessageLink')<CR>g@"
 
 nnoremap <buffer><expr> <Plug>(traqvim-yank-message-link-operator)
-			\ "<Cmd>let &opfunc=function('traqvim#registerYankMessageLink')<CR>g@"
+			\ traqvim#registerYankMessageLink()
 
 omap <buffer> im
 			\ <Plug>(traqvim-message-motion)
@@ -24,14 +24,7 @@ nmap <buffer> <LocalLeader>y
 
 " 自作モーションの作成
 onoremap <silent> <Plug>(traqvim-message-motion)
-			\ <SID>:<C-u>call s:message_motion()<CR>
-
-function s:message_motion() abort
-	let position = traqvim#get_message()->get('position')
-	call cursor(position->get('start'), 1)
-	normal! V
-	call cursor(position->get('end'), 1)
-endfunction
+			\ :<C-u>call traqvim#message_motion()<CR>
 
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])

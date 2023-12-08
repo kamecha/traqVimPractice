@@ -150,3 +150,11 @@ function traqvim#yankMessageLink(t) abort
 	let messageLink = "https://q.trap.jp/messages/" . messageStart->get('id')
 	call setreg(v:register, messageLink)
 endfunction
+
+function traqvim#message_motion() abort
+	let position = traqvim#get_message()->get('position')
+	call cursor(position->get('start'), 1)
+	normal! V
+	call cursor(position->get('end'), 1)
+endfunction
+
