@@ -12,6 +12,8 @@ nnoremap <buffer><silent> <Plug>(traqvim-prev)
 
 nnoremap <buffer><expr> <Plug>(traqvim-yank-message-link-operator)
 			\ traqvim#registerYankMessageLink()
+nnoremap <buffer><expr> <Plug>(traqvim-yank-message-markdown-operator)
+			\ traqvim#registerYankMessageMarkdown()
 
 onoremap <silent> <Plug>(traqvim-message-motion)
 			\ :<C-u>call traqvim#message_motion()<CR>
@@ -21,6 +23,9 @@ omap <buffer> im
 
 nmap <buffer> <LocalLeader>y
 			\ <Plug>(traqvim-yank-message-link-operator)
+
+nmap <buffer> <LocalLeader>Y
+			\ <Plug>(traqvim-yank-message-markdown-operator)
 
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
