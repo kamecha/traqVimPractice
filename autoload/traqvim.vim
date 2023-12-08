@@ -132,3 +132,46 @@ function! traqvim#message_next() abort
 	let next = b:channelTimeline[next_index]
 	call cursor([next.position["start"], 0])
 endfunction
+
+function traqvim#registerYankMessageLink() abort
+	let &opfunc = function('traqvim#yankMessageLink')
+	return 'g@'
+endfunction
+
+function traqvim#yankMessageLink(t) abort
+	if a:t != 'line'
+		return
+	endif
+	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	if messageStart->get('id') != messageEnd->get('id')
+		return
+	endif
+	let messageLink = "https://q.trap.jp/messages/" . messageStart->get('id')
+	call setreg(v:register, messageLink)
+endfunction
+
+function traqvim#registerYankMessageMarkdown() abort
+	let &opfunc = function('traqvim#yankMessageMarkdown')
+	return 'g@'
+endfunction
+
+function traqvim#yankMessageMarkdown(t) abort
+	if a:t != 'line'
+		return
+	endif
+	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	if messageStart->get('id') != messageEnd->get('id')
+		return
+	endif
+	call setreg(v:register, messageStart->get('content'))
+endfunction
+
+function traqvim#message_motion() abort
+	let position = traqvim#get_message()->get('position')
+	call cursor(position->get('start'), 1)
+	normal! V
+	call cursor(position->get('end'), 1)
+endfunction
+
