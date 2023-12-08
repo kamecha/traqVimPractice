@@ -1,10 +1,7 @@
 
 setlocal noswapfile
 setlocal signcolumn=no
-nnoremap <buffer><silent> r
-			\ :TraqReload<CR>
-nnoremap <buffer><silent> o
-			\ :TraqMessageOpen<CR>
+setlocal nolist
 nnoremap <buffer><silent> <Plug>(traqvim-next)
 			\ <Cmd>call traqvim#message_next()<CR>
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
