@@ -36,8 +36,6 @@ endfunction
 
 function! traqvim#draw_forward_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
-	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
-	let timeline = getbufvar(a:bufNum, "channelTimeline")
 	" startをバッファの最下値にする
 	let start = len(getbufline(a:bufNum, 1, '$')) + 1
 	let winnr = bufwinid(a:bufNum)
@@ -48,13 +46,14 @@ function! traqvim#draw_forward_messages(bufNum, messages) abort
 		call appendbufline(a:bufNum, start - 1, body)
 		let start = end + 1
 	endfor
+	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
 	call map(timeline, function("traqvim#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
 function! traqvim#draw_back_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
-	let timeline = getbufvar(a:bufNum, "channelTimeline")
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
@@ -66,6 +65,7 @@ function! traqvim#draw_back_messages(bufNum, messages) abort
 		let start = end + 1
 	endfor
 	" 既存のメッセージのpositionを更新する
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
 	call map(timeline, function("traqvim#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
