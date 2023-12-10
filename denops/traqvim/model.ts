@@ -258,3 +258,13 @@ export const sendMessage = async (
     console.error(e);
   }
 };
+
+export const deleteMessage = async (
+  messageId: string,
+): Promise<void> => {
+  try {
+    await api.api.deleteMessage(messageId);
+  } catch (e) {
+    console.error(e);
+  }
+};

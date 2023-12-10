@@ -18,6 +18,7 @@ import {
 } from "./deps.ts";
 import {
   actionBackChannelMessage,
+  actionDeleteMessage,
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
@@ -258,6 +259,36 @@ export async function main(denops: Denops) {
     },
     async yankMessageMarkdown(message: unknown): Promise<unknown> {
       await actionYankMessageMarkdown(denops, message as Message);
+      return Promise.resolve();
+    },
+    async messageDelete(bufNum: unknown, message: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      const choice = await fn.confirm(
+        denops,
+        "Delete message?",
+        "&Yes\n&No",
+        "No",
+        "Warning",
+      );
+      ensureNumber(choice);
+      switch (choice) {
+        // dialogの中断
+        case 0:
+          helper.echo(denops, "make up  your mind");
+          break;
+        // Yes
+        case 1:
+          helper.echo(denops, "delete message...");
+          await actionDeleteMessage(denops, message as Message, bufNum);
+          break;
+        // No
+        case 2:
+          helper.echo(denops, "cancel");
+          break;
+        default:
+          helper.echo(denops, "choice error");
+          break;
+      }
       return Promise.resolve();
     },
   };
