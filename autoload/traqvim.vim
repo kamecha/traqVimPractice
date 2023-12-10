@@ -24,6 +24,7 @@ function! traqvim#draw_timeline(bufNum) abort
 	for message in getbufvar(a:bufNum, "channelTimeline")
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
+		" 一度に全部描画するから、positionをここで設定する
 		let message.position = #{ index: index, start: start, end: end }
 		call setbufline(a:bufNum, start, body)
 		let start = end + 1
