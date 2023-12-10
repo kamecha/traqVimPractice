@@ -46,7 +46,7 @@ function! traqvim#draw_forward_messages(bufNum, messages) abort
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
 		let message.position = #{ index: index, start: start, end: end }
-		call setbufline(a:bufNum, start, body)
+		call appendbufline(a:bufNum, start - 1, body)
 		let start = end + 1
 		let index = index + 1
 	endfor
