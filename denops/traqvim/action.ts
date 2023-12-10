@@ -1,6 +1,6 @@
 import { Denops, ensureArray, fn, helper, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
-import { activity, channelMessageOptions, channelTimeline, deleteMessage } from "./model.ts";
+import { activity, channelMessageOptions, channelTimeline, deleteMessage, editMessage } from "./model.ts";
 
 export const actionOpenChannel = async (
   denops: Denops,
@@ -100,6 +100,42 @@ export const actionDeleteMessage = async (
   );
   await denops.call("traqvim#draw_delete_message", bufNum, message);
 }
+
+export const actionEditMessage = async (
+  denops: Denops,
+  message: Message,
+  content: string,
+  bufNum: number,
+): Promise<void> => {
+  try {
+    await editMessage(message.id, content);
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+  // 既存メッセージの取得
+  // const timeline = await vars.buffers.get(denops, "channelTimeline");
+  const timeline = await fn.getbufvar(denops, bufNum, "channelTimeline");
+  ensureArray<Message>(timeline);
+  const editedTimeline = timeline.map((m) => {
+    if (m.id === message.id) {
+      return {
+        ...m,
+        content: content,
+      };
+    } else {
+      return m;
+    }
+  });
+  // 編集したものをセット
+  await fn.setbufvar(
+    denops,
+    bufNum,
+    "channelTimeline",
+    editedTimeline,
+  );
+  await denops.call("traqvim#draw_insert_message", bufNum, editedTimeline.find((m) => m.id === message.id));
+};
 
 export const actionOpenActivity = async (
   denops: Denops,
