@@ -75,7 +75,7 @@ export const actionBackChannelMessage = async (
     backMessages.concat(timeline),
   );
   // 一旦全部描画するようにする
-  await denops.call("traqvim#draw_timeline", bufNum);
+  await denops.call("traqvim#draw_back_messages", bufNum, backMessages);
 };
 
 export const actionOpenActivity = async (

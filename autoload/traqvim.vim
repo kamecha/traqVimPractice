@@ -54,6 +54,27 @@ function! traqvim#draw_forward_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+function! traqvim#draw_back_messages(bufNum, messages) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
+	let index = 0
+	let start = 1
+	let winnr = bufwinid(a:bufNum)
+	let width = winwidth(winnr)
+	" appendbufline()を使用する
+	for message in a:messages
+		let body = traqvim#make_message_body(message, width)
+		let end = start + len(body) - 1
+		let message.position = #{ index: index, start: start, end: end }
+		call appendbufline(a:bufNum, start - 1, body)
+		let start = end + 1
+		let index = index + 1
+	endfor
+	" 既存のメッセージのpositionを更新する
+	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
 function! traqvim#update_message_position(timeline, key, value) abort
 	if a:key == 0
 		let start = 1
