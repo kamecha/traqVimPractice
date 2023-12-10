@@ -50,7 +50,24 @@ function! traqvim#draw_forward_messages(bufNum, messages) abort
 		let start = end + 1
 		let index = index + 1
 	endfor
+	call map(timeline, function("traqvim#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
+function! traqvim#update_message_position(timeline, key, value) abort
+	if a:key == 0
+		let start = 1
+		let body = traqvim#make_message_body(a:value, winwidth(bufwinid("%")))
+		let end = start + len(body) - 1
+		let a:value.position = #{ index: 0, start: start, end: end }
+	else
+		let prev = a:timeline[a:key - 1]
+		let start = prev.position["end"] + 1
+		let body = traqvim#make_message_body(a:value, winwidth(bufwinid("%")))
+		let end = start + len(body) - 1
+		let a:value.position = #{ index: a:key, start: start, end: end }
+	endif
+	return a:value
 endfunction
 
 function! traqvim#redraw_recursive(layout) abort
