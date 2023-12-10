@@ -70,6 +70,18 @@ function! traqvim#draw_back_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+function traqvim#draw_delete_message(bufNum, message) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	let start = a:message.position["start"]
+	let end = a:message.position["end"]
+	call deletebufline(a:bufNum, start, end)
+	" 既存のメッセージのpositionを更新する
+	" この関数を呼ばれる前に削除分が既にバッファ変数から削除されてる
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
+	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
 function! traqvim#update_message_position(timeline, key, value) abort
 	if a:key == 0
 		let start = 1
