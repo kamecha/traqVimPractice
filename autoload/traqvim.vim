@@ -17,6 +17,7 @@ endfunction
 
 function! traqvim#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
+	call sign_unplace("VtraQ", #{ buffer: a:bufNum })
 	let index = 0
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
