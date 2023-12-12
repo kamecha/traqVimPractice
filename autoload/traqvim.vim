@@ -29,9 +29,9 @@ function! traqvim#draw_timeline(bufNum) abort
 		let message.position = #{ index: index, start: start, end: end }
 		call setbufline(a:bufNum, start, body)
 		if message->get('pinned')
-			call sign_place(index, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
 			for i in range(start + 1, end - 1)
-				call sign_place(index, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
 			endfor
 		endif
 		let start = end + 1
