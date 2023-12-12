@@ -238,6 +238,23 @@ function traqvim#yankMessageMarkdown(t) abort
 	call setreg(v:register, messageStart->get('content'))
 endfunction
 
+function traqvim#registerDeleteMessage() abort
+	let &opfunc = function('traqvim#deleteMessage')
+	return 'g@'
+endfunction
+
+function traqvim#deleteMessage(t) abort
+	if a:t != 'line'
+		return
+	endif
+	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	if messageStart->get('id') != messageEnd->get('id')
+		return
+	endif
+	call denops#request('traqvim', 'messageDelete', [bufnr(), messageStart])
+endfunction
+
 function traqvim#message_motion() abort
 	let position = traqvim#get_message()->get('position')
 	call cursor(position->get('start'), 1)
