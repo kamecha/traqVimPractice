@@ -158,7 +158,7 @@ function! traqvim#make_message_body(message, width) abort
 			endfor
 		endif
 	endif
-	let footer = [ "", repeat("─", a:width) ]
+	let footer = [ "", repeat("─", a:width - 2) ] " 2はsigncolumnの分
 	let messageBody = header + rows + quote + footer
 	return messageBody
 endfunction
