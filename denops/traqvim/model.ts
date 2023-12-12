@@ -258,3 +258,36 @@ export const sendMessage = async (
     console.error(e);
   }
 };
+
+export const deleteMessage = async (
+  messageId: string,
+): Promise<void> => {
+  try {
+    await api.api.deleteMessage(messageId);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const editMessage = async (
+  messageId: string,
+  content: string,
+): Promise<void> => {
+  const message: traq.PostMessageRequest = {
+    content: content,
+    embed: false,
+  };
+  const messagesJson = JSON.stringify(message);
+  try {
+    // POSTに関しては、deno&npm経由だとcontent-length等々がうまくいかないらしく、
+    // APIを直打ちする必要がある
+    await api.fetchWithToken(
+      "PUT",
+      "/messages/" + messageId,
+      {},
+      messagesJson,
+    );
+  } catch (e) {
+    console.error(e);
+  }
+};

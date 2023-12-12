@@ -23,6 +23,12 @@ command! TraqFetchBack call denops#request('traqvim', 'messageBack', [bufnr(), b
 command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(), bufname()])
 " messageの送信
 command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufnr(), getline(1, '$')])
+" messageの削除
+command! TraqMessageDelete call denops#request('traqvim', 'messageDelete', [bufnr(), traqvim#get_message()])
+" messageの編集
+command! TraqMessageEdit call denops#request('traqvim', 'messageEditOpen', [bufnr(), traqvim#get_message()])
+" messageの編集を適用
+command! TraqMessageEditApply call denops#request('traqvim', 'messageEdit', [getbufvar(bufname("%"), "editSourceBuffer"), getbufvar(bufname("%"), "message"), getline(1, '$')])
 
 call helper#define_highlight()
 

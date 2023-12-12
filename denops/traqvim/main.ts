@@ -18,6 +18,8 @@ import {
 } from "./deps.ts";
 import {
   actionBackChannelMessage,
+  actionDeleteMessage,
+  actionEditMessage,
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
@@ -259,6 +261,81 @@ export async function main(denops: Denops) {
     async yankMessageMarkdown(message: unknown): Promise<unknown> {
       await actionYankMessageMarkdown(denops, message as Message);
       return Promise.resolve();
+    },
+    async messageDelete(bufNum: unknown, message: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      const choice = await fn.confirm(
+        denops,
+        "Delete message?",
+        "&Yes\n&No",
+        "No",
+        "Warning",
+      );
+      ensureNumber(choice);
+      switch (choice) {
+        // dialogの中断
+        case 0:
+          helper.echo(denops, "make up  your mind");
+          break;
+        // Yes
+        case 1:
+          helper.echo(denops, "delete message...");
+          await actionDeleteMessage(denops, message as Message, bufNum);
+          break;
+        // No
+        case 2:
+          helper.echo(denops, "cancel");
+          break;
+        default:
+          helper.echo(denops, "choice error");
+          break;
+      }
+      return Promise.resolve();
+    },
+    async messageEditOpen(bufNum: unknown, message: unknown): Promise<unknown> {
+      ensureNumber(bufNum);
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      const messageBufNum = await denops.call(
+        "traqvim#make_buffer",
+        "Edit",
+        "new",
+      );
+      ensureNumber(messageBufNum);
+      // 既存メッセージの内容を描画しておく
+      await fn.setbufline(
+        denops,
+        messageBufNum,
+        1,
+        (message as Message).content.split("\n"),
+      );
+      await fn.setbufvar(denops, bufNum, "&splitright", 0);
+      await fn.setbufvar(
+        denops,
+        messageBufNum,
+        "message",
+        message,
+      );
+      await fn.setbufvar(
+        denops,
+        messageBufNum,
+        "editSourceBuffer",
+        bufNum,
+      );
+      await denops.cmd(
+        "setlocal buftype=nofile ft=traqvim-message-edit nonumber breakindent",
+      );
+      return;
+    },
+    async messageEdit(
+      bufNum: unknown,
+      message: unknown,
+      contents: unknown,
+    ): Promise<unknown> {
+      ensureNumber(bufNum);
+      const content = (contents as string[]).join("\n");
+      await actionEditMessage(denops, message as Message, content, bufNum);
+      await denops.cmd(":bdelete");
+      return;
     },
   };
 }
