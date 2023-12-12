@@ -51,6 +51,12 @@ function! traqvim#draw_forward_messages(bufNum, messages) abort
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
 		call appendbufline(a:bufNum, start - 1, body)
+		if message->get('pinned')
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
 		let start = end + 1
 	endfor
 	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
@@ -69,6 +75,12 @@ function! traqvim#draw_back_messages(bufNum, messages) abort
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
 		call appendbufline(a:bufNum, start - 1, body)
+		if message->get('pinned')
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
 		let start = end + 1
 	endfor
 	" 既存のメッセージのpositionを更新する
@@ -81,6 +93,12 @@ function traqvim#draw_delete_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	let start = a:message.position["start"]
 	let end = a:message.position["end"]
+	if a:message->get('pinned')
+		call sign_unplace("VtraQ", #{ buffer: a:bufNum, lnum: start })
+		for i in range(start + 1, end - 1)
+			call sign_unplace("VtraQ", #{ buffer: a:bufNum, lnum: i })
+		endfor
+	endif
 	call deletebufline(a:bufNum, start, end)
 	" 既存のメッセージのpositionを更新する
 	" この関数を呼ばれる前に削除分が既にバッファ変数から削除されてる
@@ -109,6 +127,12 @@ function traqvim#draw_insert_message(bufNum, message) abort
 	let body = traqvim#make_message_body(a:message, width)
 	let end = start + len(body) - 1
 	call appendbufline(a:bufNum, start - 1, body)
+	if a:message->get('pinned')
+		call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+		for i in range(start + 1, end - 1)
+			call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+		endfor
+	endif
 	" 既存のメッセージのpositionを更新する
 	call map(timeline, function("traqvim#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
