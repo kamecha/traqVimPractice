@@ -21,10 +21,6 @@ function! traqvim#draw_timeline(bufNum) abort
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
-	" TODO: nerd font導入してるかの確認とかしたいな
-	" call sign_define("pin", #{ text: "📌"})
-	call sign_define("pin", #{ text: "󰐃", texthl: "VtraQPin"}) "f0403 ← nerd font導入後、これに対応してるらしい
-	call sign_define("pin_long", #{ text: "│" , texthl: "VtraQPin"})
 	for message in getbufvar(a:bufNum, "channelTimeline")
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1

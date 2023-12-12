@@ -2,6 +2,12 @@
 setlocal noswapfile
 setlocal signcolumn=yes
 setlocal nolist
+
+" TODO: nerd font導入してるかの確認とかしたいな
+" call sign_define("pin", #{ text: "📌"})
+call sign_define("pin", #{ text: "󰐃", texthl: "VtraQPin"}) "f0403 ← nerd font導入後、これに対応してるらしい
+call sign_define("pin_long", #{ text: "│" , texthl: "VtraQPin"})
+
 nnoremap <buffer><silent> <Plug>(traqvim-next)
 			\ <Cmd>call traqvim#message_next()<CR>
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
