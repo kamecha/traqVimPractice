@@ -21,12 +21,22 @@ function! traqvim#draw_timeline(bufNum) abort
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
+	" TODO: nerd font導入してるかの確認とかしたいな
+	" call sign_define("pin", #{ text: "📌"})
+	call sign_define("pin", #{ text: "󰐃", texthl: "VtraQPin"}) "f0403 ← nerd font導入後、これに対応してるらしい
+	call sign_define("pin_long", #{ text: "│" , texthl: "VtraQPin"})
 	for message in getbufvar(a:bufNum, "channelTimeline")
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
 		" 一度に全部描画するから、positionをここで設定する
 		let message.position = #{ index: index, start: start, end: end }
 		call setbufline(a:bufNum, start, body)
+		if message->get('pinned')
+			call sign_place(index, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(index, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
 		let start = end + 1
 		let index = index + 1
 	endfor

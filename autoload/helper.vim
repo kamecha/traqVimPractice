@@ -4,4 +4,5 @@ function! helper#define_highlight() abort
 	highlight! VtraQScreenName ctermfg=lightmagenta guifg=lightmagenta cterm=bold
 	highlight! link VtraQQuote Comment
 	highlight! link VtraQMessage Keyword
+	highlight! link VtraQPin Keyword
 endfunction
