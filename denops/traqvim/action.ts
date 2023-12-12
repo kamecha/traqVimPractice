@@ -1,6 +1,12 @@
 import { Denops, ensureArray, fn, helper, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
-import { activity, channelMessageOptions, channelTimeline, deleteMessage, editMessage } from "./model.ts";
+import {
+  activity,
+  channelMessageOptions,
+  channelTimeline,
+  deleteMessage,
+  editMessage,
+} from "./model.ts";
 
 export const actionOpenChannel = async (
   denops: Denops,
@@ -99,7 +105,7 @@ export const actionDeleteMessage = async (
     timeline.filter((m) => m.id !== message.id),
   );
   await denops.call("traqvim#draw_delete_message", bufNum, message);
-}
+};
 
 export const actionEditMessage = async (
   denops: Denops,
@@ -134,7 +140,11 @@ export const actionEditMessage = async (
     "channelTimeline",
     editedTimeline,
   );
-  await denops.call("traqvim#draw_insert_message", bufNum, editedTimeline.find((m) => m.id === message.id));
+  await denops.call(
+    "traqvim#draw_insert_message",
+    bufNum,
+    editedTimeline.find((m) => m.id === message.id),
+  );
 };
 
 export const actionOpenActivity = async (

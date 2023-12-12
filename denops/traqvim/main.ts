@@ -302,7 +302,12 @@ export async function main(denops: Denops) {
       );
       ensureNumber(messageBufNum);
       // 既存メッセージの内容を描画しておく
-      await fn.setbufline(denops, messageBufNum, 1, (message as Message).content.split("\n"));
+      await fn.setbufline(
+        denops,
+        messageBufNum,
+        1,
+        (message as Message).content.split("\n"),
+      );
       await fn.setbufvar(denops, bufNum, "&splitright", 0);
       await fn.setbufvar(
         denops,
@@ -321,7 +326,11 @@ export async function main(denops: Denops) {
       );
       return;
     },
-    async messageEdit(bufNum: unknown, message: unknown, contents: unknown): Promise<unknown> {
+    async messageEdit(
+      bufNum: unknown,
+      message: unknown,
+      contents: unknown,
+    ): Promise<unknown> {
       ensureNumber(bufNum);
       const content = (contents as string[]).join("\n");
       await actionEditMessage(denops, message as Message, content, bufNum);
