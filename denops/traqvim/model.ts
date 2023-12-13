@@ -302,3 +302,12 @@ export const createPin = async (
   }
 };
 
+export const removePin = async (
+  messageId: string,
+): Promise<void> => {
+  try {
+    await api.api.removePin(messageId);
+  } catch (e) {
+    console.error(e);
+  }
+};

@@ -24,6 +24,7 @@ import {
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
+  actionRemovePin,
   actionYankMessageLink,
   actionYankMessageMarkdown,
 } from "./action.ts";
@@ -344,6 +345,14 @@ export async function main(denops: Denops) {
     ): Promise<unknown> {
       ensureNumber(bufNum);
       await actionCreatePin(denops, message as Message, bufNum);
+      return;
+    },
+    async removePin(
+      bufNum: unknown,
+      message: unknown,
+    ): Promise<unknown> {
+      ensureNumber(bufNum);
+      await actionRemovePin(denops, message as Message, bufNum);
       return;
     },
   };
