@@ -17,6 +17,7 @@ endfunction
 
 function! traqvim#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
+	call sign_unplace("VtraQ", #{ buffer: a:bufNum })
 	let index = 0
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
@@ -27,10 +28,45 @@ function! traqvim#draw_timeline(bufNum) abort
 		" 一度に全部描画するから、positionをここで設定する
 		let message.position = #{ index: index, start: start, end: end }
 		call setbufline(a:bufNum, start, body)
+		if message->get('pinned')
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
 		let start = end + 1
 		let index = index + 1
 	endfor
 	call deletebufline(a:bufNum, start, '$')
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
+function traqvim#draw_message_pin(bufNum, message) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	let start = a:message.position["start"]
+	let end = a:message.position["end"]
+	if a:message->get('pinned')
+		call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+		for i in range(start + 1, end - 1)
+			call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+		endfor
+	else
+		" unplaceはbufferとidしか指定できない
+		let pin_signs = sign_getplaced(a:bufNum, #{ group: "VtraQ", lnum: start })
+						\ ->filter({ _, v -> v->get('bufnr') == a:bufNum })
+						\ ->get(0)
+		call sign_unplace(
+			\"VtraQ",
+			\#{ buffer: a:bufNum, id: pin_signs->get('signs')->get(0)->get('id') })
+		for i in range(start + 1, end - 1)
+			let pin_long_signs = sign_getplaced(a:bufNum, #{ group: "VtraQ", lnum: i })
+								\ ->filter({ _, v -> v->get('bufnr') == a:bufNum })
+								\ ->get(0)
+			call sign_unplace(
+				\"VtraQ",
+				\#{ buffer: a:bufNum, id: pin_long_signs->get('signs')->get(0)->get('id') })
+		endfor
+	endif
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
@@ -44,6 +80,12 @@ function! traqvim#draw_forward_messages(bufNum, messages) abort
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
 		call appendbufline(a:bufNum, start - 1, body)
+		if message->get('pinned')
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
 		let start = end + 1
 	endfor
 	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
@@ -62,6 +104,12 @@ function! traqvim#draw_back_messages(bufNum, messages) abort
 		let body = traqvim#make_message_body(message, width)
 		let end = start + len(body) - 1
 		call appendbufline(a:bufNum, start - 1, body)
+		if message->get('pinned')
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
 		let start = end + 1
 	endfor
 	" 既存のメッセージのpositionを更新する
@@ -74,6 +122,12 @@ function traqvim#draw_delete_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	let start = a:message.position["start"]
 	let end = a:message.position["end"]
+	if a:message->get('pinned')
+		call sign_unplace("VtraQ", #{ buffer: a:bufNum, lnum: start })
+		for i in range(start + 1, end - 1)
+			call sign_unplace("VtraQ", #{ buffer: a:bufNum, lnum: i })
+		endfor
+	endif
 	call deletebufline(a:bufNum, start, end)
 	" 既存のメッセージのpositionを更新する
 	" この関数を呼ばれる前に削除分が既にバッファ変数から削除されてる
@@ -102,6 +156,12 @@ function traqvim#draw_insert_message(bufNum, message) abort
 	let body = traqvim#make_message_body(a:message, width)
 	let end = start + len(body) - 1
 	call appendbufline(a:bufNum, start - 1, body)
+	if a:message->get('pinned')
+		call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+		for i in range(start + 1, end - 1)
+			call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+		endfor
+	endif
 	" 既存のメッセージのpositionを更新する
 	call map(timeline, function("traqvim#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
@@ -158,7 +218,7 @@ function! traqvim#make_message_body(message, width) abort
 			endfor
 		endif
 	endif
-	let footer = [ "", repeat("─", a:width) ]
+	let footer = [ "", repeat("─", a:width - 2) ] " 2はsigncolumnの分
 	let messageBody = header + rows + quote + footer
 	return messageBody
 endfunction
@@ -253,6 +313,27 @@ function traqvim#deleteMessage(t) abort
 		return
 	endif
 	call denops#request('traqvim', 'messageDelete', [bufnr(), messageStart])
+endfunction
+
+function traqvim#registerTogglePin() abort
+	let &opfunc = function('traqvim#togglePin')
+	return 'g@'
+endfunction
+
+function traqvim#togglePin(t) abort
+	if a:t != 'line'
+		return
+	endif
+	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	if messageStart->get('id') != messageEnd->get('id')
+		return
+	endif
+	if messageStart->get('pinned')
+		call denops#request('traqvim', 'removePin', [bufnr(), messageStart])
+	else
+		call denops#request('traqvim', 'createPin', [bufnr(), messageStart])
+	endif
 endfunction
 
 function traqvim#message_motion() abort

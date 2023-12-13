@@ -29,6 +29,10 @@ command! TraqMessageDelete call denops#request('traqvim', 'messageDelete', [bufn
 command! TraqMessageEdit call denops#request('traqvim', 'messageEditOpen', [bufnr(), traqvim#get_message()])
 " messageの編集を適用
 command! TraqMessageEditApply call denops#request('traqvim', 'messageEdit', [getbufvar(bufname("%"), "editSourceBuffer"), getbufvar(bufname("%"), "message"), getline(1, '$')])
+" pinを作成
+command! TraqCreatePin call denops#request('traqvim', 'createPin', [bufnr(), traqvim#get_message()])
+" pinを削除
+command! TraqRemovePin call denops#request('traqvim', 'removePin', [bufnr(), traqvim#get_message()])
 
 call helper#define_highlight()
 

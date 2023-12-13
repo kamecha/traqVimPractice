@@ -18,11 +18,13 @@ import {
 } from "./deps.ts";
 import {
   actionBackChannelMessage,
+  actionCreatePin,
   actionDeleteMessage,
   actionEditMessage,
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
+  actionRemovePin,
   actionYankMessageLink,
   actionYankMessageMarkdown,
 } from "./action.ts";
@@ -335,6 +337,22 @@ export async function main(denops: Denops) {
       const content = (contents as string[]).join("\n");
       await actionEditMessage(denops, message as Message, content, bufNum);
       await denops.cmd(":bdelete");
+      return;
+    },
+    async createPin(
+      bufNum: unknown,
+      message: unknown,
+    ): Promise<unknown> {
+      ensureNumber(bufNum);
+      await actionCreatePin(denops, message as Message, bufNum);
+      return;
+    },
+    async removePin(
+      bufNum: unknown,
+      message: unknown,
+    ): Promise<unknown> {
+      ensureNumber(bufNum);
+      await actionRemovePin(denops, message as Message, bufNum);
       return;
     },
   };

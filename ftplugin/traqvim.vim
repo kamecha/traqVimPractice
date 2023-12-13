@@ -1,7 +1,13 @@
 
 setlocal noswapfile
-setlocal signcolumn=no
+setlocal signcolumn=yes
 setlocal nolist
+
+" TODO: nerd font導入してるかの確認とかしたいな
+" call sign_define("pin", #{ text: "📌"})
+call sign_define("pin", #{ text: "󰐃", texthl: "VtraQPin"}) "f0403 ← nerd font導入後、これに対応してるらしい
+call sign_define("pin_long", #{ text: "│" , texthl: "VtraQPin"})
+
 nnoremap <buffer><silent> <Plug>(traqvim-next)
 			\ <Cmd>call traqvim#message_next()<CR>
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
@@ -13,6 +19,8 @@ nnoremap <buffer><expr> <Plug>(traqvim-yank-message-markdown-operator)
 			\ traqvim#registerYankMessageMarkdown()
 nnoremap <buffer><expr> <Plug>(traqvim-delete-message-operator)
 			\ traqvim#registerDeleteMessage()
+nnoremap <buffer><expr> <Plug>(traqvim-toggle-pin-operator)
+			\ traqvim#registerTogglePin()
 
 onoremap <silent> <Plug>(traqvim-message-motion)
 			\ :<C-u>call traqvim#message_motion()<CR>
@@ -28,6 +36,9 @@ nmap <buffer> <LocalLeader>Y
 
 nmap <buffer> <LocalLeader>d
 			\ <Plug>(traqvim-delete-message-operator)
+
+nmap <buffer> <LocalLeader>p
+			\ <Plug>(traqvim-toggle-pin-operator)
 
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
