@@ -4,6 +4,7 @@ import {
   activity,
   channelMessageOptions,
   channelTimeline,
+  createPin,
   deleteMessage,
   editMessage,
 } from "./model.ts";
@@ -184,3 +185,34 @@ export const actionYankMessageMarkdown = async (
   await fn.setreg(denops, '"', message.content);
   await helper.echo(denops, "Yanked message markdown");
 };
+
+export const actionCreatePin = async (
+  denops: Denops,
+  message: Message,
+  bufNum: number,
+): Promise<void> => {
+  try {
+    await createPin(message.id);
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+  // 既存メッセージの取得
+  const timeline = await vars.buffers.get(denops, "channelTimeline");
+  ensureArray<Message>(timeline);
+  message.pinned = true;
+  // ピン留めしたものをセット
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    timeline.map((m) => {
+      if (m.id === message.id) {
+        return message;
+      } else {
+        return m;
+      }
+    }),
+  );
+  await denops.call("traqvim#draw_message_pin", bufNum, message);
+};
+

@@ -291,3 +291,14 @@ export const editMessage = async (
     console.error(e);
   }
 };
+
+export const createPin = async (
+  messageId: string,
+): Promise<void> => {
+  try {
+    await api.api.createPin(messageId);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
