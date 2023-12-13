@@ -41,6 +41,35 @@ function! traqvim#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+function traqvim#draw_message_pin(bufNum, message) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	let start = a:message.position["start"]
+	let end = a:message.position["end"]
+	if a:message->get('pinned')
+		call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+		for i in range(start + 1, end - 1)
+			call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+		endfor
+	else
+		" unplaceはbufferとidしか指定できない
+		let pin_signs = sign_getplaced(a:bufNum, #{ group: "VtraQ", lnum: start })
+						\ ->filter({ _, v -> v->get('bufnr') == a:bufNum })
+						\ ->get(0)
+		call sign_unplace(
+			\"VtraQ",
+			\#{ buffer: a:bufNum, id: pin_signs->get('signs')->get(0)->get('id') })
+		for i in range(start + 1, end - 1)
+			let pin_long_signs = sign_getplaced(a:bufNum, #{ group: "VtraQ", lnum: i })
+								\ ->filter({ _, v -> v->get('bufnr') == a:bufNum })
+								\ ->get(0)
+			call sign_unplace(
+				\"VtraQ",
+				\#{ buffer: a:bufNum, id: pin_long_signs->get('signs')->get(0)->get('id') })
+		endfor
+	endif
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
 function! traqvim#draw_forward_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	" startをバッファの最下値にする
