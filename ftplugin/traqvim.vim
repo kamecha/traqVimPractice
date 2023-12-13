@@ -19,6 +19,8 @@ nnoremap <buffer><expr> <Plug>(traqvim-yank-message-markdown-operator)
 			\ traqvim#registerYankMessageMarkdown()
 nnoremap <buffer><expr> <Plug>(traqvim-delete-message-operator)
 			\ traqvim#registerDeleteMessage()
+nnoremap <buffer><expr> <Plug>(traqvim-toggle-pin-operator)
+			\ traqvim#registerTogglePin()
 
 onoremap <silent> <Plug>(traqvim-message-motion)
 			\ :<C-u>call traqvim#message_motion()<CR>
@@ -34,6 +36,9 @@ nmap <buffer> <LocalLeader>Y
 
 nmap <buffer> <LocalLeader>d
 			\ <Plug>(traqvim-delete-message-operator)
+
+nmap <buffer> <LocalLeader>p
+			\ <Plug>(traqvim-toggle-pin-operator)
 
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])

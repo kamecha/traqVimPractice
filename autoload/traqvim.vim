@@ -315,6 +315,27 @@ function traqvim#deleteMessage(t) abort
 	call denops#request('traqvim', 'messageDelete', [bufnr(), messageStart])
 endfunction
 
+function traqvim#registerTogglePin() abort
+	let &opfunc = function('traqvim#togglePin')
+	return 'g@'
+endfunction
+
+function traqvim#togglePin(t) abort
+	if a:t != 'line'
+		return
+	endif
+	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	if messageStart->get('id') != messageEnd->get('id')
+		return
+	endif
+	if messageStart->get('pinned')
+		call denops#request('traqvim', 'removePin', [bufnr(), messageStart])
+	else
+		call denops#request('traqvim', 'createPin', [bufnr(), messageStart])
+	endif
+endfunction
+
 function traqvim#message_motion() abort
 	let position = traqvim#get_message()->get('position')
 	call cursor(position->get('start'), 1)
