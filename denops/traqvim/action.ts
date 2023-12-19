@@ -1,4 +1,4 @@
-import { Denops, ensureArray, fn, helper, vars } from "./deps.ts";
+import { Denops, bufname, ensureArray, fn, helper, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,
@@ -22,10 +22,11 @@ export const actionOpenChannel = async (
     helper.echoerr(denops, "channelPath is undefined");
     return;
   }
-  const escapedChannelPath = channelMessageOptions.channelPath.replace(
-    "#",
-    "\\#",
-  );
+  const escapedChannelPath = bufname.format({
+    scheme: "VtraQ",
+    expr: "channel",
+    fragment: channelMessageOptions.channelPath.replace("#", ""),
+  });
   const channelBufferVars: ChannelBuffer = {
     channelID: channelMessageOptions.id,
     channelPath: escapedChannelPath,
@@ -160,8 +161,12 @@ export const actionOpenActivity = async (
   bufNum?: number,
 ): Promise<void> => {
   const activityList: Message[] = await activity();
+  const activityPath = bufname.format({
+    scheme: "VtraQ",
+    expr: "Activity",
+  });
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", "Activity");
+    await denops.call("traqvim#make_buffer", activityPath);
   await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(
     denops,

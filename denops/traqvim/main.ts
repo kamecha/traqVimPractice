@@ -8,6 +8,7 @@ import {
 } from "./model.ts";
 import {
   Denops,
+  bufname,
   ensureArray,
   ensureNumber,
   ensureString,
@@ -228,7 +229,14 @@ export async function main(denops: Denops) {
       const channelMessageVars: ChannelMessageBuffer = {
         channelID: channelID,
       };
-      const messageBufName = "Message" + bufName.replace("#", "\\#");
+      const messageBufName = bufname.format({
+        scheme: bufname.parse(bufName).scheme,
+        expr: "Message",
+        params: {
+          type: "open",
+        },
+        fragment: bufname.parse(bufName).fragment,
+      });
       // bufferが下に表示されるようoptionを設定し元に戻す
       await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       const messageBufNum = await denops.call(
@@ -300,9 +308,18 @@ export async function main(denops: Denops) {
     async messageEditOpen(bufNum: unknown, message: unknown): Promise<unknown> {
       ensureNumber(bufNum);
       await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      const bufName = await fn.bufname(denops, bufNum);
+      const messageBufName = bufname.format({
+        scheme: bufname.parse(bufName).scheme,
+        expr: "Message",
+        params: {
+          type: "edit",
+        },
+        fragment: bufname.parse(bufName).fragment,
+      });
       const messageBufNum = await denops.call(
         "traqvim#make_buffer",
-        "Edit",
+        messageBufName,
         "new",
       );
       ensureNumber(messageBufNum);
