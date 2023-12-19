@@ -234,12 +234,12 @@ export async function main(denops: Denops) {
         fragment: bufname.parse(bufName).fragment,
       });
       // bufferが下に表示されるようoptionを設定し元に戻す
-      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       const messageBufNum = await denops.call(
         "traqvim#make_buffer",
         messageBufName,
-        "new",
       );
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      await denops.cmd(`split +buffer\\ ${messageBufNum}`);
       await fn.setbufvar(denops, bufNum, "&splitbelow", 0);
       await fn.setbufvar(
         denops,
@@ -303,7 +303,6 @@ export async function main(denops: Denops) {
     },
     async messageEditOpen(bufNum: unknown, message: unknown): Promise<unknown> {
       ensureNumber(bufNum);
-      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       const bufName = await fn.bufname(denops, bufNum);
       const messageBufName = bufname.format({
         scheme: bufname.parse(bufName).scheme,
@@ -316,9 +315,11 @@ export async function main(denops: Denops) {
       const messageBufNum = await denops.call(
         "traqvim#make_buffer",
         messageBufName,
-        "new",
       );
       ensureNumber(messageBufNum);
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      await denops.cmd(`split +buffer\\ ${messageBufNum}`);
+      await fn.setbufvar(denops, bufNum, "&splitright", 0);
       // 既存メッセージの内容を描画しておく
       await fn.setbufline(
         denops,
@@ -326,7 +327,6 @@ export async function main(denops: Denops) {
         1,
         (message as Message).content.split("\n"),
       );
-      await fn.setbufvar(denops, bufNum, "&splitright", 0);
       await fn.setbufvar(
         denops,
         messageBufNum,
