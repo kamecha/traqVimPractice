@@ -13,7 +13,6 @@ import {
 export const actionOpenChannel = async (
   denops: Denops,
   channelMessageOptions: channelMessageOptions,
-  openCommand?: string,
   bufNum?: number,
 ): Promise<void> => {
   helper.echo(denops, "actionOpenChannel");
@@ -34,11 +33,6 @@ export const actionOpenChannel = async (
   };
   const bufN = bufNum ??
     await denops.call("traqvim#make_buffer", escapedChannelPath);
-  // const open = openCommand ?? "enew";
-  if ( openCommand ) {
-    await denops.cmd(openCommand);
-  }
-  // await denops.cmd(open);
   await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
   await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
