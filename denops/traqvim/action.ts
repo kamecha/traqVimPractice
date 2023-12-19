@@ -33,7 +33,13 @@ export const actionOpenChannel = async (
   };
   const open = openCommand ?? "edit";
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", escapedChannelPath, open);
+    await denops.call("traqvim#make_buffer", escapedChannelPath);
+  // const open = openCommand ?? "enew";
+  if ( openCommand ) {
+    await denops.cmd(openCommand);
+  }
+  // await denops.cmd(open);
+  await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
   await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
   await vars.buffers.set(
@@ -155,7 +161,8 @@ export const actionOpenActivity = async (
 ): Promise<void> => {
   const activityList: Message[] = await activity();
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", "Activity", "edit");
+    await denops.call("traqvim#make_buffer", "Activity");
+  await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(
     denops,
     "channelTimeline",
