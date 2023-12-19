@@ -4,7 +4,6 @@ import {
   channelTimeline,
   homeChannelId,
   homeChannelPath,
-  searchChannelUUID,
   sendMessage,
 } from "./model.ts";
 import {
@@ -102,11 +101,12 @@ export async function main(denops: Denops) {
       ensureString(args);
       // argsが"#gps/times/kamecha(1)"のようになっていた場合"(1)"を削除する
       const channelPath = args.replace(/\(\d+\)$/, "");
-      const channelUUID = await searchChannelUUID(channelPath);
+      const channelID = await vars.buffers.get(denops, "channelID");
+      ensureString(channelID);
       const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
       ensureNumber(limit);
       const timelineOption: channelMessageOptions = {
-        id: channelUUID,
+        id: channelID,
         channelPath: channelPath,
         limit: limit,
         until: new Date().toISOString(),
@@ -129,11 +129,12 @@ export async function main(denops: Denops) {
         // バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
         // それを削除する
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
-        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        const channelID = await vars.buffers.get(denops, "channelID");
+        ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
         ensureNumber(limit);
         const timelineOption: channelMessageOptions = {
-          id: channelUUID,
+          id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
           until: new Date().toISOString(),
@@ -151,12 +152,13 @@ export async function main(denops: Denops) {
         const timeline = await vars.buffers.get(denops, "channelTimeline");
         ensureArray<Message>(timeline);
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
-        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        const channelID = await vars.buffers.get(denops, "channelID");
+        ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
         ensureNumber(limit);
         // 最後のメッセージの内容
         const timelineOption: channelMessageOptions = {
-          id: channelUUID,
+          id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
           since: new Date(timeline[timeline.length - 1].createdAt)
@@ -187,12 +189,13 @@ export async function main(denops: Denops) {
         const timeline = await vars.buffers.get(denops, "channelTimeline");
         ensureArray<Message>(timeline);
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
-        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        const channelID = await vars.buffers.get(denops, "channelID");
+        ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
         ensureNumber(limit);
         // 最後のメッセージの内容
         const timelineOption: channelMessageOptions = {
-          id: channelUUID,
+          id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
           until: new Date(timeline[0].createdAt).toISOString(),
