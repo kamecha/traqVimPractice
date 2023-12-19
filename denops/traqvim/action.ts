@@ -32,7 +32,6 @@ export const actionOpenChannel = async (
     channelPath: escapedChannelPath,
     channelTimeline: timeline,
   };
-  const open = openCommand ?? "edit";
   const bufN = bufNum ??
     await denops.call("traqvim#make_buffer", escapedChannelPath);
   // const open = openCommand ?? "enew";

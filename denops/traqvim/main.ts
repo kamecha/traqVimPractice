@@ -220,10 +220,6 @@ export async function main(denops: Denops) {
     async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
       ensureNumber(bufNum);
       ensureString(bufName);
-      // bufNameの先頭に#がついていなければ、何もしない
-      if (bufName[0] !== "#") {
-        return;
-      }
       const channelID = await fn.getbufvar(denops, bufNum, "channelID");
       ensureString(channelID);
       const channelMessageVars: ChannelMessageBuffer = {
