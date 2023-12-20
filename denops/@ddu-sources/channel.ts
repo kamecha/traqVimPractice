@@ -7,7 +7,7 @@ import {
   vars,
 } from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
-import { channelsRecursive, searchChannelUUID } from "../traqvim/model.ts";
+import { channelsRecursive } from "../traqvim/model.ts";
 import { Channel } from "../traqvim/type.d.ts";
 import { api } from "../traqvim/api.ts";
 
@@ -27,17 +27,12 @@ export class Source extends dduVim.BaseSource<Params> {
   }): ReadableStream<dduVim.Item<ActionData>[]> {
     return new ReadableStream({
       async start(controller) {
-        const rootPath = args.sourceOptions.path;
-        // #gps/times/kamecha から対象のChannelIDを抽出
-        let rootId: string = rootPath === "VtraQ" ? "VtraQ" : "";
-        if (rootId === "") {
-          rootId = await searchChannelUUID(rootPath);
-        }
+        const rootId = args.sourceOptions.path;
         const tree = async (rootId: string) => {
           const items: dduVim.Item<ActionData>[] = [];
           const channels: Channel[] = await channelsRecursive();
           // 一番上の階層対応
-          if (rootId === "VtraQ") {
+          if (rootId === "") {
             const parentChannels = channels.filter((channel: Channel) => {
               return channel.parentId === null;
             });
@@ -48,7 +43,7 @@ export class Source extends dduVim.BaseSource<Params> {
                   id: channel.id,
                 },
                 isTree: true,
-                treePath: channel.path,
+                treePath: channel.id,
               });
             });
             return items;
@@ -74,7 +69,7 @@ export class Source extends dduVim.BaseSource<Params> {
                 id: childrenChannel.id,
               },
               isTree: childrenChannel.children.length !== 0,
-              treePath: childrenChannel.path,
+              treePath: childrenChannel.id,
             });
           });
           return items;

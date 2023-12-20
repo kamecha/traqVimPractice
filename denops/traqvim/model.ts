@@ -15,51 +15,6 @@ export type channelMessageOptions = {
   order?: "asc" | "desc";
 };
 
-// channelPathに一致するchannelのUUIDを返す
-// channelPathは#で始まる
-export async function searchChannelUUID(channelPath: string): Promise<string> {
-  // channelPathの先頭が#で始まっているかのチェック
-  if (!channelPath.startsWith("#")) {
-    throw new Error("channelPath must start with #");
-  }
-  // channelPathの先頭の#を削除
-  const channelPathWituoutSharp = channelPath.slice(1);
-  // channelPathの先頭の#を削除したものを/で分割
-  const channelPathSplited = channelPathWituoutSharp.split("/");
-  const channelsRes = await api.api.getChannels();
-  // const channelsJson = await channelsPromise.json();
-  const channels = channelsRes.data.public;
-  let channelUUID = "";
-  const searchDFS = (
-    baseChannels: traq.Channel[],
-    name: string[],
-  ): string | undefined => {
-    if (name.length === 0) {
-      return channelUUID;
-    }
-    const channel = baseChannels.find((channel: traq.Channel) =>
-      channel.name === name[0]
-    );
-    if (!channel) {
-      return undefined;
-    }
-    channelUUID = channel.id;
-    const children = channels.filter((channel: traq.Channel) =>
-      channel.parentId === channelUUID
-    );
-    return searchDFS(children, name.slice(1));
-  };
-  // channelsから親がいないchannelを探す
-  const rootChannels = channels.filter((channel: traq.Channel) =>
-    channel.parentId === null
-  );
-  const result = searchDFS(rootChannels, channelPathSplited);
-  if (!result) {
-    throw new Error("channel not found");
-  }
-  return result;
-}
-
 const makeChannelPath = (
   channels: traq.Channel[],
   channel: traq.Channel,

@@ -1,6 +1,8 @@
 " channelPath: '\#gps/times/kamecha'
-function! traqvim#make_buffer(channelPath, option) abort
-	let buf_name = a:channelPath
+"なんかバッファを作る処理(bufnrとか)と
+"バッファを開く処理(:bufferとか)を分けて実装したほうが良さそう
+function! traqvim#make_buffer(buf_name) abort
+	let buf_name = a:buf_name
 	let buf_offset = 1
 	while bufexists(buf_name[1:])
 		if buf_name =~# ')$'
@@ -10,8 +12,7 @@ function! traqvim#make_buffer(channelPath, option) abort
 			let buf_name = buf_name . '(1)'
 		endif
 	endwhile
-	noswapfile exe a:option buf_name
-	let buf_num = bufnr(buf_name)
+	let buf_num = bufnr(buf_name, 1)
 	return buf_num
 endfunction
 

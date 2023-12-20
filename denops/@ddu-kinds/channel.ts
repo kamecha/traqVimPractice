@@ -26,8 +26,6 @@ export class Kind extends dduVim.BaseKind<Params> {
       actionParams: unknown;
       items: dduVim.DduItem[];
     }) => {
-      const params = args.actionParams as OpenParams;
-      const openCommand = params.command ?? "edit";
       for (const item of args.items) {
         if (!item.action) {
           continue;
@@ -47,7 +45,11 @@ export class Kind extends dduVim.BaseKind<Params> {
           until: new Date().toISOString(),
           order: "desc",
         };
-        await actionOpenChannel(args.denops, timelineOption, openCommand);
+        const params = args.actionParams as OpenParams;
+        if (params.command) {
+          await args.denops.cmd(params.command);
+        }
+        await actionOpenChannel(args.denops, timelineOption);
       }
       return dduVim.ActionFlags.None;
     },

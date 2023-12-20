@@ -1,4 +1,4 @@
-import { Denops, ensureArray, fn, helper, vars } from "./deps.ts";
+import { bufname, Denops, ensureArray, fn, helper, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,
@@ -13,7 +13,6 @@ import {
 export const actionOpenChannel = async (
   denops: Denops,
   channelMessageOptions: channelMessageOptions,
-  openCommand?: string,
   bufNum?: number,
 ): Promise<void> => {
   helper.echo(denops, "actionOpenChannel");
@@ -22,18 +21,19 @@ export const actionOpenChannel = async (
     helper.echoerr(denops, "channelPath is undefined");
     return;
   }
-  const escapedChannelPath = channelMessageOptions.channelPath.replace(
-    "#",
-    "\\#",
-  );
+  const escapedChannelPath = bufname.format({
+    scheme: "VtraQ",
+    expr: "/Channel",
+    fragment: channelMessageOptions.channelPath.replace("#", ""),
+  });
   const channelBufferVars: ChannelBuffer = {
     channelID: channelMessageOptions.id,
     channelPath: escapedChannelPath,
     channelTimeline: timeline,
   };
-  const open = openCommand ?? "edit";
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", escapedChannelPath, open);
+    await denops.call("traqvim#make_buffer", escapedChannelPath);
+  await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
   await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
   await vars.buffers.set(
@@ -154,8 +154,13 @@ export const actionOpenActivity = async (
   bufNum?: number,
 ): Promise<void> => {
   const activityList: Message[] = await activity();
+  const activityPath = bufname.format({
+    scheme: "VtraQ",
+    expr: "/Activity",
+  });
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", "Activity", "edit");
+    await denops.call("traqvim#make_buffer", activityPath);
+  await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(
     denops,
     "channelTimeline",

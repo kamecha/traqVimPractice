@@ -4,10 +4,10 @@ import {
   channelTimeline,
   homeChannelId,
   homeChannelPath,
-  searchChannelUUID,
   sendMessage,
 } from "./model.ts";
 import {
+  bufname,
   Denops,
   ensureArray,
   ensureNumber,
@@ -102,11 +102,12 @@ export async function main(denops: Denops) {
       ensureString(args);
       // argsが"#gps/times/kamecha(1)"のようになっていた場合"(1)"を削除する
       const channelPath = args.replace(/\(\d+\)$/, "");
-      const channelUUID = await searchChannelUUID(channelPath);
+      const channelID = await vars.buffers.get(denops, "channelID");
+      ensureString(channelID);
       const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
       ensureNumber(limit);
       const timelineOption: channelMessageOptions = {
-        id: channelUUID,
+        id: channelID,
         channelPath: channelPath,
         limit: limit,
         until: new Date().toISOString(),
@@ -129,17 +130,18 @@ export async function main(denops: Denops) {
         // バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
         // それを削除する
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
-        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        const channelID = await vars.buffers.get(denops, "channelID");
+        ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
         ensureNumber(limit);
         const timelineOption: channelMessageOptions = {
-          id: channelUUID,
+          id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
           until: new Date().toISOString(),
           order: "desc",
         };
-        actionOpenChannel(denops, timelineOption, undefined, bufNum);
+        actionOpenChannel(denops, timelineOption, bufNum);
       }
       return;
     },
@@ -151,12 +153,13 @@ export async function main(denops: Denops) {
         const timeline = await vars.buffers.get(denops, "channelTimeline");
         ensureArray<Message>(timeline);
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
-        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        const channelID = await vars.buffers.get(denops, "channelID");
+        ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
         ensureNumber(limit);
         // 最後のメッセージの内容
         const timelineOption: channelMessageOptions = {
-          id: channelUUID,
+          id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
           since: new Date(timeline[timeline.length - 1].createdAt)
@@ -187,12 +190,13 @@ export async function main(denops: Denops) {
         const timeline = await vars.buffers.get(denops, "channelTimeline");
         ensureArray<Message>(timeline);
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
-        const channelUUID = await searchChannelUUID(bufNameWithoutNumber);
+        const channelID = await vars.buffers.get(denops, "channelID");
+        ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
         ensureNumber(limit);
         // 最後のメッセージの内容
         const timelineOption: channelMessageOptions = {
-          id: channelUUID,
+          id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
           until: new Date(timeline[0].createdAt).toISOString(),
@@ -216,23 +220,26 @@ export async function main(denops: Denops) {
     async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
       ensureNumber(bufNum);
       ensureString(bufName);
-      // bufNameの先頭に#がついていなければ、何もしない
-      if (bufName[0] !== "#") {
-        return;
-      }
       const channelID = await fn.getbufvar(denops, bufNum, "channelID");
       ensureString(channelID);
       const channelMessageVars: ChannelMessageBuffer = {
         channelID: channelID,
       };
-      const messageBufName = "Message" + bufName.replace("#", "\\#");
+      const messageBufName = bufname.format({
+        scheme: bufname.parse(bufName).scheme,
+        expr: "Message",
+        params: {
+          type: "open",
+        },
+        fragment: bufname.parse(bufName).fragment,
+      });
       // bufferが下に表示されるようoptionを設定し元に戻す
-      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       const messageBufNum = await denops.call(
         "traqvim#make_buffer",
         messageBufName,
-        "new",
       );
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      await denops.cmd(`split +buffer\\ ${messageBufNum}`);
       await fn.setbufvar(denops, bufNum, "&splitbelow", 0);
       await fn.setbufvar(
         denops,
@@ -296,13 +303,23 @@ export async function main(denops: Denops) {
     },
     async messageEditOpen(bufNum: unknown, message: unknown): Promise<unknown> {
       ensureNumber(bufNum);
-      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      const bufName = await fn.bufname(denops, bufNum);
+      const messageBufName = bufname.format({
+        scheme: bufname.parse(bufName).scheme,
+        expr: "Message",
+        params: {
+          type: "edit",
+        },
+        fragment: bufname.parse(bufName).fragment,
+      });
       const messageBufNum = await denops.call(
         "traqvim#make_buffer",
-        "Edit",
-        "new",
+        messageBufName,
       );
       ensureNumber(messageBufNum);
+      await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
+      await denops.cmd(`split +buffer\\ ${messageBufNum}`);
+      await fn.setbufvar(denops, bufNum, "&splitright", 0);
       // 既存メッセージの内容を描画しておく
       await fn.setbufline(
         denops,
@@ -310,7 +327,6 @@ export async function main(denops: Denops) {
         1,
         (message as Message).content.split("\n"),
       );
-      await fn.setbufvar(denops, bufNum, "&splitright", 0);
       await fn.setbufvar(
         denops,
         messageBufNum,
