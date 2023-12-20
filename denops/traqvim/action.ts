@@ -1,4 +1,4 @@
-import { Denops, bufname, ensureArray, fn, helper, vars } from "./deps.ts";
+import { bufname, Denops, ensureArray, fn, helper, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,

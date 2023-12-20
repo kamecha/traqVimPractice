@@ -7,8 +7,8 @@ import {
   sendMessage,
 } from "./model.ts";
 import {
-  Denops,
   bufname,
+  Denops,
   ensureArray,
   ensureNumber,
   ensureString,
