@@ -23,7 +23,7 @@ export const actionOpenChannel = async (
   }
   const escapedChannelPath = bufname.format({
     scheme: "VtraQ",
-    expr: "channel",
+    expr: "/Channel",
     fragment: channelMessageOptions.channelPath.replace("#", ""),
   });
   const channelBufferVars: ChannelBuffer = {
@@ -156,7 +156,7 @@ export const actionOpenActivity = async (
   const activityList: Message[] = await activity();
   const activityPath = bufname.format({
     scheme: "VtraQ",
-    expr: "Activity",
+    expr: "/Activity",
   });
   const bufN = bufNum ??
     await denops.call("traqvim#make_buffer", activityPath);
