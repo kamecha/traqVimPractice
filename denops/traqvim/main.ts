@@ -141,7 +141,7 @@ export async function main(denops: Denops) {
           until: new Date().toISOString(),
           order: "desc",
         };
-        actionOpenChannel(denops, timelineOption, undefined, bufNum);
+        actionOpenChannel(denops, timelineOption, bufNum);
       }
       return;
     },
