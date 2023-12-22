@@ -8,13 +8,32 @@ export type Params = {
 };
 
 export class Column extends dduVim.BaseColumn<Params> {
-  getLength({}: dduVimColumn.GetLengthArguments<Params>): Promise<number> {
-    throw new Error("Method not implemented.");
+  // TODO: ↓この関数が何やってるのか調べとく
+  // 現状0を返してるけど、なんかちゃんと表示されちゃってる
+  getLength(
+    args: dduVimColumn.GetLengthArguments<Params>,
+  ): Promise<number> {
+    const widths: number[] = args.items.map((item) => {
+      // TODO: ↓ここでdisplayが空文字列になってるので、原因調べとく
+      const display = item.display ?? item.word;
+      return display.length;
+    });
+    return Promise.resolve(Math.max(...widths));
   }
   getText(
-    {}: dduVimColumn.GetTextArguments<Params>,
+    args: dduVimColumn.GetTextArguments<Params>,
   ): Promise<dduVimColumn.GetTextResult> {
-    throw new Error("Method not implemented.");
+    const parentIcon = args.item.__expanded
+      ? args.columnParams.expandedParentIcon
+      : args.columnParams.collapsedParentIcon;
+    const isParent = args.item.isTree ?? false;
+    const icon = isParent ? parentIcon : args.columnParams.leafIcon;
+    const text =
+      " ".repeat(args.columnParams.indentationWidth * args.item.__level) +
+      icon + " " + args.item.word;
+    return Promise.resolve({
+      text,
+    });
   }
   params(): Params {
     return {
