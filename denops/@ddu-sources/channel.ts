@@ -38,7 +38,7 @@ export class Source extends dduVim.BaseSource<Params> {
             });
             parentChannels.forEach((channel: Channel) => {
               items.push({
-                word: channel.path + (channel.children.length === 0 ? "" : "/"),
+                word: channel.name,
                 action: {
                   id: channel.id,
                 },
@@ -63,8 +63,7 @@ export class Source extends dduVim.BaseSource<Params> {
               return;
             }
             items.push({
-              word: (childrenChannel.path.split("/").pop() ?? "") +
-                (childrenChannel.children.length === 0 ? "" : "/"),
+              word: childrenChannel.name,
               action: {
                 id: childrenChannel.id,
               },
