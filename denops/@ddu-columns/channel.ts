@@ -8,13 +8,13 @@ export type Params = {
 };
 
 export class Column extends dduVim.BaseColumn<Params> {
-  // TODO: ↓この関数が何やってるのか調べとく
-  // 現状0を返してるけど、なんかちゃんと表示されちゃってる
+  // getTextで使われるendColとかの計算に使われるらしい
+  // 事前にcolumnの概要だけを計算してるっぽい
   getLength(
     args: dduVimColumn.GetLengthArguments<Params>,
   ): Promise<number> {
     const widths: number[] = args.items.map((item) => {
-      // TODO: ↓ここでdisplayが空文字列になってるので、原因調べとく
+      // ddu側がcolumnを一個づつ適用させる時にどんどんdisplayが追加されるらしい
       const display = item.display ?? item.word;
       return display.length;
     });
