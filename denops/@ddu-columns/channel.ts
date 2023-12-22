@@ -1,4 +1,4 @@
-import { dduVim, dduVimColumn } from "../traqvim/deps.ts";
+import { dduVim, dduVimColumn, fn } from "../traqvim/deps.ts";
 
 export type Params = {
   collapsedParentIcon: string;
@@ -8,19 +8,24 @@ export type Params = {
 };
 
 export class Column extends dduVim.BaseColumn<Params> {
-  // getTextで使われるendColとかの計算に使われるらしい
-  // 事前にcolumnの概要だけを計算してるっぽい
   getLength(
     args: dduVimColumn.GetLengthArguments<Params>,
   ): Promise<number> {
+    const iconWidth = Math.max(
+      args.columnParams.collapsedParentIcon.length,
+      args.columnParams.expandedParentIcon.length,
+      args.columnParams.leafIcon.length,
+    );
     const widths: number[] = args.items.map((item) => {
-      // ddu側がcolumnを一個づつ適用させる時にどんどんdisplayが追加されるらしい
-      const display = item.display ?? item.word;
-      return display.length;
+      const length = args.columnParams.indentationWidth * item.__level +
+        iconWidth +
+        1 +
+        item.word.length;
+      return length;
     });
     return Promise.resolve(Math.max(...widths));
   }
-  getText(
+  async getText(
     args: dduVimColumn.GetTextArguments<Params>,
   ): Promise<dduVimColumn.GetTextResult> {
     const parentIcon = args.item.__expanded
@@ -31,8 +36,10 @@ export class Column extends dduVim.BaseColumn<Params> {
     const text =
       " ".repeat(args.columnParams.indentationWidth * args.item.__level) +
       icon + " " + args.item.word;
+    const width = await fn.strwidth(args.denops, text) as number;
+    const padding = " ".repeat(args.endCol - args.startCol - width);
     return Promise.resolve({
-      text,
+      text: text + padding,
     });
   }
   params(): Params {
