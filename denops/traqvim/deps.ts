@@ -16,4 +16,5 @@ export * as ddcVim from "https://deno.land/x/ddc_vim@v3.4.0/types.ts";
 export * as ddcVimSource from "https://deno.land/x/ddc_vim@v3.4.0/base/source.ts";
 export * as dduVim from "https://deno.land/x/ddu_vim@v1.13.0/types.ts";
 export * as dduVimSource from "https://deno.land/x/ddu_vim@v1.13.0/base/source.ts";
+export * as dduVimColumn from "https://deno.land/x/ddu_vim@v1.13.0/base/column.ts";
 export * as traq from "https://esm.sh/@traptitech/traq@3.11.0-3";
