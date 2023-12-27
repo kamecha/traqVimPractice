@@ -37,7 +37,6 @@ export async function main(denops: Denops) {
   api.tokenFilePath = path;
   // oauthの仮オブジェクト
   let oauth: OAuth;
-  helper.echo(denops, "Hello Denops!");
   denops.dispatcher = {
     setupOAuth(): Promise<unknown> {
       helper.echo(denops, "setup...");
