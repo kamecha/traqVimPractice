@@ -123,7 +123,11 @@ export async function main(denops: Denops) {
       // バッファ番号は被らないが、バッファ名は被る可能性がある
       ensureNumber(bufNum);
       ensureString(bufName);
-      if (bufName === "Activity") {
+      const activityBufName = bufname.format({
+        scheme: "VtraQ",
+        expr: "/Activity",
+      });
+      if (bufName === activityBufName) {
         actionOpenActivity(denops, bufNum);
       } else {
         // バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
