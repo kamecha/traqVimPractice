@@ -15,7 +15,8 @@ export type channelMessageOptions = {
   order?: "asc" | "desc";
 };
 
-export const channelMapCache: Map<string, traq.Channel> = new Map();
+// TODO: ↓チャンネル周りはclassに分離しても良いかも
+const channelMapCache: Map<string, traq.Channel> = new Map();
 
 const getChannelCache = () => {
   return channelMapCache;
