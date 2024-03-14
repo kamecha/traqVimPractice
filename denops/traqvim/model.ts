@@ -18,11 +18,11 @@ export type channelMessageOptions = {
 // TODO: ↓チャンネル周りはclassに分離しても良いかも
 const channelMapCache: Map<string, traq.Channel> = new Map();
 
-const getChannelCache = () => {
+const getChannelMapCache = () => {
   return channelMapCache;
 };
 
-const makeCacheChannel = async () => {
+const makeChannelMapCache = async () => {
   const channelsRes = await api.api.getChannels();
   const channels = channelsRes.data;
   channels.public.forEach((channel: traq.Channel) => {
@@ -59,9 +59,9 @@ const makeChannelPath = (
 // channelUUIDに対応するchannelPathを生成する
 export const channelPath = async (channelUUID: string): Promise<string> => {
   if (getCacheChannel(channelUUID) === undefined) {
-    await makeCacheChannel();
+    await makeChannelMapCache();
   }
-  return makeChannelPath(getChannelCache(), channelUUID);
+  return makeChannelPath(getChannelMapCache(), channelUUID);
 };
 
 // 自身のユーザー情報を取得する
@@ -168,7 +168,7 @@ export const channelsRecursive = async (): Promise<Channel[]> => {
     (channel: traq.Channel) => {
       return {
         ...channel,
-        path: makeChannelPath(getChannelCache(), channel.id),
+        path: makeChannelPath(getChannelMapCache(), channel.id),
       };
     },
   );
