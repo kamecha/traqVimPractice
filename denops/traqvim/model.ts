@@ -38,31 +38,29 @@ const getCacheChannel = (channelId: string): traq.Channel | undefined => {
 };
 
 const makeChannelPath = (
-  channels: traq.Channel[],
-  channel: traq.Channel,
+  channelCache: Map<string, traq.Channel>,
+  channelId: string,
 ): string => {
-  const parentChannel = channels.find((c: traq.Channel) =>
-    c.id === channel.parentId
-  );
-  if (!parentChannel) {
-    return "#" + channel.name;
+  if (getCacheChannel(channelId) === undefined) {
+    throw new Error("channel not found");
+  }
+  const parentId = getCacheChannel(channelId)?.parentId;
+  if (parentId === null || parentId === undefined) {
+    return "#" + getCacheChannel(channelId)?.name;
   } else {
-    return makeChannelPath(channels, parentChannel) + "/" + channel.name;
+    return (
+      makeChannelPath(channelCache, parentId) + "/" +
+      getCacheChannel(channelId)?.name
+    );
   }
 };
 
 // channelUUIDに対応するchannelPathを生成する
 export const channelPath = async (channelUUID: string): Promise<string> => {
-  const channelsRes = await api.api.getChannels();
-  const publicChannels = channelsRes.data.public;
-  const channel = publicChannels.find((c: traq.Channel) =>
-    c.id === channelUUID
-  );
-  if (!channel) {
-    return "";
-  } else {
-    return makeChannelPath(publicChannels, channel);
+  if (getCacheChannel(channelUUID) === undefined) {
+    await makeCacheChannel();
   }
+  return makeChannelPath(getChannelCache(), channelUUID);
 };
 
 // 自身のユーザー情報を取得する
@@ -160,11 +158,16 @@ export const channelTimeline = async (
 export const channelsRecursive = async (): Promise<Channel[]> => {
   const channelsRes = await api.api.getChannels();
   const publicChannels = channelsRes.data.public;
+  publicChannels.forEach((channel: traq.Channel) => {
+    if (getCacheChannel(channel.id) === undefined) {
+      setCacheChannel(channel);
+    }
+  });
   const channelsConverted: Channel[] = publicChannels.map(
     (channel: traq.Channel) => {
       return {
         ...channel,
-        path: makeChannelPath(publicChannels, channel),
+        path: makeChannelPath(getChannelCache(), channel.id),
       };
     },
   );
