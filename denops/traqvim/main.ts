@@ -129,7 +129,8 @@ export async function main(denops: Denops) {
       } else {
         // バッファが"#gps/times/kamecha(1)"のように"(1)"がついている場合、
         // それを削除する
-        const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
+        const bufNameWithoutNumber =
+          bufnameParsed.fragment?.replace(/\(\d+\)$/, "") || "";
         const channelID = await vars.buffers.get(denops, "channelID");
         ensureString(channelID);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
