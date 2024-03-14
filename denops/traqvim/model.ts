@@ -15,6 +15,28 @@ export type channelMessageOptions = {
   order?: "asc" | "desc";
 };
 
+export const channelMapCache: Map<string, traq.Channel> = new Map();
+
+const getChannelCache = () => {
+  return channelMapCache;
+};
+
+const makeCacheChannel = async () => {
+  const channelsRes = await api.api.getChannels();
+  const channels = channelsRes.data;
+  channels.public.forEach((channel: traq.Channel) => {
+    setCacheChannel(channel);
+  });
+};
+
+const setCacheChannel = (channel: traq.Channel) => {
+  channelMapCache.set(channel.id, channel);
+};
+
+const getCacheChannel = (channelId: string): traq.Channel | undefined => {
+  return channelMapCache.get(channelId);
+};
+
 const makeChannelPath = (
   channels: traq.Channel[],
   channel: traq.Channel,
