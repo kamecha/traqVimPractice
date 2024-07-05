@@ -101,6 +101,22 @@ g:traqvim#token_file_path
 <Plug>(traqvim-prev)				    *<Plug>(traqvim-prev)*
     前のメッセージへカーソルを移動させます
 
+<Plug>(traqvim-message-motion)			    *<Plug>(traqvim-message-motion)*
+    カーソル下の該当メッセージの始まり・終わりを選択します
+    レイアウトで表示されるものが選択されます
+
+<Plug>(traqvim-yank-message-link-operator)	    *<Plug>(traqvim-yank-message-link-operator)*
+    該当メッセージのリンクをヤンクします
+
+<Plug>(traqvim-yank-message-markdown-operator)	    *<Plug>(traqvim-yank-message-markdown-operator)*
+    該当メッセージのリンクをマークダウン形式でヤンクします
+
+<Plug>(traqvim-delete-message-operator)		    *<Plug>(traqvim-delete-message-operator)*
+    該当メッセージを削除します
+
+<Plug>(traqvim-toggle-pin-operator)		    *<Plug>(traqvim-toggle-pin-operator)*
+    該当メッセージのピンをトグルします
+
 ------------------------------------------------------------------------------
 レイアウト					*traqvim-channel-layout*
 
