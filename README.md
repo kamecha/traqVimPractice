@@ -45,15 +45,15 @@ autocmd FileType traqvim call s:traqvim_setting()
 
 function s:traqvim_setting()
 	omap <buffer> im
-				\ <Plug>(traqvim-message-motion)
+				\ <Plug>(traqvim-motion-message)
 	nmap <buffer> <LocalLeader>y
-				\ <Plug>(traqvim-yank-message-link-operator)
+				\ <Plug>(traqvim-operator-message-yank-link)
 	nmap <buffer> <LocalLeader>Y
-				\ <Plug>(traqvim-yank-message-markdown-operator)
+				\ <Plug>(traqvim-operator-message-yank-markdown)
 	nmap <buffer> <LocalLeader>d
-				\ <Plug>(traqvim-delete-message-operator)
+				\ <Plug>(traqvim-operator-message-delete)
 	nmap <buffer> <LocalLeader>p
-				\ <Plug>(traqvim-toggle-pin-operator)
+				\ <Plug>(traqvim-operator-pin-toggle)
 endfunction
 ```
 

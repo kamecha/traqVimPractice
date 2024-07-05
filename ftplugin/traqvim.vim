@@ -13,16 +13,16 @@ nnoremap <buffer><silent> <Plug>(traqvim-next)
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
 			\ <Cmd>call traqvim#message_prev()<CR>
 
-nnoremap <buffer><expr> <Plug>(traqvim-yank-message-link-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-link)
 			\ traqvim#registerYankMessageLink()
-nnoremap <buffer><expr> <Plug>(traqvim-yank-message-markdown-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-markdown)
 			\ traqvim#registerYankMessageMarkdown()
-nnoremap <buffer><expr> <Plug>(traqvim-delete-message-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-message-delete)
 			\ traqvim#registerDeleteMessage()
-nnoremap <buffer><expr> <Plug>(traqvim-toggle-pin-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-pin-toggle)
 			\ traqvim#registerTogglePin()
 
-onoremap <buffer><silent> <Plug>(traqvim-message-motion)
+onoremap <buffer><silent> <Plug>(traqvim-motion-message)
 			\ :<C-u>call traqvim#message_motion()<CR>
 
 command! -buffer -nargs=0 TraqYankMessageLink
