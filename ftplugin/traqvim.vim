@@ -25,21 +25,6 @@ nnoremap <buffer><expr> <Plug>(traqvim-toggle-pin-operator)
 onoremap <silent> <Plug>(traqvim-message-motion)
 			\ :<C-u>call traqvim#message_motion()<CR>
 
-omap <buffer> im
-			\ <Plug>(traqvim-message-motion)
-
-nmap <buffer> <LocalLeader>y
-			\ <Plug>(traqvim-yank-message-link-operator)
-
-nmap <buffer> <LocalLeader>Y
-			\ <Plug>(traqvim-yank-message-markdown-operator)
-
-nmap <buffer> <LocalLeader>d
-			\ <Plug>(traqvim-delete-message-operator)
-
-nmap <buffer> <LocalLeader>p
-			\ <Plug>(traqvim-toggle-pin-operator)
-
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
 command! -buffer -nargs=0 TraqYankMessageMarkdown
