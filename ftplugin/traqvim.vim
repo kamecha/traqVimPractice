@@ -22,7 +22,7 @@ nnoremap <buffer><expr> <Plug>(traqvim-delete-message-operator)
 nnoremap <buffer><expr> <Plug>(traqvim-toggle-pin-operator)
 			\ traqvim#registerTogglePin()
 
-onoremap <silent> <Plug>(traqvim-message-motion)
+onoremap <buffer><silent> <Plug>(traqvim-message-motion)
 			\ :<C-u>call traqvim#message_motion()<CR>
 
 command! -buffer -nargs=0 TraqYankMessageLink
