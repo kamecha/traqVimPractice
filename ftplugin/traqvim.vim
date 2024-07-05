@@ -13,32 +13,17 @@ nnoremap <buffer><silent> <Plug>(traqvim-next)
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
 			\ <Cmd>call traqvim#message_prev()<CR>
 
-nnoremap <buffer><expr> <Plug>(traqvim-yank-message-link-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-link)
 			\ traqvim#registerYankMessageLink()
-nnoremap <buffer><expr> <Plug>(traqvim-yank-message-markdown-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-markdown)
 			\ traqvim#registerYankMessageMarkdown()
-nnoremap <buffer><expr> <Plug>(traqvim-delete-message-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-message-delete)
 			\ traqvim#registerDeleteMessage()
-nnoremap <buffer><expr> <Plug>(traqvim-toggle-pin-operator)
+nnoremap <buffer><expr> <Plug>(traqvim-operator-pin-toggle)
 			\ traqvim#registerTogglePin()
 
-onoremap <silent> <Plug>(traqvim-message-motion)
+onoremap <buffer><silent> <Plug>(traqvim-motion-message)
 			\ :<C-u>call traqvim#message_motion()<CR>
-
-omap <buffer> im
-			\ <Plug>(traqvim-message-motion)
-
-nmap <buffer> <LocalLeader>y
-			\ <Plug>(traqvim-yank-message-link-operator)
-
-nmap <buffer> <LocalLeader>Y
-			\ <Plug>(traqvim-yank-message-markdown-operator)
-
-nmap <buffer> <LocalLeader>d
-			\ <Plug>(traqvim-delete-message-operator)
-
-nmap <buffer> <LocalLeader>p
-			\ <Plug>(traqvim-toggle-pin-operator)
 
 command! -buffer -nargs=0 TraqYankMessageLink
 			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
