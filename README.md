@@ -36,6 +36,27 @@ ddu-ui-filer
 ddcとの連携
 ![image](https://user-images.githubusercontent.com/50443168/221398079-da91a873-5f8d-4c5a-af1c-650e4b88e09b.png)
 
+## 設定
+
+```vim
+" for keymap
+
+autocmd FileType traqvim call s:traqvim_setting()
+
+function s:traqvim_setting()
+	omap <buffer> im
+				\ <Plug>(traqvim-message-motion)
+	nmap <buffer> <LocalLeader>y
+				\ <Plug>(traqvim-yank-message-link-operator)
+	nmap <buffer> <LocalLeader>Y
+				\ <Plug>(traqvim-yank-message-markdown-operator)
+	nmap <buffer> <LocalLeader>d
+				\ <Plug>(traqvim-delete-message-operator)
+	nmap <buffer> <LocalLeader>p
+				\ <Plug>(traqvim-toggle-pin-operator)
+endfunction
+```
+
 ## 今後の展望
 
 WebSocketとか実装して、手動リロードしなくてもいいようにしたいなぁ...
