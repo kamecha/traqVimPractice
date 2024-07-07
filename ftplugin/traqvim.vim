@@ -25,11 +25,6 @@ nnoremap <buffer><expr> <Plug>(traqvim-operator-pin-toggle)
 onoremap <buffer><silent> <Plug>(traqvim-motion-message)
 			\ :<C-u>call traqvim#message_motion()<CR>
 
-command! -buffer -nargs=0 TraqYankMessageLink
-			\ call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
-command! -buffer -nargs=0 TraqYankMessageMarkdown
-			\ call denops#request('traqvim', 'yankMessageMarkdown', [traqvim#get_message()])
-
 " filetypeがtraqvimの時かつ、ウィンドウのサイズが変更された時だけ実行
 
 augroup traqvim
