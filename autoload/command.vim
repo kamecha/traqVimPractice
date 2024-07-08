@@ -7,6 +7,24 @@ let s:completions = #{
 			\ pin: ['create', 'remove'],
 			\}
 
+let s:subcommands = #{
+			\ token: #{
+			\   impl: function('command#token'),
+			\ },
+			\ channel: #{
+			\   impl: function('command#channel'),
+			\ },
+			\ activity: #{
+			\   impl: function('command#activity'),
+			\ },
+			\ message: #{
+			\   impl: function('command#message'),
+			\ },
+			\ pin: #{
+			\   impl: function('command#pin'),
+			\ },
+			\}
+
 function command#token(args) abort
 	if a:args[0] ==# 'setup'
 		call denops#request('traqvim', 'setupOAuth', [])
@@ -85,8 +103,12 @@ endfunction
 
 function command#call(rargs) abort
 	let args = split(a:rargs)
-	let cmd = args[0]
-	let FuncRef = function('command#' . cmd)
-	call FuncRef(args[1:])
+	let subcommandKey = args[0]
+	let subcommand = s:subcommands->get(subcommandKey)
+	if type(subcommand) ==# type(0) && subcommand ==# 0
+		echomsg 'subcommand not found: ' . subcommandKey
+		return
+	endif
+	call subcommand.impl(args[1:])
 endfunction
 
