@@ -3,36 +3,11 @@
 " endif
 " let g:loaded_traq = 1
 "
-" :Traq setup でdenopsのsetupAPIを叩く
-command! TraqSetup call denops#request('traqvim', 'setupOAuth', [])
-" :Traq setup でdenopsのsetupAPIを叩く
-command! TraqDeleteToken call denops#request('traqvim', 'deleteOAuthToken', [])
-" homeChannelを開く
-command! TraqHome call denops#request('traqvim', 'home', [])
-" :Traq timeline でdenopsのtimelineAPIを叩く
-command! -nargs=1 TraqTimeline call denops#request('traqvim', 'timeline', [<q-args>])
-" activity
-command! TraqActivity call denops#request('traqvim', 'activity', [])
-" reload
-command! TraqReload call denops#request('traqvim', 'reload', [bufnr(), bufname()])
-" fetch forward
-command! TraqFetchForward call denops#request('traqvim', 'messageForward', [bufnr(), bufname()])
-" fetch backward
-command! TraqFetchBack call denops#request('traqvim', 'messageBack', [bufnr(), bufname()])
-" messageバッファの作成
-command! TraqMessageOpen call denops#request('traqvim', 'messageOpen', [bufnr(), bufname()])
-" messageの送信
-command! TraqMessageSend call denops#request('traqvim', 'messageSend', [bufnr(), getline(1, '$')])
-" messageの削除
-command! TraqMessageDelete call denops#request('traqvim', 'messageDelete', [bufnr(), traqvim#get_message()])
-" messageの編集
-command! TraqMessageEdit call denops#request('traqvim', 'messageEditOpen', [bufnr(), traqvim#get_message()])
-" messageの編集を適用
-command! TraqMessageEditApply call denops#request('traqvim', 'messageEdit', [getbufvar(bufname("%"), "editSourceBuffer"), getbufvar(bufname("%"), "message"), getline(1, '$')])
-" pinを作成
-command! TraqCreatePin call denops#request('traqvim', 'createPin', [bufnr(), traqvim#get_message()])
-" pinを削除
-command! TraqRemovePin call denops#request('traqvim', 'removePin', [bufnr(), traqvim#get_message()])
+
+command! -nargs=+
+			\ -complete=customlist,command#complete
+			\ Traq
+			\ call command#call(<q-args>)
 
 call helper#define_highlight()
 
