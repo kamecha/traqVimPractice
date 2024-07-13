@@ -31,7 +31,7 @@ augroup traqvim
 	autocmd!
 	autocmd WinResized *
 				\ if &ft == 'traqvim' |
-				\   call traqvim#redraw_recursive(winlayout()) |
+				\   call traqvim#view#redraw_recursive(winlayout()) |
 				\ endif
 	autocmd CursorMoved *
 				\ :match VtraQMessage '\v^─*%(─%#|%#─)─*\n%(%(.*[^─].*|)\n)+─+$|^─+\n%(%(.*[^─].*|)\n)+─*%(─%#|%#─)─*$|^─+\n%(%(.*[^─].*|)\n)*%(.*[^─].*%#.*|.*%#.*[^─].*|%#)\n%(%(.*[^─].*|)\n)*─+$'

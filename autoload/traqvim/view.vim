@@ -1,3 +1,4 @@
+" バッファ変数の情報を元に描画する関数郡
 
 function traqvim#view#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
@@ -24,3 +25,24 @@ function traqvim#view#draw_timeline(bufNum) abort
 	call deletebufline(a:bufNum, start, '$')
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
+
+function traqvim#view#redraw_recursive(layout) abort
+	if a:layout[0] ==# "leaf"
+		let bufNum = winbufnr(a:layout[1])
+		if getbufvar(bufNum, "&filetype") ==# "traqvim"
+			call traqvim#view#draw_timeline(bufNum)
+		endif
+	else
+		for win in a:layout[1]
+			if win[0] ==# "leaf"
+				let bufNum = winbufnr(win[1])
+				if getbufvar(bufNum, "&filetype") ==# "traqvim"
+					call traqvim#view#draw_timeline(bufNum)
+				endif
+			else
+				call traqvim#view#redraw_recursive(win)
+			endif
+		endfor
+	endif
+endfunction
+

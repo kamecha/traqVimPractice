@@ -158,26 +158,6 @@ function! traqvim#update_message_position(timeline, key, value) abort
 	return a:value
 endfunction
 
-function! traqvim#redraw_recursive(layout) abort
-	if a:layout[0] ==# "leaf"
-		let bufNum = winbufnr(a:layout[1])
-		if getbufvar(bufNum, "&filetype") ==# "traqvim"
-			call traqvim#draw_timeline(bufNum)
-		endif
-	else
-		for win in a:layout[1]
-			if win[0] ==# "leaf"
-				let bufNum = winbufnr(win[1])
-				if getbufvar(bufNum, "&filetype") ==# "traqvim"
-					call traqvim#draw_timeline(bufNum)
-				endif
-			else
-				call traqvim#redraw_recursive(win)
-			endif
-		endfor
-	endif
-endfunction
-
 " Message { user : {id, name, displayName}, content, createdAt }
 function! traqvim#make_message_body(message, width) abort
 	let header = [ a:message["user"]["displayName"] . " @" . a:message["user"]["name"] . " " . a:message["createdAt"], "" ]
