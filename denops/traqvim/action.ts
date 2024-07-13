@@ -223,7 +223,7 @@ export const actionCreatePin = async (
       }
     }),
   );
-  await denops.call("traqvim#draw_message_pin", bufNum, message);
+  await denops.call("traqvim#view#draw_message_pin", bufNum, message);
 };
 
 export const actionRemovePin = async (
@@ -253,5 +253,5 @@ export const actionRemovePin = async (
       }
     }),
   );
-  await denops.call("traqvim#draw_message_pin", bufNum, message);
+  await denops.call("traqvim#view#draw_message_pin", bufNum, message);
 };
