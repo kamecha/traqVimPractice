@@ -9,7 +9,7 @@ command! -nargs=+
 			\ Traq
 			\ call traqvim#command#call(<q-args>)
 
-call helper#define_highlight()
+call traqvim#helper#define_highlight()
 
 let g:traqvim#fetch_limit = 20
 let g:traqvim#token_file_path = expand('~/.config/traq/token.json')
