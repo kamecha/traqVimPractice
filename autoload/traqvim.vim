@@ -16,22 +16,8 @@ function! traqvim#make_buffer(buf_name) abort
 	return buf_num
 endfunction
 
-function! traqvim#get_message_buf(curline, bufNum) abort
-	let timeline = getbufvar(a:bufNum, "channelTimeline")
-	let message = copy(timeline)->filter({ _, v -> v.position["start"] <= a:curline && a:curline <= v.position["end"] })
-	if len(message) == 0
-		return {}
-	endif
-	return message[0]
-endfunction
-
-function! traqvim#get_message() abort
-	let curline = line(".")
-	return traqvim#get_message_buf(curline, bufnr("%"))
-endfunction
-
 function! traqvim#message_prev() abort
-	let cur = traqvim#get_message()
+	let cur = traqvim#message#get_message()
 	if empty(cur)
 		return
 	endif
@@ -44,7 +30,7 @@ function! traqvim#message_prev() abort
 endfunction
 
 function! traqvim#message_next() abort
-	let cur = traqvim#get_message()
+	let cur = traqvim#message#get_message()
 	if empty(cur)
 		return
 	endif
@@ -65,8 +51,8 @@ function traqvim#yankMessageLink(t) abort
 	if a:t != 'line'
 		return
 	endif
-	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
-	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	let messageStart = traqvim#message#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#message#get_message_buf(line("']"), bufnr('%'))
 	if messageStart->get('id') != messageEnd->get('id')
 		return
 	endif
@@ -83,8 +69,8 @@ function traqvim#yankMessageMarkdown(t) abort
 	if a:t != 'line'
 		return
 	endif
-	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
-	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	let messageStart = traqvim#message#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#message#get_message_buf(line("']"), bufnr('%'))
 	if messageStart->get('id') != messageEnd->get('id')
 		return
 	endif
@@ -100,8 +86,8 @@ function traqvim#deleteMessage(t) abort
 	if a:t != 'line'
 		return
 	endif
-	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
-	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	let messageStart = traqvim#message#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#message#get_message_buf(line("']"), bufnr('%'))
 	if messageStart->get('id') != messageEnd->get('id')
 		return
 	endif
@@ -117,8 +103,8 @@ function traqvim#togglePin(t) abort
 	if a:t != 'line'
 		return
 	endif
-	let messageStart = traqvim#get_message_buf(line("'["), bufnr('%'))
-	let messageEnd = traqvim#get_message_buf(line("']"), bufnr('%'))
+	let messageStart = traqvim#message#get_message_buf(line("'["), bufnr('%'))
+	let messageEnd = traqvim#message#get_message_buf(line("']"), bufnr('%'))
 	if messageStart->get('id') != messageEnd->get('id')
 		return
 	endif
@@ -130,7 +116,7 @@ function traqvim#togglePin(t) abort
 endfunction
 
 function traqvim#message_motion() abort
-	let position = traqvim#get_message()->get('position')
+	let position = traqvim#message#get_message()->get('position')
 	call cursor(position->get('start'), 1)
 	normal! V
 	call cursor(position->get('end'), 1)
