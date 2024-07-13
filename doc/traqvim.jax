@@ -258,6 +258,38 @@ type		(string)
 
 
 ==============================================================================
+FAQ						*traqvim-faq*
+
+
+FAQ 1:						|traqvim-faq-1|
+    How to display image with sixel?
+
+------------------------------------------------------------------------------
+						*traqvim-faq-1*
+Q: How to display image with sixel?
+
+A: install `denops-sixel-view.vim` plugin. and you have to set function like
+bellow.
+
+https://github.com/gw31415/denops-sixel-view.vim
+
+>
+	function s:preview_img(fileId) abort
+		let file = denops#request("traqvim", "getFile", [a:fileId])
+		call sixel_view#view_sixel(file['data'], 0, 0)
+	endfunction
+
+	function s:preview_cursor_img() abort
+		let cursor_url = getline('.')
+		let fileId = matchstr(cursor_url, 'https://q.trap.jp/files/\zs.*')
+		call s:preview_img(fileId)
+	endfunction
+
+	nnoremap <buffer><silent> K
+				\ <Cmd>call <SID>preview_cursor_img()<CR>
+<
+
+==============================================================================
 TODO						*traqvim-todo*
 
 
