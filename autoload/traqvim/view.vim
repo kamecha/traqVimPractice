@@ -112,3 +112,34 @@ function traqvim#view#draw_delete_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+function traqvim#view#draw_insert_message(bufNum, message) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	let prevMessage = #{}
+	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
+	for message in timeline
+		if message.id == a:message.id
+			let prevMessage = message
+			break
+		endif
+	endfor
+	let start = 1
+	if !empty(prevMessage)
+		let start = prevMessage.position["end"] + 1
+	endif
+	let winnr = bufwinid(a:bufNum)
+	let width = winwidth(winnr)
+	let body = traqvim#make_message_body(a:message, width)
+	let end = start + len(body) - 1
+	call appendbufline(a:bufNum, start - 1, body)
+	if a:message->get('pinned')
+		call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+		for i in range(start + 1, end - 1)
+			call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+		endfor
+	endif
+	" 既存のメッセージのpositionを更新する
+	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
