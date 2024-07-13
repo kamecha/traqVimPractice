@@ -70,3 +70,27 @@ function traqvim#view#draw_forward_messages(bufNum, messages) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+function traqvim#view#draw_back_messages(bufNum, messages) abort
+	call setbufvar(a:bufNum, "&modifiable", 1)
+	let start = 1
+	let winnr = bufwinid(a:bufNum)
+	let width = winwidth(winnr)
+	" appendbufline()を使用する
+	for message in a:messages
+		let body = traqvim#make_message_body(message, width)
+		let end = start + len(body) - 1
+		call appendbufline(a:bufNum, start - 1, body)
+		if message->get('pinned')
+			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
+			for i in range(start + 1, end - 1)
+				call sign_place(0, "VtraQ", "pin_long", a:bufNum, #{ lnum: i, priority: 10 })
+			endfor
+		endif
+		let start = end + 1
+	endfor
+	" 既存のメッセージのpositionを更新する
+	let timeline = getbufvar(a:bufNum, "channelTimeline")
+	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call setbufvar(a:bufNum, "&modifiable", 0)
+endfunction
+
