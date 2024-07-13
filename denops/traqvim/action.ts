@@ -64,7 +64,11 @@ export const actionForwardChannelMessage = async (
     timeline.concat(forwardMessages),
   );
   // 描画は追記した部分だけ
-  await denops.call("traqvim#draw_forward_messages", bufNum, forwardMessages);
+  await denops.call(
+    "traqvim#view#draw_forward_messages",
+    bufNum,
+    forwardMessages,
+  );
 };
 
 // 後ろにメッセージを追加する
