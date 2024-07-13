@@ -2,6 +2,7 @@ import { OAuth } from "./oauth.ts";
 import {
   channelMessageOptions,
   channelTimeline,
+  downloadFile,
   homeChannelId,
   homeChannelPath,
   sendMessage,
@@ -11,6 +12,7 @@ import {
   Denops,
   ensureArray,
   ensureNumber,
+  ensureObject,
   ensureString,
   fn,
   helper,
@@ -38,6 +40,14 @@ export async function main(denops: Denops) {
   // oauthの仮オブジェクト
   let oauth: OAuth;
   denops.dispatcher = {
+    async getFile(fileId: unknown): Promise<unknown> {
+      ensureString(fileId);
+      const file: Uint8Array = await downloadFile(fileId);
+      // denops-sixel-view.vimのsixel_viewがUint8Arrayを受け取れる必要がある
+      const sixel = denops.dispatch("sixel_view", "img2sixel", file);
+      ensureObject<{ data: string; height: number; width: number }>(sixel);
+      return sixel;
+    },
     setupOAuth(): Promise<unknown> {
       helper.echo(denops, "setup...");
       // OAuthの設定を行う
