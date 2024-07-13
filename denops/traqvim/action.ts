@@ -110,7 +110,7 @@ export const actionDeleteMessage = async (
     "channelTimeline",
     timeline.filter((m) => m.id !== message.id),
   );
-  await denops.call("traqvim#draw_delete_message", bufNum, message);
+  await denops.call("traqvim#view#draw_delete_message", bufNum, message);
 };
 
 export const actionEditMessage = async (

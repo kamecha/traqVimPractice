@@ -45,24 +45,6 @@ function traqvim#draw_message_pin(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
-function traqvim#draw_delete_message(bufNum, message) abort
-	call setbufvar(a:bufNum, "&modifiable", 1)
-	let start = a:message.position["start"]
-	let end = a:message.position["end"]
-	if a:message->get('pinned')
-		call sign_unplace("VtraQ", #{ buffer: a:bufNum, lnum: start })
-		for i in range(start + 1, end - 1)
-			call sign_unplace("VtraQ", #{ buffer: a:bufNum, lnum: i })
-		endfor
-	endif
-	call deletebufline(a:bufNum, start, end)
-	" 既存のメッセージのpositionを更新する
-	" この関数を呼ばれる前に削除分が既にバッファ変数から削除されてる
-	let timeline = getbufvar(a:bufNum, "channelTimeline")
-	call map(timeline, function("traqvim#update_message_position", [timeline]))
-	call setbufvar(a:bufNum, "&modifiable", 0)
-endfunction
-
 function traqvim#draw_insert_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	let prevMessage = #{}
