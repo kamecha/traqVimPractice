@@ -1,5 +1,21 @@
 " バッファ変数の情報を元に描画する関数郡
 
+function traqvim#view#update_message_position(timeline, key, value) abort
+	if a:key == 0
+		let start = 1
+		let body = traqvim#make_message_body(a:value, winwidth(bufwinid("%")))
+		let end = start + len(body) - 1
+		let a:value.position = #{ index: 0, start: start, end: end }
+	else
+		let prev = a:timeline[a:key - 1]
+		let start = prev.position["end"] + 1
+		let body = traqvim#make_message_body(a:value, winwidth(bufwinid("%")))
+		let end = start + len(body) - 1
+		let a:value.position = #{ index: a:key, start: start, end: end }
+	endif
+	return a:value
+endfunction
+
 function traqvim#view#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	call sign_unplace("VtraQ", #{ buffer: a:bufNum })
@@ -66,7 +82,7 @@ function traqvim#view#draw_forward_messages(bufNum, messages) abort
 	endfor
 	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
 	let timeline = getbufvar(a:bufNum, "channelTimeline")
-	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call map(timeline, function("traqvim#view#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
@@ -90,7 +106,7 @@ function traqvim#view#draw_back_messages(bufNum, messages) abort
 	endfor
 	" 既存のメッセージのpositionを更新する
 	let timeline = getbufvar(a:bufNum, "channelTimeline")
-	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call map(timeline, function("traqvim#view#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
@@ -108,7 +124,7 @@ function traqvim#view#draw_delete_message(bufNum, message) abort
 	" 既存のメッセージのpositionを更新する
 	" この関数を呼ばれる前に削除分が既にバッファ変数から削除されてる
 	let timeline = getbufvar(a:bufNum, "channelTimeline")
-	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call map(timeline, function("traqvim#view#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
@@ -139,7 +155,7 @@ function traqvim#view#draw_insert_message(bufNum, message) abort
 		endfor
 	endif
 	" 既存のメッセージのpositionを更新する
-	call map(timeline, function("traqvim#update_message_position", [timeline]))
+	call map(timeline, function("traqvim#view#update_message_position", [timeline]))
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 

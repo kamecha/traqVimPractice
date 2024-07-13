@@ -16,22 +16,6 @@ function! traqvim#make_buffer(buf_name) abort
 	return buf_num
 endfunction
 
-function! traqvim#update_message_position(timeline, key, value) abort
-	if a:key == 0
-		let start = 1
-		let body = traqvim#make_message_body(a:value, winwidth(bufwinid("%")))
-		let end = start + len(body) - 1
-		let a:value.position = #{ index: 0, start: start, end: end }
-	else
-		let prev = a:timeline[a:key - 1]
-		let start = prev.position["end"] + 1
-		let body = traqvim#make_message_body(a:value, winwidth(bufwinid("%")))
-		let end = start + len(body) - 1
-		let a:value.position = #{ index: a:key, start: start, end: end }
-	endif
-	return a:value
-endfunction
-
 " Message { user : {id, name, displayName}, content, createdAt }
 function! traqvim#make_message_body(message, width) abort
 	let header = [ a:message["user"]["displayName"] . " @" . a:message["user"]["name"] . " " . a:message["createdAt"], "" ]
