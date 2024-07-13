@@ -21,7 +21,7 @@ augroup traqvim
 	autocmd BufWinEnter *
 		\ if matchstr(bufname(), "ddu-ff:ddu-ff-filter-default") !=# "" |
 		\   echomsg "bufname" |
-		\   call traqvim#draw_timeline(bufnr()) |
+		\   call traqvim#view#draw_timeline(bufnr()) |
 		\   setlocal nonumber |
 		\ endif
 augroup END

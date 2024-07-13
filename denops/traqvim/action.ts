@@ -42,7 +42,7 @@ export const actionOpenChannel = async (
     channelBufferVars.channelTimeline,
   );
   await denops.cmd("setlocal buftype=nofile ft=traqvim nonumber breakindent");
-  await denops.call("traqvim#draw_timeline", bufN);
+  await denops.call("traqvim#view#draw_timeline", bufN);
   // 最終行にカーソルを移動する
   const lastLine = await fn.line(denops, "$");
   await fn.cursor(denops, lastLine, 0);
@@ -170,7 +170,7 @@ export const actionOpenActivity = async (
     "setlocal buftype=nofile ft=traqvim nonumber breakindent",
   );
   await denops.call(
-    "traqvim#draw_timeline",
+    "traqvim#view#draw_timeline",
     bufN,
   );
 };
