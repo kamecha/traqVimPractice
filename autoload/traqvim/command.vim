@@ -1,33 +1,33 @@
 
-let s:subcommands = #{
+let g:traqvim#command#subcommands = #{
 			\ token: #{
 			\   args: ['setup', 'delete'],
-			\   impl: function('command#token'),
-			\   comp: function('command#tokenComplete'),
+			\   impl: function('traqvim#command#token'),
+			\   comp: function('traqvim#command#tokenComplete'),
 			\ },
 			\ channel: #{
 			\   args: ['open', 'home', 'reload', 'forward', 'back'],
-			\   impl: function('command#channel'),
-			\   comp: function('command#channelComplete'),
+			\   impl: function('traqvim#command#channel'),
+			\   comp: function('traqvim#command#channelComplete'),
 			\ },
 			\ activity: #{
 			\   args: ['open', 'reload'],
-			\   impl: function('command#activity'),
-			\   comp: function('command#activityComplete'),
+			\   impl: function('traqvim#command#activity'),
+			\   comp: function('traqvim#command#activityComplete'),
 			\ },
 			\ message: #{
 			\   args: ['open', 'send', 'delete', 'edit', 'editApply', 'yankLink', 'yankMarkdown'],
-			\   impl: function('command#message'),
-			\   comp: function('command#messageComplete'),
+			\   impl: function('traqvim#command#message'),
+			\   comp: function('traqvim#command#messageComplete'),
 			\ },
 			\ pin: #{
 			\   args: ['create', 'remove'],
-			\   impl: function('command#pin'),
-			\   comp: function('command#pinComplete'),
+			\   impl: function('traqvim#command#pin'),
+			\   comp: function('traqvim#command#pinComplete'),
 			\ },
 			\}
 
-function command#token(args) abort
+function traqvim#command#token(args) abort
 	if a:args[0] ==# 'setup'
 		call denops#request('traqvim', 'setupOAuth', [])
 	elseif a:args[0] ==# 'delete'
@@ -35,14 +35,14 @@ function command#token(args) abort
 	endif
 endfunction
 
-function command#tokenComplete(arglead, cmdline) abort
+function traqvim#command#tokenComplete(arglead, cmdline) abort
 	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
 		return []
 	endif
-	return s:subcommands.token.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
+	return g:traqvim#command#subcommands.token.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
 endfunction
 
-function command#channel(args) abort
+function traqvim#command#channel(args) abort
 	if a:args[0] ==# 'open'
 		 " TODO:↓これtimeline APIの実装側が間違ってるのでいったんこのまま
 		call denops#request('traqvim', 'timeline', [a:args[1]])
@@ -57,14 +57,14 @@ function command#channel(args) abort
 	endif
 endfunction
 
-function command#channelComplete(arglead, cmdline) abort
+function traqvim#command#channelComplete(arglead, cmdline) abort
 	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
 		return []
 	endif
-	return s:subcommands.channel.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
+	return g:traqvim#command#subcommands.channel.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
 endfunction
 
-function command#activity(args) abort
+function traqvim#command#activity(args) abort
 	if a:args[0] ==# 'open'
 		call denops#request('traqvim', 'activity', [])
 	elseif a:args[0] ==# 'reload'
@@ -72,14 +72,14 @@ function command#activity(args) abort
 	endif
 endfunction
 
-function command#activityComplete(arglead, cmdline) abort
+function traqvim#command#activityComplete(arglead, cmdline) abort
 	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
 		return []
 	endif
-	return s:subcommands.activity.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
+	return g:traqvim#command#subcommands.activity.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
 endfunction
 
-function command#message(args) abort
+function traqvim#command#message(args) abort
 	if a:args[0] ==# 'open'
 		call denops#request('traqvim', 'messageOpen', [bufnr(), bufname()])
 	elseif a:args[0] ==# 'send'
@@ -97,14 +97,14 @@ function command#message(args) abort
 	endif
 endfunction
 
-function command#messageComplete(arglead, cmdline) abort
+function traqvim#command#messageComplete(arglead, cmdline) abort
 	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
 		return []
 	endif
-	return s:subcommands.message.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
+	return g:traqvim#command#subcommands.message.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
 endfunction
 
-function command#pin(args) abort
+function traqvim#command#pin(args) abort
 	if a:args[0] ==# 'create'
 		call denops#request('traqvim', 'createPin', [bufnr(), traqvim#get_message()])
 	elseif a:args[0] ==# 'remove'
@@ -112,35 +112,35 @@ function command#pin(args) abort
 	endif
 endfunction
 
-function command#pinComplete(arglead, cmdline) abort
+function traqvim#command#pinComplete(arglead, cmdline) abort
 	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
 		return []
 	endif
-	return s:subcommands.pin.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
+	return g:traqvim#command#subcommands.pin.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
 endfunction
 
-function command#complete(arglead, cmdline, cursorpos) abort
+function traqvim#command#complete(arglead, cmdline, cursorpos) abort
 	" subcommandを取得
 	let subcmd = matchstr(a:cmdline, '^Traq\s\+\zs\w\+')
 	let subcmdArgLead = matchstr(a:cmdline, '^Traq\s\+\w\+\s\+\zs\w\+')
 	" subcommandの引数を補完
 	if subcmd != ''
-				\ && has_key(s:subcommands, subcmd) == 1
-				\ && has_key(s:subcommands[subcmd], 'comp') == 1
-		return s:subcommands[subcmd].comp(a:arglead, a:cmdline)
+				\ && has_key(g:traqvim#command#subcommands, subcmd) == 1
+				\ && has_key(g:traqvim#command#subcommands[subcmd], 'comp') == 1
+		return g:traqvim#command#subcommands[subcmd].comp(a:arglead, a:cmdline)
 	endif
 	" subcommandを補完
 	let cmdline = matchstr(a:cmdline, '^Traq\s\+\w*$')
 	if cmdline != ''
-		let subcmdKeys = s:subcommands->keys()
+		let subcmdKeys = g:traqvim#command#subcommands->keys()
 		return subcmdKeys->filter({_, v -> v =~? '^' . a:arglead})
 	endif
 endfunction
 
-function command#call(rargs) abort
+function traqvim#command#call(rargs) abort
 	let args = split(a:rargs)
 	let subcommandKey = args[0]
-	let subcommand = s:subcommands->get(subcommandKey)
+	let subcommand = g:traqvim#command#subcommands->get(subcommandKey)
 	if type(subcommand) ==# type(0) && subcommand ==# 0
 		echomsg 'subcommand not found: ' . subcommandKey
 		return

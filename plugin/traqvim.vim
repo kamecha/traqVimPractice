@@ -5,9 +5,9 @@
 "
 
 command! -nargs=+
-			\ -complete=customlist,command#complete
+			\ -complete=customlist,traqvim#command#complete
 			\ Traq
-			\ call command#call(<q-args>)
+			\ call traqvim#command#call(<q-args>)
 
 call helper#define_highlight()
 
