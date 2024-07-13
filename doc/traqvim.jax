@@ -48,7 +48,7 @@ https://github.com/kamecha/traqVimPractice
 使い方						*traqvim-usage*
 
 始めにOAuth2を通してtraQへのアクセストークンを取得します。
-|:TraqSetup|を使用するとアプリがlocalhost:8000で待機するため、
+`:Traq token setup`を使用するとアプリがlocalhost:8000で待機するため、
 ブラウザ等でlocalhost:8000/oauth2へアクセスします。
 (open-browser.vimプラグインが認識されている場合自動でアクセスします)
 認証画面で認証を行うと、トークンがデフォルトでは~/.config/traqに保存されます。
@@ -67,30 +67,80 @@ g:traqvim#token_file_path
 ------------------------------------------------------------------------------
 コマンド					*traqvim-commands*
 
-:TraqSetup					*:TraqSetup*
-    認証をします
+						*:Traq*
+:Traq {command} {args}
+	{command}に対応するコマンドを実行します。
 
-:TraqDeleteToken				*:TraqDeleteToken*
-    トークンファイルを削除します
+						*:Traq-token*
+:Traq token {args}
+	OAuth2認証で取得されるtokenに対する操作を行います。
 
-:TraqHome					*:TraqHome*
-    ホームチャンネルを現在のバッファに表示します
+	対応している引数
 
-:TraqTimeline {channelPath}			*:TraqTimeline*
-    引数のチャンネル名のチャンネルを現在のバッファに表示します
-    {channelPath}: #gps/times/kamecha
+	setup
+		トークンを取得するためOAuth2認証を行います。
+	delete
+		トークンファイルを削除します。
 
-:TraqActivity					*:TraqActivity*
-    アクティビティを現在のバッファに表示します
+						*:Traq-channel*
+:Traq channel {args}
+	traQのチャンネルに対する操作を行います。
 
-:TraqReload					*:TraqReload*
-    現在のバッファに表示されているチャンネル、アクティビティの最新メッセージを取得します
+	対応している引数
 
-:TraqMessageOpen				*:TraqMessageOpen*
-    現在のバッファに表示されているチャンネルに対するメッセージを生成するバッファを開きます
+	open {args}
+		引数のチャンネルを現在のバッファで開きます。
+	home
+		ホームチャンネルを現在のバッファで開きます。
+	reload
+		現在のバッファに表示されているチャンネルの最新メッセージを取得します。
+	forwad
+		現在表示されているバッファのチャンネルの次のメッセージを取得します。
+	back
+		現在表示されているバッファのチャンネルの前のメッセージを取得します。
 
-:TraqMessageSend				*:TraqMessageSend*
-    メッセージバッファにおいて有効であり、メッセージを対象チャンネルに送信します
+						*:Traq-activity*
+:Traq activity {args}
+	traQのアクティビティに対する操作を行います。
+
+	対応している引数
+
+	open
+		アクティビティを現在のバッファで開きます。
+	reload
+		現在のバッファに表示されているアクティビティの最新メッセージを取得します。
+
+						*:Traq-message*
+:Traq message {args}
+	traQのメッセージに対する操作を行います。
+
+	対応している引数
+
+	open
+		現在のバッファに表示されているチャンネルに対するメッセージを生成するバッファを開きます。
+	send
+		メッセージバッファにおいて有効であり、メッセージを対象チャンネルに送信します。
+	delete
+		該当メッセージを削除します。
+	edit
+		該当メッセージを編集します。
+	editApply
+		編集中のメッセージを適用します。
+	yankLink
+		該当メッセージのリンクをヤンクします。
+	yankMarkdown
+		該当メッセージのリンクをマークダウン形式でヤンクします。
+
+						*:Traq-pin*
+:Traq pin {args}
+	traQのピンに対する操作を行います。
+
+	対応している引数
+
+	create
+		該当メッセージをピン留めします。
+	remove
+		該当メッセージのピンを解除します。
 
 ------------------------------------------------------------------------------
 キーマッピング					*traqvim-keymappings*
