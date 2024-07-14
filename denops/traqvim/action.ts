@@ -32,7 +32,7 @@ export const actionOpenChannel = async (
     channelTimeline: timeline,
   };
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", escapedChannelPath);
+    await fn.bufnr(denops, escapedChannelPath, true);
   await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
   await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
@@ -163,7 +163,7 @@ export const actionOpenActivity = async (
     expr: "/Activity",
   });
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", activityPath);
+    await fn.bufnr(denops, activityPath, true);
   await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(
     denops,

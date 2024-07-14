@@ -234,11 +234,8 @@ export async function main(denops: Denops) {
         },
         fragment: bufname.parse(bufName).fragment,
       });
+      const messageBufNum = await fn.bufnr(denops, messageBufName, true);
       // bufferが下に表示されるようoptionを設定し元に戻す
-      const messageBufNum = await denops.call(
-        "traqvim#make_buffer",
-        messageBufName,
-      );
       await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       await denops.cmd(`split +buffer\\ ${messageBufNum}`);
       await fn.setbufvar(denops, bufNum, "&splitbelow", 0);
@@ -313,10 +310,7 @@ export async function main(denops: Denops) {
         },
         fragment: bufname.parse(bufName).fragment,
       });
-      const messageBufNum = await denops.call(
-        "traqvim#make_buffer",
-        messageBufName,
-      );
+      const messageBufNum = await fn.bufnr(denops, messageBufName, true);
       ensureNumber(messageBufNum);
       await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       await denops.cmd(`split +buffer\\ ${messageBufNum}`);
