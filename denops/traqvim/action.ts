@@ -32,7 +32,7 @@ export const actionOpenChannel = async (
     channelTimeline: timeline,
   };
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", escapedChannelPath);
+    await fn.bufnr(denops, escapedChannelPath, true);
   await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(denops, "channelID", channelBufferVars.channelID);
   await vars.buffers.set(denops, "channelPath", channelBufferVars.channelPath);
@@ -42,7 +42,7 @@ export const actionOpenChannel = async (
     channelBufferVars.channelTimeline,
   );
   await denops.cmd("setlocal buftype=nofile ft=traqvim nonumber breakindent");
-  await denops.call("traqvim#draw_timeline", bufN);
+  await denops.call("traqvim#view#draw_timeline", bufN);
   // 最終行にカーソルを移動する
   const lastLine = await fn.line(denops, "$");
   await fn.cursor(denops, lastLine, 0);
@@ -64,7 +64,11 @@ export const actionForwardChannelMessage = async (
     timeline.concat(forwardMessages),
   );
   // 描画は追記した部分だけ
-  await denops.call("traqvim#draw_forward_messages", bufNum, forwardMessages);
+  await denops.call(
+    "traqvim#view#draw_forward_messages",
+    bufNum,
+    forwardMessages,
+  );
 };
 
 // 後ろにメッセージを追加する
@@ -83,7 +87,7 @@ export const actionBackChannelMessage = async (
     backMessages.concat(timeline),
   );
   // 一旦全部描画するようにする
-  await denops.call("traqvim#draw_back_messages", bufNum, backMessages);
+  await denops.call("traqvim#view#draw_back_messages", bufNum, backMessages);
 };
 
 export const actionDeleteMessage = async (
@@ -106,7 +110,7 @@ export const actionDeleteMessage = async (
     "channelTimeline",
     timeline.filter((m) => m.id !== message.id),
   );
-  await denops.call("traqvim#draw_delete_message", bufNum, message);
+  await denops.call("traqvim#view#draw_delete_message", bufNum, message);
 };
 
 export const actionEditMessage = async (
@@ -143,7 +147,7 @@ export const actionEditMessage = async (
     editedTimeline,
   );
   await denops.call(
-    "traqvim#draw_insert_message",
+    "traqvim#view#draw_insert_message",
     bufNum,
     editedTimeline.find((m) => m.id === message.id),
   );
@@ -159,7 +163,7 @@ export const actionOpenActivity = async (
     expr: "/Activity",
   });
   const bufN = bufNum ??
-    await denops.call("traqvim#make_buffer", activityPath);
+    await fn.bufnr(denops, activityPath, true);
   await denops.cmd(`noswapfile buffer ${bufN}`);
   await vars.buffers.set(
     denops,
@@ -170,7 +174,7 @@ export const actionOpenActivity = async (
     "setlocal buftype=nofile ft=traqvim nonumber breakindent",
   );
   await denops.call(
-    "traqvim#draw_timeline",
+    "traqvim#view#draw_timeline",
     bufN,
   );
 };
@@ -219,7 +223,7 @@ export const actionCreatePin = async (
       }
     }),
   );
-  await denops.call("traqvim#draw_message_pin", bufNum, message);
+  await denops.call("traqvim#view#draw_message_pin", bufNum, message);
 };
 
 export const actionRemovePin = async (
@@ -249,5 +253,5 @@ export const actionRemovePin = async (
       }
     }),
   );
-  await denops.call("traqvim#draw_message_pin", bufNum, message);
+  await denops.call("traqvim#view#draw_message_pin", bufNum, message);
 };

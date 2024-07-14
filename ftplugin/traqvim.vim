@@ -9,21 +9,21 @@ call sign_define("pin", #{ text: "󰐃", texthl: "VtraQPin"}) "f0403 ← nerd fo
 call sign_define("pin_long", #{ text: "│" , texthl: "VtraQPin"})
 
 nnoremap <buffer><silent> <Plug>(traqvim-next)
-			\ <Cmd>call traqvim#message_next()<CR>
+			\ <Cmd>call traqvim#message#message_next()<CR>
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
-			\ <Cmd>call traqvim#message_prev()<CR>
+			\ <Cmd>call traqvim#message#message_prev()<CR>
 
 nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-link)
-			\ traqvim#registerYankMessageLink()
+			\ traqvim#message#registerYankMessageLink()
 nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-markdown)
-			\ traqvim#registerYankMessageMarkdown()
+			\ traqvim#message#registerYankMessageMarkdown()
 nnoremap <buffer><expr> <Plug>(traqvim-operator-message-delete)
-			\ traqvim#registerDeleteMessage()
+			\ traqvim#message#registerDeleteMessage()
 nnoremap <buffer><expr> <Plug>(traqvim-operator-pin-toggle)
-			\ traqvim#registerTogglePin()
+			\ traqvim#message#registerTogglePin()
 
 onoremap <buffer><silent> <Plug>(traqvim-motion-message)
-			\ :<C-u>call traqvim#message_motion()<CR>
+			\ :<C-u>call traqvim#message#message_motion()<CR>
 
 " filetypeがtraqvimの時かつ、ウィンドウのサイズが変更された時だけ実行
 
@@ -31,7 +31,7 @@ augroup traqvim
 	autocmd!
 	autocmd WinResized *
 				\ if &ft == 'traqvim' |
-				\   call traqvim#redraw_recursive(winlayout()) |
+				\   call traqvim#view#redraw_recursive(winlayout()) |
 				\ endif
 	autocmd CursorMoved *
 				\ :match VtraQMessage '\v^─*%(─%#|%#─)─*\n%(%(.*[^─].*|)\n)+─+$|^─+\n%(%(.*[^─].*|)\n)+─*%(─%#|%#─)─*$|^─+\n%(%(.*[^─].*|)\n)*%(.*[^─].*%#.*|.*%#.*[^─].*|%#)\n%(%(.*[^─].*|)\n)*─+$'

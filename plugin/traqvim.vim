@@ -5,11 +5,11 @@
 "
 
 command! -nargs=+
-			\ -complete=customlist,command#complete
+			\ -complete=customlist,traqvim#command#complete
 			\ Traq
-			\ call command#call(<q-args>)
+			\ call traqvim#command#call(<q-args>)
 
-call helper#define_highlight()
+call traqvim#helper#define_highlight()
 
 let g:traqvim#fetch_limit = 20
 let g:traqvim#token_file_path = expand('~/.config/traq/token.json')
@@ -21,7 +21,7 @@ augroup traqvim
 	autocmd BufWinEnter *
 		\ if matchstr(bufname(), "ddu-ff:ddu-ff-filter-default") !=# "" |
 		\   echomsg "bufname" |
-		\   call traqvim#draw_timeline(bufnr()) |
+		\   call traqvim#view#draw_timeline(bufnr()) |
 		\   setlocal nonumber |
 		\ endif
 augroup END
