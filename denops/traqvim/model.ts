@@ -64,6 +64,55 @@ export const channelPath = async (channelUUID: string): Promise<string> => {
   return makeChannelPath(getChannelMapCache(), channelUUID);
 };
 
+// channelPathに対応するchannelUUIDを生成する
+export const channelUUID = async (
+  channelPath: string[],
+  depth: number = 0,
+  children: traq.Channel[] = [],
+): Promise<string | undefined> => {
+  if (channelPath.length === 0) {
+    return undefined;
+  }
+  // 最初のchannelPathを取得
+  if (depth === 0 && children.length === 0) {
+    if (getChannelMapCache().size === 0) {
+      const channelsRes = await api.api.getChannels();
+      const channels = channelsRes.data.public;
+      channels.forEach((channel: traq.Channel) => {
+        setCacheChannel(channel);
+      });
+    }
+    getChannelMapCache().forEach((channel: traq.Channel) => {
+      if (channel.parentId === null) {
+        children.push(channel);
+      }
+    });
+  }
+  // 末端のチャンネルを返す
+  if (channelPath.length === depth + 1) {
+    const channel = children.find((channel: traq.Channel) => {
+      return channel.name === channelPath[depth];
+    });
+    return channel?.id;
+  }
+  const channelName = channelPath[depth];
+  const channel = children.find((channel: traq.Channel) => {
+    return channel.name === channelName;
+  });
+  const chans = channel?.children
+    .map((childId: string) => {
+      return getCacheChannel(childId);
+    })
+    .filter((channel: traq.Channel | undefined) => {
+      return channel !== undefined;
+    });
+  return channelUUID(
+    channelPath,
+    depth + 1,
+    chans,
+  );
+};
+
 // 自身のユーザー情報を取得する
 export const getMeInfo = async (): Promise<traq.MyUserDetail> => {
   const meRes = await api.api.getMe();
