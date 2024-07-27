@@ -1,10 +1,4 @@
-import {
-  dduVim,
-  Denops,
-  ensureArray,
-  ensureNumber,
-  vars,
-} from "../traqvim/deps.ts";
+import { assert, dduVim, Denops, is, vars } from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
 import { Message } from "../traqvim/type.d.ts";
@@ -39,7 +33,7 @@ export class Kind extends dduVim.BaseKind<Params> {
           args.denops,
           "traqvim#fetch_limit",
         );
-        ensureNumber(limit);
+        assert(limit, is.Number);
         const timelineOption: channelMessageOptions = {
           id: channelID,
           channelPath: channelPath,
@@ -80,7 +74,7 @@ export class Kind extends dduVim.BaseKind<Params> {
           message,
           args.previewContext.width,
         );
-        ensureArray<string>(ret);
+        assert(ret, is.ArrayOf(is.String));
         return ret;
       }),
     );

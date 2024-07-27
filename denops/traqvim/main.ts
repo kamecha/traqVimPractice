@@ -7,16 +7,7 @@ import {
   homeChannelPath,
   sendMessage,
 } from "./model.ts";
-import {
-  bufname,
-  Denops,
-  ensureArray,
-  ensureNumber,
-  ensureString,
-  fn,
-  helper,
-  vars,
-} from "./deps.ts";
+import { assert, bufname, Denops, fn, helper, is, vars } from "./deps.ts";
 import {
   actionBackChannelMessage,
   actionCreatePin,
@@ -31,10 +22,11 @@ import {
 } from "./action.ts";
 import { ChannelMessageBuffer, Message } from "./type.d.ts";
 import { api } from "./api.ts";
+import { isMessage } from "./type_check.ts";
 
 export async function main(denops: Denops) {
   const path = await vars.globals.get(denops, "traqvim#token_file_path");
-  ensureString(path);
+  assert(path, is.String);
   api.tokenFilePath = path;
   // oauthの仮オブジェクト
   let oauth: OAuth;
@@ -62,7 +54,7 @@ export async function main(denops: Denops) {
         "No",
         "Warning",
       );
-      ensureNumber(choice);
+      assert(choice, is.Number);
       switch (choice) {
         // dialogの中断
         case 0:
@@ -87,7 +79,7 @@ export async function main(denops: Denops) {
       const homePath = await homeChannelPath();
       const homeId = await homeChannelId();
       const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
-      ensureNumber(limit);
+      assert(limit, is.Number);
       const timelineOption: channelMessageOptions = {
         id: homeId,
         channelPath: homePath,
@@ -99,7 +91,7 @@ export async function main(denops: Denops) {
       return;
     },
     async timeline(channelPath: unknown): Promise<unknown> {
-      ensureString(channelPath);
+      assert(channelPath, is.String);
       // '#gps/times/kamecha' → ['gps', 'times', 'kamecha']
       const channelPathArray = channelPath.substring(1).split("/");
       const channelID = await channelUUID(channelPathArray);
@@ -107,9 +99,9 @@ export async function main(denops: Denops) {
         helper.echo(denops, "Channel not found");
         return;
       }
-      ensureString(channelID);
+      assert(channelID, is.String);
       const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
-      ensureNumber(limit);
+      assert(limit, is.Number);
       const timelineOption: channelMessageOptions = {
         id: channelID,
         channelPath: channelPath,
@@ -126,8 +118,8 @@ export async function main(denops: Denops) {
     },
     async reload(bufNum: unknown, bufName: unknown): Promise<unknown> {
       // バッファ番号は被らないが、バッファ名は被る可能性がある
-      ensureNumber(bufNum);
-      ensureString(bufName);
+      assert(bufNum, is.Number);
+      assert(bufName, is.String);
       const bufnameParsed = bufname.parse(bufName);
       if (bufnameParsed.expr === "/Activity") {
         actionOpenActivity(denops, bufNum);
@@ -137,9 +129,9 @@ export async function main(denops: Denops) {
         const bufNameWithoutNumber =
           bufnameParsed.fragment?.replace(/\(\d+\)$/, "") || "";
         const channelID = await vars.buffers.get(denops, "channelID");
-        ensureString(channelID);
+        assert(channelID, is.String);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
-        ensureNumber(limit);
+        assert(limit, is.Number);
         const timelineOption: channelMessageOptions = {
           id: channelID,
           channelPath: bufNameWithoutNumber,
@@ -152,17 +144,17 @@ export async function main(denops: Denops) {
       return;
     },
     async messageForward(bufNum: unknown, bufName: unknown): Promise<unknown> {
-      ensureNumber(bufNum);
-      ensureString(bufName);
+      assert(bufNum, is.Number);
+      assert(bufName, is.String);
       // 対応するバッファのメッセージの新しいメッセージの日付を取得
       try {
         const timeline = await vars.buffers.get(denops, "channelTimeline");
-        ensureArray<Message>(timeline);
+        assert(timeline, is.ArrayOf(isMessage));
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
         const channelID = await vars.buffers.get(denops, "channelID");
-        ensureString(channelID);
+        assert(channelID, is.String);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
-        ensureNumber(limit);
+        assert(limit, is.Number);
         // 最後のメッセージの内容
         const timelineOption: channelMessageOptions = {
           id: channelID,
@@ -189,17 +181,17 @@ export async function main(denops: Denops) {
       }
     },
     async messageBack(bufNum: unknown, bufName: unknown): Promise<unknown> {
-      ensureNumber(bufNum);
-      ensureString(bufName);
+      assert(bufNum, is.Number);
+      assert(bufName, is.String);
       // 対応するバッファのメッセージの古いメッセージの日付を取得
       try {
         const timeline = await vars.buffers.get(denops, "channelTimeline");
-        ensureArray<Message>(timeline);
+        assert(timeline, is.ArrayOf(isMessage));
         const bufNameWithoutNumber = bufName.replace(/\(\d+\)$/, "");
         const channelID = await vars.buffers.get(denops, "channelID");
-        ensureString(channelID);
+        assert(channelID, is.String);
         const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
-        ensureNumber(limit);
+        assert(limit, is.Number);
         // 最後のメッセージの内容
         const timelineOption: channelMessageOptions = {
           id: channelID,
@@ -224,10 +216,10 @@ export async function main(denops: Denops) {
       }
     },
     async messageOpen(bufNum: unknown, bufName: unknown): Promise<unknown> {
-      ensureNumber(bufNum);
-      ensureString(bufName);
+      assert(bufNum, is.Number);
+      assert(bufName, is.String);
       const channelID = await fn.getbufvar(denops, bufNum, "channelID");
-      ensureString(channelID);
+      assert(channelID, is.String);
       const channelMessageVars: ChannelMessageBuffer = {
         channelID: channelID,
       };
@@ -257,9 +249,9 @@ export async function main(denops: Denops) {
     },
     async messageSend(bufNum: unknown, contents: unknown): Promise<unknown> {
       helper.echo(denops, "Sending...");
-      ensureNumber(bufNum);
+      assert(bufNum, is.Number);
       const channelID = await fn.getbufvar(denops, bufNum, "channelID");
-      ensureString(channelID);
+      assert(channelID, is.String);
       const content = (contents as string[]).join("\n");
       await sendMessage(channelID, content);
       await denops.cmd(":bdelete");
@@ -275,7 +267,7 @@ export async function main(denops: Denops) {
       return Promise.resolve();
     },
     async messageDelete(bufNum: unknown, message: unknown): Promise<unknown> {
-      ensureNumber(bufNum);
+      assert(bufNum, is.Number);
       const choice = await fn.confirm(
         denops,
         "Delete message?",
@@ -283,7 +275,7 @@ export async function main(denops: Denops) {
         "No",
         "Warning",
       );
-      ensureNumber(choice);
+      assert(choice, is.Number);
       switch (choice) {
         // dialogの中断
         case 0:
@@ -305,7 +297,7 @@ export async function main(denops: Denops) {
       return Promise.resolve();
     },
     async messageEditOpen(bufNum: unknown, message: unknown): Promise<unknown> {
-      ensureNumber(bufNum);
+      assert(bufNum, is.Number);
       const bufName = await fn.bufname(denops, bufNum);
       const messageBufName = bufname.format({
         scheme: bufname.parse(bufName).scheme,
@@ -316,7 +308,7 @@ export async function main(denops: Denops) {
         fragment: bufname.parse(bufName).fragment,
       });
       const messageBufNum = await fn.bufnr(denops, messageBufName, true);
-      ensureNumber(messageBufNum);
+      assert(messageBufNum, is.Number);
       await fn.setbufvar(denops, bufNum, "&splitbelow", 1);
       await denops.cmd(`split +buffer\\ ${messageBufNum}`);
       await fn.setbufvar(denops, bufNum, "&splitright", 0);
@@ -349,7 +341,7 @@ export async function main(denops: Denops) {
       message: unknown,
       contents: unknown,
     ): Promise<unknown> {
-      ensureNumber(bufNum);
+      assert(bufNum, is.Number);
       const content = (contents as string[]).join("\n");
       await actionEditMessage(denops, message as Message, content, bufNum);
       await denops.cmd(":bdelete");
@@ -359,7 +351,7 @@ export async function main(denops: Denops) {
       bufNum: unknown,
       message: unknown,
     ): Promise<unknown> {
-      ensureNumber(bufNum);
+      assert(bufNum, is.Number);
       await actionCreatePin(denops, message as Message, bufNum);
       return;
     },
@@ -367,7 +359,7 @@ export async function main(denops: Denops) {
       bufNum: unknown,
       message: unknown,
     ): Promise<unknown> {
-      ensureNumber(bufNum);
+      assert(bufNum, is.Number);
       await actionRemovePin(denops, message as Message, bufNum);
       return;
     },
