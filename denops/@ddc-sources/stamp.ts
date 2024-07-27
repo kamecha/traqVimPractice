@@ -3,13 +3,14 @@ import {
   ddcVim,
   ddcVimSource,
   Denops,
+  ensure,
   is,
   traq,
   vars,
 } from "../traqvim/deps.ts";
-
 import { getStamps } from "../traqvim/model.ts";
 import { api } from "../traqvim/api.ts";
+import { isDdcItem } from "../traqvim/type_check.ts";
 
 type Params = Record<never, never>;
 
@@ -26,9 +27,9 @@ export class Source extends ddcVim.BaseSource<Params> {
     return stamps
       .filter((stamp) => stamp.name)
       .map((stamp) => {
-        return {
+        return ensure({
           word: ":" + stamp.name + ":",
-        } as ddcVim.Item;
+        }, isDdcItem);
       });
   }
 

@@ -1,5 +1,24 @@
-import { is, Predicate, traq } from "./deps.ts";
+import { ddcVim, is, Predicate, traq } from "./deps.ts";
 import { Message } from "./type.d.ts";
+
+const isPumHighlight: Predicate<ddcVim.PumHighlight> = is.ObjectOf({
+  name: is.String,
+  type: is.LiteralOneOf(["abbr", "kind", "menu"] as const),
+  hl_group: is.String,
+  col: is.Number,
+  width: is.Number,
+});
+
+export const isDdcItem: Predicate<ddcVim.Item> = is.ObjectOf({
+  word: is.String,
+  abbr: is.OptionalOf(is.String),
+  menu: is.OptionalOf(is.String),
+  info: is.OptionalOf(is.String),
+  kind: is.OptionalOf(is.String),
+  user_data: is.OptionalOf(is.Unknown),
+  highlights: is.OptionalOf(is.ArrayOf(isPumHighlight)),
+  columns: is.OptionalOf(is.RecordOf(is.String)),
+});
 
 export const isMessageStamp: Predicate<traq.MessageStamp> = is.ObjectOf({
   userId: is.String,

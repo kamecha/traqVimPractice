@@ -267,16 +267,18 @@ export async function main(denops: Denops) {
       return;
     },
     async yankMessageLink(message: unknown): Promise<unknown> {
-      // ensureでの型チェックの仕方分からんから、とりあえずasで:awoo:
-      await actionYankMessageLink(denops, message as Message);
+      assert(message, isMessage);
+      await actionYankMessageLink(denops, message);
       return Promise.resolve();
     },
     async yankMessageMarkdown(message: unknown): Promise<unknown> {
-      await actionYankMessageMarkdown(denops, message as Message);
+      assert(message, isMessage);
+      await actionYankMessageMarkdown(denops, message);
       return Promise.resolve();
     },
     async messageDelete(bufNum: unknown, message: unknown): Promise<unknown> {
       assert(bufNum, is.Number);
+      assert(message, isMessage);
       const choice = await fn.confirm(
         denops,
         "Delete message?",
@@ -293,7 +295,7 @@ export async function main(denops: Denops) {
         // Yes
         case 1:
           helper.echo(denops, "delete message...");
-          await actionDeleteMessage(denops, message as Message, bufNum);
+          await actionDeleteMessage(denops, message, bufNum);
           break;
         // No
         case 2:
@@ -326,7 +328,7 @@ export async function main(denops: Denops) {
         denops,
         messageBufNum,
         1,
-        (message as Message).content.split("\n"),
+        (ensure(message, isMessage)).content.split("\n"),
       );
       await fn.setbufvar(
         denops,
@@ -351,8 +353,9 @@ export async function main(denops: Denops) {
       contents: unknown,
     ): Promise<unknown> {
       assert(bufNum, is.Number);
+      assert(message, isMessage);
       const content = (ensure(contents, is.ArrayOf(is.String))).join("\n");
-      await actionEditMessage(denops, message as Message, content, bufNum);
+      await actionEditMessage(denops, message, content, bufNum);
       await denops.cmd(":bdelete");
       return;
     },
@@ -361,7 +364,8 @@ export async function main(denops: Denops) {
       message: unknown,
     ): Promise<unknown> {
       assert(bufNum, is.Number);
-      await actionCreatePin(denops, message as Message, bufNum);
+      assert(message, isMessage);
+      await actionCreatePin(denops, message, bufNum);
       return;
     },
     async removePin(
@@ -369,7 +373,8 @@ export async function main(denops: Denops) {
       message: unknown,
     ): Promise<unknown> {
       assert(bufNum, is.Number);
-      await actionRemovePin(denops, message as Message, bufNum);
+      assert(message, isMessage);
+      await actionRemovePin(denops, message, bufNum);
       return;
     },
   };
