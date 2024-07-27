@@ -7,7 +7,16 @@ import {
   homeChannelPath,
   sendMessage,
 } from "./model.ts";
-import { assert, bufname, Denops, fn, helper, is, vars } from "./deps.ts";
+import {
+  assert,
+  bufname,
+  Denops,
+  ensure,
+  fn,
+  helper,
+  is,
+  vars,
+} from "./deps.ts";
 import {
   actionBackChannelMessage,
   actionCreatePin,
@@ -252,7 +261,7 @@ export async function main(denops: Denops) {
       assert(bufNum, is.Number);
       const channelID = await fn.getbufvar(denops, bufNum, "channelID");
       assert(channelID, is.String);
-      const content = (contents as string[]).join("\n");
+      const content = (ensure(contents, is.ArrayOf(is.String))).join("\n");
       await sendMessage(channelID, content);
       await denops.cmd(":bdelete");
       return;
@@ -342,7 +351,7 @@ export async function main(denops: Denops) {
       contents: unknown,
     ): Promise<unknown> {
       assert(bufNum, is.Number);
-      const content = (contents as string[]).join("\n");
+      const content = (ensure(contents, is.ArrayOf(is.String))).join("\n");
       await actionEditMessage(denops, message as Message, content, bufNum);
       await denops.cmd(":bdelete");
       return;

@@ -1,4 +1,4 @@
-import { dduVim, dduVimColumn, fn } from "../traqvim/deps.ts";
+import { dduVim, dduVimColumn, ensure, fn, is } from "../traqvim/deps.ts";
 
 export type Params = {
   collapsedParentIcon: string;
@@ -36,7 +36,7 @@ export class Column extends dduVim.BaseColumn<Params> {
     const text =
       " ".repeat(args.columnParams.indentationWidth * args.item.__level) +
       icon + " " + args.item.word;
-    const width = await fn.strwidth(args.denops, text) as number;
+    const width = ensure(await fn.strwidth(args.denops, text), is.Number);
     const padding = " ".repeat(args.endCol - args.startCol - width);
     return Promise.resolve({
       text: text + padding,

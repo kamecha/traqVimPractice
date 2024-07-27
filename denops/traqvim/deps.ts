@@ -1,7 +1,11 @@
 export * as oauth2Client from "https://deno.land/x/oauth2_client@v1.0.0/mod.ts";
 export * as oak from "https://deno.land/x/oak@v6.3.0/mod.ts";
 export * as path from "https://deno.land/std@0.177.0/path/mod.ts";
-export { assert, is } from "https://deno.land/x/unknownutil@v3.18.1/mod.ts";
+export {
+  assert,
+  ensure,
+  is,
+} from "https://deno.land/x/unknownutil@v3.18.1/mod.ts";
 export type { Predicate } from "https://deno.land/x/unknownutil@v3.18.1/mod.ts";
 export type { Denops } from "https://deno.land/x/denops_std@v4.0.0/mod.ts";
 export * as fn from "https://deno.land/x/denops_std@v4.0.0/function/mod.ts";
