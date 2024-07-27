@@ -44,7 +44,6 @@ endfunction
 
 function traqvim#command#channel(args) abort
 	if a:args[0] ==# 'open'
-		 " TODO:↓これtimeline APIの実装側が間違ってるのでいったんこのまま
 		call denops#request('traqvim', 'timeline', [a:args[1]])
 	elseif a:args[0] ==# 'home'
 		call denops#request('traqvim', 'home', [])

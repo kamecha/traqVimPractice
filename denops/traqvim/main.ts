@@ -2,6 +2,7 @@ import { OAuth } from "./oauth.ts";
 import {
   channelMessageOptions,
   channelTimeline,
+  channelUUID,
   homeChannelId,
   homeChannelPath,
   sendMessage,
@@ -97,11 +98,15 @@ export async function main(denops: Denops) {
       await actionOpenChannel(denops, timelineOption);
       return;
     },
-    async timeline(args: unknown): Promise<unknown> {
-      ensureString(args);
-      // argsが"#gps/times/kamecha(1)"のようになっていた場合"(1)"を削除する
-      const channelPath = args.replace(/\(\d+\)$/, "");
-      const channelID = await vars.buffers.get(denops, "channelID");
+    async timeline(channelPath: unknown): Promise<unknown> {
+      ensureString(channelPath);
+      // '#gps/times/kamecha' → ['gps', 'times', 'kamecha']
+      const channelPathArray = channelPath.substring(1).split("/");
+      const channelID = await channelUUID(channelPathArray);
+      if (channelID === undefined) {
+        helper.echo(denops, "Channel not found");
+        return;
+      }
       ensureString(channelID);
       const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
       ensureNumber(limit);
