@@ -1,8 +1,10 @@
 import {
+  assert,
   dduVim,
   Denops,
-  ensureArray,
-  ensureNumber,
+  ensure,
+  is,
+  Predicate,
   vars,
 } from "../traqvim/deps.ts";
 import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
@@ -10,15 +12,24 @@ import { actionOpenChannel } from "../traqvim/action.ts";
 import { Message } from "../traqvim/type.d.ts";
 
 // TODO: unkownutilのアプデしたらtype.d.tsのChannelとかに変更する
+// ChannelとUnreadChannelをUnion型にできなかったので、kindごと分ける
 export interface ActionData {
   id: string;
 }
+
+export const isActionData: Predicate<ActionData> = is.ObjectOf({
+  id: is.String,
+});
 
 type Params = Record<never, never>;
 
 type OpenParams = {
   command: string;
 };
+
+const isOpenParams: Predicate<OpenParams> = is.ObjectOf({
+  command: is.String,
+});
 
 export class Kind extends dduVim.BaseKind<Params> {
   actions: dduVim.Actions<Params> = {
@@ -31,15 +42,14 @@ export class Kind extends dduVim.BaseKind<Params> {
         if (!item.action) {
           continue;
         }
-        // TODO: unkownutilのアプデしたらasをensureに変更
-        const action = item.action as ActionData;
+        const action = ensure(item.action, isActionData);
         const channelPath: string = item.word;
         const channelID: string = action.id;
         const limit = await vars.globals.get(
           args.denops,
           "traqvim#fetch_limit",
         );
-        ensureNumber(limit);
+        assert(limit, is.Number);
         const timelineOption: channelMessageOptions = {
           id: channelID,
           channelPath: channelPath,
@@ -47,7 +57,7 @@ export class Kind extends dduVim.BaseKind<Params> {
           until: new Date().toISOString(),
           order: "desc",
         };
-        const params = args.actionParams as OpenParams;
+        const params = ensure(args.actionParams, isOpenParams);
         if (params.command) {
           await args.denops.cmd(params.command);
         }
@@ -65,7 +75,7 @@ export class Kind extends dduVim.BaseKind<Params> {
       item: dduVim.DduItem;
     },
   ): Promise<dduVim.Previewer | undefined> {
-    const action = args.item.action as ActionData;
+    const action = ensure(args.item.action, isActionData);
     if (!action) {
       return undefined;
     }
@@ -80,7 +90,7 @@ export class Kind extends dduVim.BaseKind<Params> {
           message,
           args.previewContext.width,
         );
-        ensureArray<string>(ret);
+        assert(ret, is.ArrayOf(is.String));
         return ret;
       }),
     );

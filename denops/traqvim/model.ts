@@ -1,6 +1,6 @@
 import { api } from "./api.ts";
 import { Channel, Message, UnreadChannel } from "./type.d.ts";
-import { traq } from "./deps.ts";
+import { ensure, is, traq } from "./deps.ts";
 
 export type channelMessageOptions = {
   // channelUUID
@@ -133,7 +133,7 @@ export const homeChannelId = async (): Promise<string> => {
   if (me.homeChannel === null) {
     return "";
   }
-  return me.homeChannel as string;
+  return ensure(me.homeChannel, is.String);
 };
 
 // userIdからユーザー情報を取得する

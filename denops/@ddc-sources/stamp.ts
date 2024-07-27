@@ -1,21 +1,23 @@
 import {
+  assert,
   ddcVim,
   ddcVimSource,
   Denops,
-  ensureString,
+  ensure,
+  is,
   traq,
   vars,
 } from "../traqvim/deps.ts";
-
 import { getStamps } from "../traqvim/model.ts";
 import { api } from "../traqvim/api.ts";
+import { isDdcItem } from "../traqvim/type_check.ts";
 
 type Params = Record<never, never>;
 
 export class Source extends ddcVim.BaseSource<Params> {
   async onInit(args: ddcVimSource.OnInitArguments<Params>): Promise<void> {
     const path = await vars.globals.get(args.denops, "traqvim#token_file_path");
-    ensureString(path);
+    assert(path, is.String);
     api.tokenFilePath = path;
     return Promise.resolve();
   }
@@ -25,9 +27,9 @@ export class Source extends ddcVim.BaseSource<Params> {
     return stamps
       .filter((stamp) => stamp.name)
       .map((stamp) => {
-        return {
+        return ensure({
           word: ":" + stamp.name + ":",
-        } as ddcVim.Item;
+        }, isDdcItem);
       });
   }
 

@@ -1,4 +1,4 @@
-import { bufname, Denops, ensureArray, fn, helper, vars } from "./deps.ts";
+import { assert, bufname, Denops, fn, helper, is, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,
@@ -9,6 +9,7 @@ import {
   editMessage,
   removePin,
 } from "./model.ts";
+import { isMessage } from "./type_check.ts";
 
 export const actionOpenChannel = async (
   denops: Denops,
@@ -56,7 +57,7 @@ export const actionForwardChannelMessage = async (
 ): Promise<void> => {
   // 既存メッセージの取得
   const timeline = await vars.buffers.get(denops, "channelTimeline");
-  ensureArray<Message>(timeline);
+  assert(timeline, is.ArrayOf(isMessage));
   // 追記したものをセット
   await vars.buffers.set(
     denops,
@@ -79,7 +80,7 @@ export const actionBackChannelMessage = async (
 ): Promise<void> => {
   // 既存メッセージの取得
   const timeline = await vars.buffers.get(denops, "channelTimeline");
-  ensureArray<Message>(timeline);
+  assert(timeline, is.ArrayOf(isMessage));
   // 追記したものをセット
   await vars.buffers.set(
     denops,
@@ -103,7 +104,7 @@ export const actionDeleteMessage = async (
   }
   // 既存メッセージの取得
   const timeline = await vars.buffers.get(denops, "channelTimeline");
-  ensureArray<Message>(timeline);
+  assert(timeline, is.ArrayOf(isMessage));
   // 削除したものをセット
   await vars.buffers.set(
     denops,
@@ -128,7 +129,7 @@ export const actionEditMessage = async (
   // 既存メッセージの取得
   // const timeline = await vars.buffers.get(denops, "channelTimeline");
   const timeline = await fn.getbufvar(denops, bufNum, "channelTimeline");
-  ensureArray<Message>(timeline);
+  assert(timeline, is.ArrayOf(isMessage));
   const editedTimeline = timeline.map((m) => {
     if (m.id === message.id) {
       return {
@@ -209,7 +210,7 @@ export const actionCreatePin = async (
   }
   // 既存メッセージの取得
   const timeline = await vars.buffers.get(denops, "channelTimeline");
-  ensureArray<Message>(timeline);
+  assert(timeline, is.ArrayOf(isMessage));
   message.pinned = true;
   // ピン留めしたものをセット
   await vars.buffers.set(
@@ -239,7 +240,7 @@ export const actionRemovePin = async (
   }
   // 既存メッセージの取得
   const timeline = await vars.buffers.get(denops, "channelTimeline");
-  ensureArray<Message>(timeline);
+  assert(timeline, is.ArrayOf(isMessage));
   message.pinned = false;
   // ピン留め解除したものをセット
   await vars.buffers.set(

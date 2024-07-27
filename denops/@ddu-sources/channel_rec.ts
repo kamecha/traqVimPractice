@@ -1,8 +1,9 @@
 import {
+  assert,
   dduVim,
   dduVimSource,
   Denops,
-  ensureString,
+  is,
   vars,
 } from "../traqvim/deps.ts";
 import { ActionData } from "../@ddu-kinds/channel.ts";
@@ -18,7 +19,7 @@ export class Source extends dduVim.BaseSource<Params> {
   kind = "channel";
   async onInit(args: dduVimSource.OnInitArguments<Params>): Promise<void> {
     const path = await vars.globals.get(args.denops, "traqvim#token_file_path");
-    ensureString(path);
+    assert(path, is.String);
     api.tokenFilePath = path;
     return Promise.resolve();
   }
