@@ -9,6 +9,7 @@ import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
 import { Message } from "../traqvim/type.d.ts";
 
+// TODO: unkownutilのアプデしたらtype.d.tsのChannelとかに変更する
 export interface ActionData {
   id: string;
 }
@@ -30,6 +31,7 @@ export class Kind extends dduVim.BaseKind<Params> {
         if (!item.action) {
           continue;
         }
+        // TODO: unkownutilのアプデしたらasをensureに変更
         const action = item.action as ActionData;
         const channelPath: string = item.word;
         const channelID: string = action.id;
@@ -74,7 +76,7 @@ export class Kind extends dduVim.BaseKind<Params> {
     const timelinePreviewArray: string[][] = await Promise.all(
       timeline.map(async (message: Message) => {
         const ret = await args.denops.call(
-          "traqvim#make_message_body",
+          "traqvim#view#make_message_body",
           message,
           args.previewContext.width,
         );
