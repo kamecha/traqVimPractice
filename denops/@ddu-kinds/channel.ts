@@ -12,6 +12,7 @@ import { actionOpenChannel } from "../traqvim/action.ts";
 import { Message } from "../traqvim/type.d.ts";
 
 // TODO: unkownutilのアプデしたらtype.d.tsのChannelとかに変更する
+// ChannelとUnreadChannelをUnion型にできなかったので、kindごと分ける
 export interface ActionData {
   id: string;
 }
