@@ -24,11 +24,11 @@ export const isActionData: Predicate<ActionData> = is.ObjectOf({
 type Params = Record<never, never>;
 
 type OpenParams = {
-  command: string;
+  command?: string;
 };
 
 const isOpenParams: Predicate<OpenParams> = is.ObjectOf({
-  command: is.String,
+  command: is.OptionalOf(is.String),
 });
 
 export class Kind extends dduVim.BaseKind<Params> {
