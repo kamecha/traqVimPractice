@@ -39,6 +39,14 @@ function traqvim#message#message_next() abort
 	call cursor([next.position["start"], 0])
 endfunction
 
+function traqvim#message#goto_message() abort
+	let message = traqvim#message#get_message()
+	if empty(message)
+		return
+	endif
+	call denops#request('traqvim', 'timelineMessage', [message])
+endfunction
+
 function traqvim#message#registerYankMessageLink() abort
 	let &opfunc = function('traqvim#message#yankMessageLink')
 	return 'g@'

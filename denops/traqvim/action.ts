@@ -3,6 +3,7 @@ import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,
   channelMessageOptions,
+  channelPath,
   channelTimeline,
   createPin,
   deleteMessage,
@@ -14,17 +15,20 @@ import { isMessage } from "./type_check.ts";
 export const actionOpenChannel = async (
   denops: Denops,
   channelMessageOptions: channelMessageOptions,
+  message?: Message,
   bufNum?: number,
 ): Promise<void> => {
   helper.echo(denops, "actionOpenChannel");
   const timeline: Message[] = await channelTimeline(channelMessageOptions);
   if (channelMessageOptions.channelPath === undefined) {
-    helper.echoerr(denops, "channelPath is undefined");
-    return;
+    channelMessageOptions.channelPath = await channelPath(
+      channelMessageOptions.id,
+    );
   }
   const escapedChannelPath = bufname.format({
     scheme: "VtraQ",
     expr: "/Channel",
+    params: message ? { message: message.id } : undefined,
     fragment: channelMessageOptions.channelPath.replace("#", ""),
   });
   const channelBufferVars: ChannelBuffer = {

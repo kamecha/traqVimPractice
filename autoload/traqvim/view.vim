@@ -2,14 +2,16 @@
 
 " Message { user : {id, name, displayName}, content, createdAt }
 function! traqvim#view#make_message_body(message, width) abort
-	let header = [ a:message["user"]["displayName"] . " @" . a:message["user"]["name"] . " " . a:message["createdAt"], "" ]
+	let createdAt = denops#request('traqvim', 'convertDate', [a:message["createdAt"]])
+	let header = [ a:message["user"]["displayName"] . " @" . a:message["user"]["name"] . " " . createdAt, "" ]
 	let rows = split(a:message["content"], "\n")
 	let quote = []
 	if a:message->has_key("quote")
 		if type(a:message["quote"]) == type([])
 			for q in a:message["quote"]
+				let createdAt = denops#request('traqvim', 'convertDate', [q["createdAt"]])
 				let quote += [ "", ">"]
-				let quote += [ "\t". q["user"]["displayName"] . " @" . q["user"]["name"] . " " . q["createdAt"], "" ]
+				let quote += [ "\t". q["user"]["displayName"] . " @" . q["user"]["name"] . " " . createdAt, "" ]
 				let quote += map(split(q["content"], "\n"), { _, v -> "\t" . v })
 				let quote += [ "", "<"]
 			endfor

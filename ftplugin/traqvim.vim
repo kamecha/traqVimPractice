@@ -12,6 +12,8 @@ nnoremap <buffer><silent> <Plug>(traqvim-next)
 			\ <Cmd>call traqvim#message#message_next()<CR>
 nnoremap <buffer><silent> <Plug>(traqvim-prev)
 			\ <Cmd>call traqvim#message#message_prev()<CR>
+nnoremap <buffer><silent> <Plug>(traqvim-goto)
+			\ <Cmd>call traqvim#message#goto_message()<CR>
 
 nnoremap <buffer><expr> <Plug>(traqvim-operator-message-yank-link)
 			\ traqvim#message#registerYankMessageLink()

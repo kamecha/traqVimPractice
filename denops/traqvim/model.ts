@@ -185,7 +185,6 @@ export const channelTimeline = async (
         const ret: Message = {
           ...message,
           user: user,
-          createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
         };
         // quotedMessageUUIDsが存在しなかった場合はundefinedを返す
         let quotedMessages: Message[] | undefined = undefined;
@@ -199,9 +198,6 @@ export const channelTimeline = async (
               const ret: Message = {
                 ...quotedMessage,
                 user: user,
-                createdAt: new Date(quotedMessage.createdAt).toLocaleString(
-                  "ja-JP",
-                ),
               };
               return ret;
             }),
@@ -265,7 +261,6 @@ export const activity = async (): Promise<Message[]> => {
       return {
         ...message,
         user: user,
-        createdAt: new Date(activity.createdAt).toLocaleString("ja-JP"),
       };
     }),
   );

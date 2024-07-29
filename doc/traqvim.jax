@@ -151,6 +151,9 @@ g:traqvim#token_file_path
 <Plug>(traqvim-prev)				    *<Plug>(traqvim-prev)*
     前のメッセージへカーソルを移動させます
 
+<Plug>(traqvim-goto)				    *<Plug>(traqvim-goto)*
+    メッセージに対応するチャンネルへ移動します
+
 <Plug>(traqvim-motion-message)			    *<Plug>(traqvim-motion-message)*
     カーソル下の該当メッセージの始まり・終わりを選択します
     レイアウトで表示されるものが選択されます
