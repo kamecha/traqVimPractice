@@ -182,6 +182,11 @@ export const channelTimeline = async (
         )?.map((url: string) => {
           return url.split("/").slice(-1)[0];
         });
+        const ret: Message = {
+          ...message,
+          user: user,
+          createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
+        };
         // quotedMessageUUIDsが存在しなかった場合はundefinedを返す
         let quotedMessages: Message[] | undefined = undefined;
         if (quotedMessageUUIDs) {
@@ -202,12 +207,10 @@ export const channelTimeline = async (
             }),
           );
         }
-        return {
-          ...message,
-          user: user,
-          createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
-          quote: quotedMessages,
-        };
+        if (quotedMessages !== undefined) {
+          ret.quote = quotedMessages;
+        }
+        return ret;
       }),
   );
   return messagesConverted;
