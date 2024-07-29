@@ -139,7 +139,17 @@ export const homeChannelId = async (): Promise<string> => {
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<traq.User> => {
   const userRes = await api.api.getUser(userId);
-  const user = userRes.data;
+  const userDetail: traq.UserDetail = userRes.data;
+  // TODO: もっと良い変換方法ありそうなんで、見つけたらやっとく
+  const user: traq.User = {
+    id: userDetail.id,
+    name: userDetail.name,
+    displayName: userDetail.displayName,
+    iconFileId: userDetail.iconFileId,
+    bot: userDetail.bot,
+    state: userDetail.state,
+    updatedAt: userDetail.updatedAt,
+  };
   return user;
 };
 
@@ -172,6 +182,11 @@ export const channelTimeline = async (
         )?.map((url: string) => {
           return url.split("/").slice(-1)[0];
         });
+        const ret: Message = {
+          ...message,
+          user: user,
+          createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
+        };
         // quotedMessageUUIDsが存在しなかった場合はundefinedを返す
         let quotedMessages: Message[] | undefined = undefined;
         if (quotedMessageUUIDs) {
@@ -192,12 +207,10 @@ export const channelTimeline = async (
             }),
           );
         }
-        return {
-          ...message,
-          user: user,
-          createdAt: new Date(message.createdAt).toLocaleString("ja-JP"),
-          quote: quotedMessages,
-        };
+        if (quotedMessages !== undefined) {
+          ret.quote = quotedMessages;
+        }
+        return ret;
       }),
   );
   return messagesConverted;
