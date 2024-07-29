@@ -1,6 +1,7 @@
 import { OAuth } from "./oauth.ts";
 import {
   channelMessageOptions,
+  channelsRecursive,
   channelTimeline,
   channelUUID,
   homeChannelId,
@@ -29,7 +30,7 @@ import {
   actionYankMessageLink,
   actionYankMessageMarkdown,
 } from "./action.ts";
-import { ChannelMessageBuffer, Message } from "./type.d.ts";
+import { Channel, ChannelMessageBuffer, Message } from "./type.d.ts";
 import { api } from "./api.ts";
 import { isMessage } from "./type_check.ts";
 
@@ -377,5 +378,11 @@ export async function main(denops: Denops) {
       await actionRemovePin(denops, message, bufNum);
       return;
     },
+  };
+
+  // apiっぽいやつ
+  denops.dispatcher["channelList"] = async (): Promise<Channel[]> => {
+    const channels = await channelsRecursive();
+    return channels;
   };
 }

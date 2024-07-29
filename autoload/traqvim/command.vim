@@ -50,14 +50,25 @@ function traqvim#command#channel(args) abort
 	elseif a:args[0] ==# 'reload'
 		call denops#request('traqvim', 'reload', [bufnr(), bufname()])
 	elseif a:args[0] ==# 'forward'
-		call denops#request('traqvim', 'messageForwad', [bufnr(), bufname()])
+		call denops#request('traqvim', 'messageForward', [bufnr(), bufname()])
 	elseif a:args[0] ==# 'back'
 		call denops#request('traqvim', 'messageBack', [bufnr(), bufname()])
 	endif
 endfunction
 
 function traqvim#command#channelComplete(arglead, cmdline) abort
-	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
+	" ['Traq', 'channel', ...]
+	let cmds = split(a:cmdline)
+	" openの場合はチャンネル名を補完
+	if len(cmds) >= 3 && cmds[2] ==# 'open'
+		if len(cmds) == 3
+			return ['#']
+		elseif len(cmds) == 4
+			let channels = denops#request('traqvim', 'channelList', [])
+			return channels->map({_, v -> v['path']})->matchfuzzy(a:arglead)
+		endif
+	endif
+	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(cmds) >= 3
 		return []
 	endif
 	return g:traqvim#command#subcommands.channel.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
