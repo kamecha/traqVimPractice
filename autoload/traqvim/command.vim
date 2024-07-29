@@ -59,6 +59,15 @@ endfunction
 function traqvim#command#channelComplete(arglead, cmdline) abort
 	" ['Traq', 'channel', ...]
 	let cmds = split(a:cmdline)
+	" openの場合はチャンネル名を補完
+	if len(cmds) >= 3 && cmds[2] ==# 'open'
+		if len(cmds) == 3
+			return ['#']
+		elseif len(cmds) == 4
+			let channels = denops#request('traqvim', 'channelList', [])
+			return channels->map({_, v -> v['path']})->matchfuzzy(a:arglead)
+		endif
+	endif
 	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(cmds) >= 3
 		return []
 	endif
