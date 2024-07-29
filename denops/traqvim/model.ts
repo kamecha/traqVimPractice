@@ -139,7 +139,17 @@ export const homeChannelId = async (): Promise<string> => {
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<traq.User> => {
   const userRes = await api.api.getUser(userId);
-  const user = userRes.data;
+  const userDetail: traq.UserDetail = userRes.data;
+  // TODO: もっと良い変換方法ありそうなんで、見つけたらやっとく
+  const user: traq.User = {
+    id: userDetail.id,
+    name: userDetail.name,
+    displayName: userDetail.displayName,
+    iconFileId: userDetail.iconFileId,
+    bot: userDetail.bot,
+    state: userDetail.state,
+    updatedAt: userDetail.updatedAt,
+  };
   return user;
 };
 
