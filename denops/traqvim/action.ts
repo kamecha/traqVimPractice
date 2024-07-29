@@ -3,6 +3,7 @@ import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,
   channelMessageOptions,
+  channelPath,
   channelTimeline,
   createPin,
   deleteMessage,
@@ -19,8 +20,9 @@ export const actionOpenChannel = async (
   helper.echo(denops, "actionOpenChannel");
   const timeline: Message[] = await channelTimeline(channelMessageOptions);
   if (channelMessageOptions.channelPath === undefined) {
-    helper.echoerr(denops, "channelPath is undefined");
-    return;
+    channelMessageOptions.channelPath = await channelPath(
+      channelMessageOptions.id,
+    );
   }
   const escapedChannelPath = bufname.format({
     scheme: "VtraQ",
