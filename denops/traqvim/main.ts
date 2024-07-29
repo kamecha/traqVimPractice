@@ -124,6 +124,20 @@ export async function main(denops: Denops) {
       await actionOpenChannel(denops, timelineOption);
       return;
     },
+    async timelineMessage(message: unknown): Promise<unknown> {
+      assert(message, isMessage);
+      const limit = await vars.globals.get(denops, "traqvim#fetch_limit");
+      assert(limit, is.Number);
+      const timelineOption: channelMessageOptions = {
+        id: message.channelId,
+        limit: limit,
+        until: message.createdAt,
+        inclusive: true,
+        order: "desc",
+      };
+      await actionOpenChannel(denops, timelineOption, message);
+      return;
+    },
     async activity(): Promise<unknown> {
       await actionOpenActivity(denops);
       return;
@@ -152,7 +166,7 @@ export async function main(denops: Denops) {
           inclusive: true,
           order: "desc",
         };
-        actionOpenChannel(denops, timelineOption, bufNum);
+        actionOpenChannel(denops, timelineOption, undefined, bufNum);
       }
       return;
     },

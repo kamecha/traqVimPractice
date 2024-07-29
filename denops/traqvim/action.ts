@@ -15,6 +15,7 @@ import { isMessage } from "./type_check.ts";
 export const actionOpenChannel = async (
   denops: Denops,
   channelMessageOptions: channelMessageOptions,
+  message?: Message,
   bufNum?: number,
 ): Promise<void> => {
   helper.echo(denops, "actionOpenChannel");
@@ -27,6 +28,7 @@ export const actionOpenChannel = async (
   const escapedChannelPath = bufname.format({
     scheme: "VtraQ",
     expr: "/Channel",
+    params: message ? { message: message.id } : undefined,
     fragment: channelMessageOptions.channelPath.replace("#", ""),
   });
   const channelBufferVars: ChannelBuffer = {
