@@ -57,7 +57,9 @@ function traqvim#command#channel(args) abort
 endfunction
 
 function traqvim#command#channelComplete(arglead, cmdline) abort
-	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
+	" ['Traq', 'channel', ...]
+	let cmds = split(a:cmdline)
+	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(cmds) >= 3
 		return []
 	endif
 	return g:traqvim#command#subcommands.channel.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
