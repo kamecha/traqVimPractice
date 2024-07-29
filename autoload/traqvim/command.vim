@@ -50,7 +50,7 @@ function traqvim#command#channel(args) abort
 	elseif a:args[0] ==# 'reload'
 		call denops#request('traqvim', 'reload', [bufnr(), bufname()])
 	elseif a:args[0] ==# 'forward'
-		call denops#request('traqvim', 'messageForwad', [bufnr(), bufname()])
+		call denops#request('traqvim', 'messageForward', [bufnr(), bufname()])
 	elseif a:args[0] ==# 'back'
 		call denops#request('traqvim', 'messageBack', [bufnr(), bufname()])
 	endif
