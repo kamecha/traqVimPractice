@@ -95,6 +95,7 @@ export async function main(denops: Denops) {
         channelPath: homePath,
         limit: limit,
         until: new Date().toISOString(),
+        inclusive: true,
         order: "desc",
       };
       await actionOpenChannel(denops, timelineOption);
@@ -117,6 +118,7 @@ export async function main(denops: Denops) {
         channelPath: channelPath,
         limit: limit,
         until: new Date().toISOString(),
+        inclusive: true,
         order: "desc",
       };
       await actionOpenChannel(denops, timelineOption);
@@ -147,6 +149,7 @@ export async function main(denops: Denops) {
           channelPath: bufNameWithoutNumber,
           limit: limit,
           until: new Date().toISOString(),
+          inclusive: true,
           order: "desc",
         };
         actionOpenChannel(denops, timelineOption, bufNum);
@@ -170,19 +173,14 @@ export async function main(denops: Denops) {
           id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
-          since: new Date(timeline[timeline.length - 1].createdAt)
-            .toISOString(),
+          since: timeline[timeline.length - 1].createdAt,
         };
         const forwardTimeline: Message[] = await channelTimeline(
           timelineOption,
         );
         await actionForwardChannelMessage(
           denops,
-          // 一番古いメッセージを削除
-          forwardTimeline.filter((message: Message) => {
-            return message.createdAt !==
-              timeline[timeline.length - 1].createdAt;
-          }),
+          forwardTimeline,
           bufNum,
         );
       } catch (e) {
@@ -207,17 +205,14 @@ export async function main(denops: Denops) {
           id: channelID,
           channelPath: bufNameWithoutNumber,
           limit: limit,
-          until: new Date(timeline[0].createdAt).toISOString(),
+          until: timeline[0].createdAt,
         };
         const backTimeline: Message[] = await channelTimeline(
           timelineOption,
         );
         await actionBackChannelMessage(
           denops,
-          // 受け取ったメッセージの中で一番新しい重複メッセージを削除
-          backTimeline.filter((message: Message) => {
-            return message.createdAt !== timeline[0].createdAt;
-          }),
+          backTimeline,
           bufNum,
         );
       } catch (e) {
@@ -384,5 +379,10 @@ export async function main(denops: Denops) {
   denops.dispatcher["channelList"] = async (): Promise<Channel[]> => {
     const channels = await channelsRecursive();
     return channels;
+  };
+  denops.dispatcher["convertDate"] = (date: unknown): Promise<string> => {
+    assert(date, is.String);
+    const d = new Date(date);
+    return Promise.resolve(d.toLocaleString("ja-JP"));
   };
 }
