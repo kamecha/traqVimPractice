@@ -90,8 +90,20 @@ export class Kind extends dduVim.BaseKind<Params> {
           message,
           args.previewContext.width,
         );
-        assert(ret, is.ArrayOf(is.String));
-        return ret;
+        assert(
+          ret,
+          is.ObjectOf({
+            body: is.ArrayOf(is.String),
+            position: is.OptionalOf(is.ObjectOf({
+              quote: is.ArrayOf(is.ObjectOf({
+                index: is.Number,
+                start: is.Number,
+                end: is.Number,
+              })),
+            })),
+          }),
+        );
+        return ret.body;
       }),
     );
     const timelinePreview: string[] = timelinePreviewArray.flat();

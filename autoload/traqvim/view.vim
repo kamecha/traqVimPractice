@@ -1,39 +1,67 @@
 " バッファ変数の情報を元に描画する関数郡
 
 " Message { user : {id, name, displayName}, content, createdAt }
-function! traqvim#view#make_message_body(message, width) abort
+" return {
+"	body: string[],
+"	position: {
+"		quote: {
+"			index: number,
+"			start: number,
+"			end: number
+"		}[]
+"	}
+" }
+function traqvim#view#make_message_body(message, width) abort
 	let createdAt = denops#request('traqvim', 'convertDate', [a:message["createdAt"]])
 	let header = [ a:message["user"]["displayName"] . " @" . a:message["user"]["name"] . " " . createdAt, "" ]
 	let rows = split(a:message["content"], "\n")
-	let quote = []
+	let quotes = []
+	let quotePos = []
 	if a:message->has_key("quote")
 		if type(a:message["quote"]) == type([])
 			for q in a:message["quote"]
 				let createdAt = denops#request('traqvim', 'convertDate', [q["createdAt"]])
-				let quote += [ "", ">"]
+				let quote = []
+				let quote += [ ">" ]
 				let quote += [ "\t". q["user"]["displayName"] . " @" . q["user"]["name"] . " " . createdAt, "" ]
 				let quote += map(split(q["content"], "\n"), { _, v -> "\t" . v })
 				let quote += [ "", "<"]
+				let quotes += [ quote ]
+				let quotePos += [#{
+							\ index: len(quotes) - 1,
+							\ start: len(header) + len(rows) + copy(quotes)->flatten()->len() - len(quote) + 1,
+							\ end: len(header) + len(rows) + copy(quotes)->flatten()->len()
+							\}]
 			endfor
 		endif
 	endif
 	let footer = [ "", repeat("─", a:width - 2) ] " 2はsigncolumnの分
-	let messageBody = header + rows + quote + footer
-	return messageBody
+	let messageBody = header + rows + quotes->flatten() + footer
+	return #{ body: messageBody, position: #{ quote: quotePos }}
 endfunction
 
 function traqvim#view#update_message_position(timeline, key, value) abort
 	if a:key == 0
 		let start = 1
-		let body = traqvim#view#make_message_body(a:value, winwidth(bufwinid("%")))
-		let end = start + len(body) - 1
-		let a:value.position = #{ index: 0, start: start, end: end }
+		let mes = traqvim#view#make_message_body(a:value, winwidth(bufwinid("%")))
+		let end = start + len(mes.body) - 1
+		let a:value.position = #{
+					\ index: 0,
+					\ start: start,
+					\ end: end,
+					\ quote: mes.position["quote"]
+					\}
 	else
 		let prev = a:timeline[a:key - 1]
 		let start = prev.position["end"] + 1
-		let body = traqvim#view#make_message_body(a:value, winwidth(bufwinid("%")))
-		let end = start + len(body) - 1
-		let a:value.position = #{ index: a:key, start: start, end: end }
+		let mes = traqvim#view#make_message_body(a:value, winwidth(bufwinid("%")))
+		let end = start + len(mes.body) - 1
+		let a:value.position = #{
+					\ index: a:key,
+					\ start: start,
+					\ end: end,
+					\ quote: mes.position["quote"]
+					\}
 	endif
 	return a:value
 endfunction
@@ -46,11 +74,16 @@ function traqvim#view#draw_timeline(bufNum) abort
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
 	for message in getbufvar(a:bufNum, "channelTimeline")
-		let body = traqvim#view#make_message_body(message, width)
-		let end = start + len(body) - 1
+		let mes = traqvim#view#make_message_body(message, width)
+		let end = start + len(mes.body) - 1
 		" 一度に全部描画するから、positionをここで設定する
-		let message.position = #{ index: index, start: start, end: end }
-		call setbufline(a:bufNum, start, body)
+		let message.position = #{
+					\ index: index,
+					\ start: start,
+					\ end: end,
+					\ quote: mes.position["quote"]
+					\}
+		call setbufline(a:bufNum, start, mes.body)
 		if message->get('pinned')
 			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
 			for i in range(start + 1, end - 1)
@@ -91,9 +124,9 @@ function traqvim#view#draw_forward_messages(bufNum, messages) abort
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
 	for message in a:messages
-		let body = traqvim#view#make_message_body(message, width)
-		let end = start + len(body) - 1
-		call appendbufline(a:bufNum, start - 1, body)
+		let mes = traqvim#view#make_message_body(message, width)
+		let end = start + len(mes.body) - 1
+		call appendbufline(a:bufNum, start - 1, mes.body)
 		if message->get('pinned')
 			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
 			for i in range(start + 1, end - 1)
@@ -115,9 +148,9 @@ function traqvim#view#draw_back_messages(bufNum, messages) abort
 	let width = winwidth(winnr)
 	" appendbufline()を使用する
 	for message in a:messages
-		let body = traqvim#view#make_message_body(message, width)
-		let end = start + len(body) - 1
-		call appendbufline(a:bufNum, start - 1, body)
+		let mes = traqvim#view#make_message_body(message, width)
+		let end = start + len(mes.body) - 1
+		call appendbufline(a:bufNum, start - 1, mes.body)
 		if message->get('pinned')
 			call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
 			for i in range(start + 1, end - 1)
@@ -167,9 +200,9 @@ function traqvim#view#draw_insert_message(bufNum, message) abort
 	endif
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
-	let body = traqvim#view#make_message_body(a:message, width)
-	let end = start + len(body) - 1
-	call appendbufline(a:bufNum, start - 1, body)
+	let mes = traqvim#view#make_message_body(a:message, width)
+	let end = start + len(mes.body) - 1
+	call appendbufline(a:bufNum, start - 1, mes.body)
 	if a:message->get('pinned')
 		call sign_place(0, "VtraQ", "pin", a:bufNum, #{ lnum: start, priority: 10 })
 		for i in range(start + 1, end - 1)

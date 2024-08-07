@@ -14,6 +14,12 @@ export interface Message extends traq.Message {
     index: number;
     start: number;
     end: number;
+    // 相対位置の方がメッセージの位置変更に簡単に対応できそう
+    quote?: {
+      index: number;
+      start: number;
+      end: number;
+    }[];
   };
   quote?: Message[];
 }

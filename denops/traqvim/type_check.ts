@@ -64,6 +64,11 @@ export const isMessage: Predicate<Message> = is.ObjectOf({
     index: is.Number,
     start: is.Number,
     end: is.Number,
+    quote: is.OptionalOf(is.ArrayOf(is.ObjectOf({
+      index: is.Number,
+      start: is.Number,
+      end: is.Number,
+    }))),
   })),
   // quote?: Message[];
   quote: is.OptionalOf(is.ArrayOf((x: unknown): x is Message => isMessage(x))),
