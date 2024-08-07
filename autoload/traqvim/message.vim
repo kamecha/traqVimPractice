@@ -13,6 +13,26 @@ function traqvim#message#get_message() abort
 	return traqvim#message#get_message_buf(curline, bufnr("%"))
 endfunction
 
+function traqvim#message#get_message_quote() abort
+	let curline = line(".")
+	let message = traqvim#message#get_message_buf(curline, bufnr("%"))
+	let quote = message->get("quote", [])
+	if empty(quote)
+		return {}
+	endif
+	let quotePos = copy(message)->get("position")->get("quote", [])
+	if empty(quotePos)
+		return {}
+	endif
+	let relativePos = curline - message.position["start"]
+	silent let quotePos->filter({ _, v -> v.start <= relativePos && relativePos <= v.end })
+	if len(quotePos) == 0
+		return {}
+	else
+		return quote[quotePos[0]->get("index")]
+	endif
+endfunction
+
 function traqvim#message#message_prev() abort
 	let cur = traqvim#message#get_message()
 	if empty(cur)
@@ -44,7 +64,8 @@ function traqvim#message#goto_message() abort
 	if empty(message)
 		return
 	endif
-	call denops#request('traqvim', 'timelineMessage', [message])
+	let quote = traqvim#message#get_message_quote()
+	call denops#request('traqvim', 'timelineMessage', [quote != #{} ? quote : message])
 endfunction
 
 function traqvim#message#registerYankMessageLink() abort
