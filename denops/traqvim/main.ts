@@ -4,6 +4,8 @@ import {
   channelsRecursive,
   channelTimeline,
   channelUUID,
+  getStamp,
+  getUser,
   homeChannelId,
   homeChannelPath,
   sendMessage,
@@ -16,6 +18,7 @@ import {
   fn,
   helper,
   is,
+  traq,
   vars,
 } from "./deps.ts";
 import {
@@ -398,5 +401,13 @@ export async function main(denops: Denops) {
     assert(date, is.String);
     const d = new Date(date);
     return Promise.resolve(d.toLocaleString("ja-JP"));
+  };
+  denops.dispatcher["getUser"] = (userId: unknown): Promise<traq.User> => {
+    assert(userId, is.String);
+    return getUser(userId);
+  };
+  denops.dispatcher["getStamp"] = (stampId: unknown): Promise<traq.Stamp> => {
+    assert(stampId, is.String);
+    return getStamp(stampId);
   };
 }

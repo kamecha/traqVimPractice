@@ -349,3 +349,11 @@ export const removePin = async (
     console.error(e);
   }
 };
+
+export const getStamp = async (
+  stampId: string,
+): Promise<traq.Stamp> => {
+  const stampRes = await api.api.getStamp(stampId);
+  const stamp = stampRes.data;
+  return stamp;
+};
