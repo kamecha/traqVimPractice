@@ -55,7 +55,7 @@ endfunction
 function traqvim#view#folded_stamp_text() abort
 	let stamps = []
 	for l in getline(v:foldstart + 1, v:foldend - 1)
-		let stamps += [ matchstr(l, "^:.*:") ]
+		let stamps += [ matchstr(l, "^:[^:]*:") ]
 	endfor
 	return stamps->uniq()->join(" ")
 endfunction
