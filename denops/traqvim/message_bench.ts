@@ -41,7 +41,7 @@ for (const message of messages) {
   console.log("stamps length:", message.stamps.length);
 }
 
-Deno.bench("user & stamp chache", async (b: Deno.BenchContext) => {
+Deno.bench("user & stamp cache", async (b: Deno.BenchContext) => {
   const userCache: Record<string, traq.User> = {};
   const stampCache: Record<string, traq.Stamp> = {};
   b.start();
@@ -72,7 +72,7 @@ Deno.bench("stamp cache", async (b: Deno.BenchContext) => {
   b.end();
 });
 
-Deno.bench("user chache", async (b: Deno.BenchContext) => {
+Deno.bench("user cache", async (b: Deno.BenchContext) => {
   const userCache: Record<string, traq.User> = {};
   b.start();
   for (const message of messages) {
@@ -86,7 +86,7 @@ Deno.bench("user chache", async (b: Deno.BenchContext) => {
   b.end();
 });
 
-Deno.bench("no chache", async (b: Deno.BenchContext) => {
+Deno.bench("no cache", async (b: Deno.BenchContext) => {
   b.start();
   for (const message of messages) {
     for (const stamp of message.stamps) {
