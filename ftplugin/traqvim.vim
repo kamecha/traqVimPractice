@@ -2,6 +2,8 @@
 setlocal noswapfile
 setlocal signcolumn=yes
 setlocal nolist
+setlocal foldmethod=marker
+setlocal foldtext=traqvim#view#folded_stamp_text()
 
 " TODO: nerd font導入してるかの確認とかしたいな
 " call sign_define("pin", #{ text: "📌"})

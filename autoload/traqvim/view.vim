@@ -35,9 +35,29 @@ function traqvim#view#make_message_body(message, width) abort
 			endfor
 		endif
 	endif
+	let stamps = []
+	if !empty(a:message.stamps)
+		let stamps += [ "{{{" ]
+	endif
+	for stamp in a:message.stamps
+		let s = denops#request('traqvim', 'getStamp', [stamp.stampId])
+		let user = denops#request('traqvim', 'getUser', [stamp.userId])
+		let stamps += [ ":" . s.name . ":" . user.displayName . "(" . stamp.count . ")" ]
+	endfor
+	if !empty(a:message.stamps)
+		let stamps += [ "}}}" ]
+	endif
 	let footer = [ "", repeat("─", a:width - 2) ] " 2はsigncolumnの分
-	let messageBody = header + rows + quotes->flatten() + footer
+	let messageBody = header + rows + quotes->flatten() + stamps + footer
 	return #{ body: messageBody, position: #{ quote: quotePos }}
+endfunction
+
+function traqvim#view#folded_stamp_text() abort
+	let stamps = []
+	for l in getline(v:foldstart + 1, v:foldend - 1)
+		let stamps += [ matchstr(l, "^:[^:]*:") ]
+	endfor
+	return stamps->uniq()->join(" ")
 endfunction
 
 function traqvim#view#update_message_position(timeline, key, value) abort

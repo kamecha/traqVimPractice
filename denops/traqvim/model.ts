@@ -18,6 +18,10 @@ export type channelMessageOptions = {
 // TODO: ↓チャンネル周りはclassに分離しても良いかも
 const channelMapCache: Map<string, traq.Channel> = new Map();
 
+const UserMapCache = new Map<string, traq.UserDetail>();
+
+const StampMapCache = new Map<string, traq.Stamp>();
+
 const getChannelMapCache = () => {
   return channelMapCache;
 };
@@ -138,8 +142,12 @@ export const homeChannelId = async (): Promise<string> => {
 
 // userIdからユーザー情報を取得する
 export const getUser = async (userId: string): Promise<traq.User> => {
-  const userRes = await api.api.getUser(userId);
-  const userDetail: traq.UserDetail = userRes.data;
+  let userDetail: traq.UserDetail | undefined = UserMapCache.get(userId);
+  if (userDetail === undefined) {
+    const userRes = await api.api.getUser(userId);
+    userDetail = userRes.data;
+    UserMapCache.set(userId, userDetail);
+  }
   // TODO: もっと良い変換方法ありそうなんで、見つけたらやっとく
   const user: traq.User = {
     id: userDetail.id,
@@ -348,4 +356,16 @@ export const removePin = async (
   } catch (e) {
     console.error(e);
   }
+};
+
+export const getStamp = async (
+  stampId: string,
+): Promise<traq.Stamp> => {
+  let stamp: traq.Stamp | undefined = StampMapCache.get(stampId);
+  if (stamp === undefined) {
+    const stampRes = await api.api.getStamp(stampId);
+    stamp = stampRes.data;
+    StampMapCache.set(stampId, stamp);
+  }
+  return stamp;
 };
