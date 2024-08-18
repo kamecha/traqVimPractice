@@ -190,6 +190,7 @@ endfunction
 
 function traqvim#view#draw_delete_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
+	" TODO: このstart, endがスタンプの行をどのように考慮してるか確認しとく
 	let start = a:message.position["start"]
 	let end = a:message.position["end"]
 	if a:message->get('pinned')
