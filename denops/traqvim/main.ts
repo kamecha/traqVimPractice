@@ -6,6 +6,8 @@ import {
   channelUUID,
   downloadFile,
   getStamp,
+  getStampId,
+  getStamps,
   getUser,
   homeChannelId,
   homeChannelPath,
@@ -23,6 +25,7 @@ import {
   vars,
 } from "./deps.ts";
 import {
+  actionAddMessageStamp,
   actionBackChannelMessage,
   actionCreatePin,
   actionDeleteMessage,
@@ -403,6 +406,25 @@ export async function main(denops: Denops) {
       await denops.cmd(":bdelete");
       return;
     },
+    async messageAddStamps(
+      bufNum: unknown,
+      message: unknown,
+      stampNames: unknown,
+    ): Promise<unknown> {
+      assert(bufNum, is.Number);
+      assert(message, isMessage);
+      assert(stampNames, is.ArrayOf(is.String));
+      for (const stampName of stampNames) {
+        const stampId = await getStampId(stampName);
+        if (stampId === undefined) {
+          helper.echo(denops, `Stamp not found: ${stampName}`);
+          continue;
+        }
+        const stamp = await getStamp(stampId);
+        await actionAddMessageStamp(denops, message, stamp.id, bufNum);
+      }
+      return;
+    },
     async createPin(
       bufNum: unknown,
       message: unknown,
@@ -436,6 +458,9 @@ export async function main(denops: Denops) {
   denops.dispatcher["getUser"] = (userId: unknown): Promise<traq.User> => {
     assert(userId, is.String);
     return getUser(userId);
+  };
+  denops.dispatcher["getStamps"] = (): Promise<traq.Stamp[]> => {
+    return getStamps();
   };
   denops.dispatcher["getStamp"] = (stampId: unknown): Promise<traq.Stamp> => {
     assert(stampId, is.String);

@@ -2,12 +2,14 @@ import { assert, bufname, Denops, fn, helper, is, vars } from "./deps.ts";
 import { ChannelBuffer, Message } from "./type.d.ts";
 import {
   activity,
+  addMessageStamp,
   channelMessageOptions,
   channelPath,
   channelTimeline,
   createPin,
   deleteMessage,
   editMessage,
+  getMessageStamps,
   removePin,
 } from "./model.ts";
 import { isMessage } from "./type_check.ts";
@@ -272,3 +274,50 @@ export const actionRemovePin = async (
   );
   await denops.call("traqvim#view#draw_message_pin", bufNum, message);
 };
+
+export const actionAddMessageStamp = async (
+  denops: Denops,
+  message: Message,
+  stamp: string,
+  bufNum: number,
+): Promise<void> => {
+  try {
+    await addMessageStamp(message.id, stamp);
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+  // 既存メッセージの取得
+  const timeline = await vars.buffers.get(denops, "channelTimeline");
+  assert(timeline, is.ArrayOf(isMessage));
+  // 一旦対象メッセージを削除する
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    timeline.filter((m) => m.id !== message.id),
+  );
+  await denops.call("traqvim#view#draw_delete_message", bufNum, message);
+  // 更新されたメッセージにあるスタンプを取得
+  const updatedMessage = await getMessageStamps(message.id);
+  const editedTimeline = timeline.map((m) => {
+    if (m.id === message.id) {
+      return {
+        ...m,
+        stamps: updatedMessage
+      };
+    } else {
+      return m;
+    }
+  });
+  // 編集したものをセット
+  await vars.buffers.set(
+    denops,
+    "channelTimeline",
+    editedTimeline,
+  );
+  await denops.call(
+    "traqvim#view#draw_append_message",
+    bufNum,
+    editedTimeline.find((m) => m.id === message.id),
+  );
+}
