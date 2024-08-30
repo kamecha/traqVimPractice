@@ -45,11 +45,26 @@ export async function main(denops: Denops) {
   // oauthの仮オブジェクト
   let oauth: OAuth;
   denops.dispatcher = {
-    async getFile(fileId: unknown): Promise<unknown> {
+    async getFile(
+      fileId: unknown,
+      opts?: unknown,
+    ): Promise<unknown> {
       assert(fileId, is.String);
+      assert(
+        opts,
+        is.OptionalOf(is.ObjectOf({
+          maxWidth: is.Number,
+          maxHeight: is.Number,
+        })),
+      );
       const file: Uint8Array = await downloadFile(fileId);
       // denops-sixel-view.vimのsixel_viewがUint8Arrayを受け取れる必要がある
-      const sixel = await denops.dispatch("sixel_view", "img2sixel", file);
+      const sixel = await denops.dispatch(
+        "sixel_view",
+        "img2sixel",
+        file,
+        opts,
+      );
       assert(
         sixel,
         is.ObjectOf({
