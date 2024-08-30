@@ -280,8 +280,18 @@ https://github.com/gw31415/denops-sixel-view.vim
 	endfunction
 
 	function s:preview_img(fileId) abort
+		let font_height = 12
+		let font_width = font_height / 2
+		let retina_scale = 2
 		" download the file and convert it to sixel data
-		let sixel = denops#request("traqvim", "getFile", [a:fileId])
+		let sixel = denops#request("traqvim", "getFile",
+					\[
+					\	a:fileId,
+					\	#{
+					\		maxWidth: winwidth('.') * font_width / 2 * retina_scale,
+					\		maxHeight: winheight('.') * font_height / 2 * retina_scale,
+					\	}
+					\])
 		call sixel_view#view_sixel(sixel['data'], 0, 0)
 	endfunction
 
