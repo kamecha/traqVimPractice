@@ -4,6 +4,7 @@ import {
   channelsRecursive,
   channelTimeline,
   channelUUID,
+  downloadFile,
   getStamp,
   getUser,
   homeChannelId,
@@ -44,6 +45,21 @@ export async function main(denops: Denops) {
   // oauthの仮オブジェクト
   let oauth: OAuth;
   denops.dispatcher = {
+    async getFile(fileId: unknown): Promise<unknown> {
+      assert(fileId, is.String);
+      const file: Uint8Array = await downloadFile(fileId);
+      // denops-sixel-view.vimのsixel_viewがUint8Arrayを受け取れる必要がある
+      const sixel = await denops.dispatch("sixel_view", "img2sixel", file);
+      assert(
+        sixel,
+        is.ObjectOf({
+          data: is.String,
+          height: is.Number,
+          width: is.Number,
+        }),
+      );
+      return sixel;
+    },
     setupOAuth(): Promise<unknown> {
       helper.echo(denops, "setup...");
       // OAuthの設定を行う

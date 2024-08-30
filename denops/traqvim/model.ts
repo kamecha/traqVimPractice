@@ -369,3 +369,20 @@ export const getStamp = async (
   }
   return stamp;
 };
+
+export const downloadFile = async (
+  fileId: string,
+): Promise<Uint8Array> => {
+  try {
+    const fileRes = await api.fetchWithToken(
+      "GET",
+      "/files/" + fileId,
+      {},
+    );
+    const blob = await fileRes.blob();
+    return new Uint8Array(await blob.arrayBuffer());
+  } catch (e) {
+    console.error(e);
+  }
+  return new Uint8Array();
+};
