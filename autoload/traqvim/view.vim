@@ -203,7 +203,7 @@ function traqvim#view#draw_delete_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
-function traqvim#view#draw_insert_message(bufNum, message) abort
+function traqvim#view#draw_append_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	let prevMessage = #{}
 	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる

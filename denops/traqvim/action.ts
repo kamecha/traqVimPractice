@@ -152,7 +152,7 @@ export const actionEditMessage = async (
     editedTimeline,
   );
   await denops.call(
-    "traqvim#view#draw_insert_message",
+    "traqvim#view#draw_append_message",
     bufNum,
     editedTimeline.find((m) => m.id === message.id),
   );
