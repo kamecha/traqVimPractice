@@ -134,6 +134,19 @@ export const actionEditMessage = async (
   // const timeline = await vars.buffers.get(denops, "channelTimeline");
   const timeline = await fn.getbufvar(denops, bufNum, "channelTimeline");
   assert(timeline, is.ArrayOf(isMessage));
+  // 削除したものをセット
+  await fn.setbufvar(
+    denops,
+    bufNum,
+    "channelTimeline",
+    timeline.filter((m) => m.id !== message.id),
+  );
+  await denops.call(
+    "traqvim#view#draw_delete_message",
+    bufNum,
+    message,
+  );
+  // 編集したものを追記
   const editedTimeline = timeline.map((m) => {
     if (m.id === message.id) {
       return {
@@ -144,7 +157,6 @@ export const actionEditMessage = async (
       return m;
     }
   });
-  // 編集したものをセット
   await fn.setbufvar(
     denops,
     bufNum,
@@ -152,7 +164,7 @@ export const actionEditMessage = async (
     editedTimeline,
   );
   await denops.call(
-    "traqvim#view#draw_insert_message",
+    "traqvim#view#draw_append_message",
     bufNum,
     editedTimeline.find((m) => m.id === message.id),
   );
