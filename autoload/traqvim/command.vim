@@ -95,15 +95,15 @@ function traqvim#command#message(args) abort
 	elseif a:args[0] ==# 'send'
 		call denops#request('traqvim', 'messageSend', [bufnr(), getline(1, '$')])
 	elseif a:args[0] ==# 'delete'
-		call denops#request('traqvim', 'messageDelete', [bufnr(), traqvim#get_message()])
+		call denops#request('traqvim', 'messageDelete', [bufnr(), traqvim#message#get_message()])
 	elseif a:args[0] ==# 'edit'
-		call denops#request('traqvim', 'messageEditOpen', [bufnr(), traqvim#get_message()])
+		call denops#request('traqvim', 'messageEditOpen', [bufnr(), traqvim#message#get_message()])
 	elseif a:args[0] ==# 'editApply'
 		call denops#request('traqvim', 'messageEdit', [getbufvar(bufname("%"), "editSourceBuffer"), getbufvar(bufname("%"), "message"), getline(1, '$')])
 	elseif a:args[0] ==# 'yankLink'
-		call denops#request('traqvim', 'yankMessageLink', [traqvim#get_message()])
+		call denops#request('traqvim', 'yankMessageLink', [traqvim#message#get_message()])
 	elseif a:args[0] ==# 'yankMarkdown'
-		call denops#request('traqvim', 'yankMessageMarkdown', [traqvim#get_message()])
+		call denops#request('traqvim', 'yankMessageMarkdown', [traqvim#message#get_message()])
 	endif
 endfunction
 
@@ -116,9 +116,9 @@ endfunction
 
 function traqvim#command#pin(args) abort
 	if a:args[0] ==# 'create'
-		call denops#request('traqvim', 'createPin', [bufnr(), traqvim#get_message()])
+		call denops#request('traqvim', 'createPin', [bufnr(), traqvim#message#get_message()])
 	elseif a:args[0] ==# 'remove'
-		call denops#request('traqvim', 'removePin', [bufnr(), traqvim#get_message()])
+		call denops#request('traqvim', 'removePin', [bufnr(), traqvim#message#get_message()])
 	endif
 endfunction
 
