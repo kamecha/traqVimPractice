@@ -123,7 +123,7 @@ function traqvim#command#stamp(args) abort
 	if a:args[0] ==# 'add'
 		call denops#request('traqvim', 'messageAddStamps', [bufnr(), traqvim#message#get_message(), a:args[1:]])
 	elseif a:args[0] ==# 'remove'
-		call denops#request('traqvim', 'removeStamps', [bufnr(), traqvim#message#get_message(), a:args[1:]])
+		call denops#request('traqvim', 'messageRemoveStamps', [bufnr(), traqvim#message#get_message(), a:args[1:]])
 	endif
 endfunction
 

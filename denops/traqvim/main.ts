@@ -33,6 +33,7 @@ import {
   actionForwardChannelMessage,
   actionOpenActivity,
   actionOpenChannel,
+  actionRemoveMessageStamp,
   actionRemovePin,
   actionYankMessageLink,
   actionYankMessageMarkdown,
@@ -422,6 +423,25 @@ export async function main(denops: Denops) {
         }
         const stamp = await getStamp(stampId);
         await actionAddMessageStamp(denops, message, stamp.id, bufNum);
+      }
+      return;
+    },
+    async messageRemoveStamps(
+      bufNum: unknown,
+      message: unknown,
+      stampNames: unknown,
+    ): Promise<unknown> {
+      assert(bufNum, is.Number);
+      assert(message, isMessage);
+      assert(stampNames, is.ArrayOf(is.String));
+      for (const stampName of stampNames) {
+        const stampId = await getStampId(stampName);
+        if (stampId === undefined) {
+          helper.echo(denops, `Stamp not found: ${stampName}`);
+          continue;
+        }
+        const stamp = await getStamp(stampId);
+        await actionRemoveMessageStamp(denops, message, stamp.id, bufNum);
       }
       return;
     },
