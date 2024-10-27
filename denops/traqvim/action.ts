@@ -304,7 +304,7 @@ export const actionAddMessageStamp = async (
     if (m.id === message.id) {
       return {
         ...m,
-        stamps: updatedMessage
+        stamps: updatedMessage,
       };
     } else {
       return m;
@@ -321,7 +321,7 @@ export const actionAddMessageStamp = async (
     bufNum,
     editedTimeline.find((m) => m.id === message.id),
   );
-}
+};
 
 export const actionRemoveMessageStamp = async (
   denops: Denops,

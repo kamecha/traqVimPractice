@@ -387,7 +387,7 @@ export const downloadFile = async (
     console.error(e);
   }
   return new Uint8Array();
-}
+};
 
 export const getStampId = async (
   stampName: string,
@@ -397,7 +397,7 @@ export const getStampId = async (
     return stamp.name === stampName;
   });
   return stamp?.id;
-}
+};
 
 export const getMessageStamps = async (
   messageId: string,
