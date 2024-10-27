@@ -212,18 +212,18 @@ endfunction
 " これを利用してback, forwadの方のメッセージをhogehogeしたい
 function traqvim#view#draw_append_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
-	let prevMessage = #{}
+	let prevMessageIndex = 0
 	" この関数を呼ばれる前に追加分が既にバッファ変数に登録されてる
 	let timeline = getbufvar(a:bufNum, "channelTimeline")
 	for message in timeline
 		if message.id == a:message.id
-			let prevMessage = message
+			let prevMessageIndex = message.position.index
 			break
 		endif
 	endfor
 	let start = 1
-	if !empty(prevMessage)
-		let start = prevMessage.position["end"] + 1
+	if prevMessageIndex
+		let start = timeline->get(prevMessageIndex-1)->get("position")->get("end") + 1
 	endif
 	let winnr = bufwinid(a:bufNum)
 	let width = winwidth(winnr)
