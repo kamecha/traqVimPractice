@@ -1,5 +1,18 @@
 import { traq } from "./deps.ts";
 
+export type channelMessageOptions = {
+  // channelUUID
+  id: string;
+  // #gps/time/kamecha
+  channelPath?: string;
+  limit?: number;
+  offset?: number;
+  since?: string;
+  until?: string;
+  inclusive?: boolean;
+  order?: "asc" | "desc";
+};
+
 export interface Channel extends traq.Channel {
   path: string;
 }

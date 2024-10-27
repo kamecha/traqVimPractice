@@ -1,19 +1,11 @@
 import { api } from "./api.ts";
-import { Channel, Message, UnreadChannel } from "./type.d.ts";
+import {
+  Channel,
+  channelMessageOptions,
+  Message,
+  UnreadChannel,
+} from "./type.d.ts";
 import { ensure, is, traq } from "./deps.ts";
-
-export type channelMessageOptions = {
-  // channelUUID
-  id: string;
-  // #gps/time/kamecha
-  channelPath?: string;
-  limit?: number;
-  offset?: number;
-  since?: string;
-  until?: string;
-  inclusive?: boolean;
-  order?: "asc" | "desc";
-};
 
 // TODO: ↓チャンネル周りはclassに分離しても良いかも
 const channelMapCache: Map<string, traq.Channel> = new Map();

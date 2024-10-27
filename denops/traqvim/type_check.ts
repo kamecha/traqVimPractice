@@ -1,5 +1,5 @@
 import { ddcVim, is, Predicate, traq } from "./deps.ts";
-import { Message } from "./type.d.ts";
+import { channelMessageOptions, Message } from "./type.d.ts";
 
 const isPumHighlight: Predicate<ddcVim.PumHighlight> = is.ObjectOf({
   name: is.String,
@@ -73,3 +73,15 @@ export const isMessage: Predicate<Message> = is.ObjectOf({
   // quote?: Message[];
   quote: is.OptionalOf(is.ArrayOf((x: unknown): x is Message => isMessage(x))),
 });
+
+export const isChannelMessageOptions: Predicate<channelMessageOptions> = is
+  .ObjectOf({
+    id: is.String,
+    channelPath: is.OptionalOf(is.String),
+    limit: is.OptionalOf(is.Number),
+    offset: is.OptionalOf(is.Number),
+    since: is.OptionalOf(is.String),
+    until: is.OptionalOf(is.String),
+    inclusive: is.OptionalOf(is.Boolean),
+    order: is.OptionalOf(is.LiteralOneOf(["asc", "desc"] as const)),
+  });

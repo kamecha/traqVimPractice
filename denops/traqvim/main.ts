@@ -1,6 +1,5 @@
 import { OAuth } from "./oauth.ts";
 import {
-  channelMessageOptions,
   channelsRecursive,
   channelTimeline,
   channelUUID,
@@ -38,9 +37,14 @@ import {
   actionYankMessageLink,
   actionYankMessageMarkdown,
 } from "./action.ts";
-import { Channel, ChannelMessageBuffer, Message } from "./type.d.ts";
+import {
+  Channel,
+  ChannelMessageBuffer,
+  channelMessageOptions,
+  Message,
+} from "./type.d.ts";
 import { api } from "./api.ts";
-import { isMessage } from "./type_check.ts";
+import { isChannelMessageOptions, isMessage } from "./type_check.ts";
 
 export async function main(denops: Denops) {
   const path = await vars.globals.get(denops, "traqvim#token_file_path");
@@ -469,6 +473,13 @@ export async function main(denops: Denops) {
   denops.dispatcher["channelList"] = async (): Promise<Channel[]> => {
     const channels = await channelsRecursive();
     return channels;
+  };
+  denops.dispatcher["channelMessage"] = async (
+    option: unknown,
+  ): Promise<Message[]> => {
+    assert(option, isChannelMessageOptions);
+    const timeline = await channelTimeline(option);
+    return timeline;
   };
   denops.dispatcher["convertDate"] = (date: unknown): Promise<string> => {
     assert(date, is.String);
