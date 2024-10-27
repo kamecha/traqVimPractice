@@ -89,6 +89,7 @@ endfunction
 function traqvim#view#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	call sign_unplace("VtraQ", #{ buffer: a:bufNum })
+	" ここでindexの始まりが決定されてる
 	let index = 0
 	let start = 1
 	let winnr = bufwinid(a:bufNum)
@@ -97,6 +98,7 @@ function traqvim#view#draw_timeline(bufNum) abort
 		let mes = traqvim#view#make_message_body(message, width)
 		let end = start + len(mes.body) - 1
 		" 一度に全部描画するから、positionをここで設定する
+		" TODO: ここでバッファ変数を変更してるのを直す
 		let message.position = #{
 					\ index: index,
 					\ start: start,
@@ -117,6 +119,7 @@ function traqvim#view#draw_timeline(bufNum) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+" TODO: 全部を描画しなおすんじゃなくて、フッターだけ再描画したいな
 function traqvim#view#redraw_recursive(layout) abort
 	if a:layout[0] ==# "leaf"
 		let bufNum = winbufnr(a:layout[1])
@@ -203,6 +206,10 @@ function traqvim#view#draw_delete_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 0)
 endfunction
 
+" indexの後のmessageを追加
+" positionのindexを0-indexか1-indexにするか悩むなぁ…
+" 現状は0-indexだから、いったんそれでいく
+" これを利用してback, forwadの方のメッセージをhogehogeしたい
 function traqvim#view#draw_append_message(bufNum, message) abort
 	call setbufvar(a:bufNum, "&modifiable", 1)
 	let prevMessage = #{}
