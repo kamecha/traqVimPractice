@@ -275,13 +275,6 @@ export const activity = async (): Promise<Message[]> => {
   return activitiesConverted;
 };
 
-// stamp情報の取得
-export const getStamps = async (): Promise<traq.Stamp[]> => {
-  const stampsRes = await api.api.getStamps();
-  const stamps = stampsRes.data;
-  return stamps;
-};
-
 export const sendMessage = async (
   channelUUID: string,
   content: string,
@@ -358,6 +351,15 @@ export const removePin = async (
   }
 };
 
+export const getStamps = async (): Promise<traq.Stamp[]> => {
+  const stampsRes = await api.api.getStamps();
+  const stamps = stampsRes.data;
+  stamps.forEach((stamp: traq.Stamp) => {
+    StampMapCache.set(stamp.id, stamp);
+  });
+  return stamps;
+};
+
 export const getStamp = async (
   stampId: string,
 ): Promise<traq.Stamp> => {
@@ -385,4 +387,45 @@ export const downloadFile = async (
     console.error(e);
   }
   return new Uint8Array();
+};
+
+export const getStampId = async (
+  stampName: string,
+): Promise<string | undefined> => {
+  const stamps = await getStamps();
+  const stamp = stamps.find((stamp: traq.Stamp) => {
+    return stamp.name === stampName;
+  });
+  return stamp?.id;
+};
+
+export const getMessageStamps = async (
+  messageId: string,
+): Promise<traq.MessageStamp[]> => {
+  const stmpasRes = await api.api.getMessageStamps(messageId);
+  return stmpasRes.data;
+};
+
+export const addMessageStamp = async (
+  messageId: string,
+  stampId: string,
+): Promise<void> => {
+  try {
+    // TODO: postだから失敗するかも
+    await api.api.addMessageStamp(messageId, stampId);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const removeMessageStamp = async (
+  messageId: string,
+  stampId: string,
+): Promise<void> => {
+  try {
+    // TODO: postだから失敗するかも
+    await api.api.removeMessageStamp(messageId, stampId);
+  } catch (e) {
+    console.error(e);
+  }
 };

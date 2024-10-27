@@ -20,6 +20,11 @@ let g:traqvim#command#subcommands = #{
 			\   impl: function('traqvim#command#message'),
 			\   comp: function('traqvim#command#messageComplete'),
 			\ },
+			\ stamp: #{
+			\   args: ['add', 'remove'],
+			\   impl: function('traqvim#command#stamp'),
+			\   comp: function('traqvim#command#stampComplete'),
+			\ },
 			\ pin: #{
 			\   args: ['create', 'remove'],
 			\   impl: function('traqvim#command#pin'),
@@ -112,6 +117,39 @@ function traqvim#command#messageComplete(arglead, cmdline) abort
 		return []
 	endif
 	return g:traqvim#command#subcommands.message.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
+endfunction
+
+function traqvim#command#stamp(args) abort
+	if a:args[0] ==# 'add'
+		call denops#request('traqvim', 'messageAddStamps', [bufnr(), traqvim#message#get_message(), a:args[1:]])
+	elseif a:args[0] ==# 'remove'
+		call denops#request('traqvim', 'messageRemoveStamps', [bufnr(), traqvim#message#get_message(), a:args[1:]])
+	endif
+endfunction
+
+function traqvim#command#stampComplete(arglead, cmdline) abort
+	let cmds = split(a:cmdline)
+	" addの場合はスタンプ名を補完
+	if len(cmds) >= 3 && cmds[2] ==# 'add'
+		let stamps = denops#request('traqvim', 'getStamps', [])
+		return stamps->map({_, v -> v['name']})->matchfuzzy(a:arglead)
+	endif
+	" removeの場合はスタンプに押されてるスタンプを補完
+	if len(cmds) >= 3 && cmds[2] ==# 'remove'
+		let message = traqvim#message#get_message()
+		let stamps = message->get('stamps', [])
+		let ret = []
+		" TODO: userIDを取得して自分が押したスタンプだけを補完する
+		for stamp in stamps
+			let s = denops#request('traqvim', 'getStamp', [stamp['stampId']])
+			let ret += [s['name']]
+		endfor
+		return ret->matchfuzzy(a:arglead)
+	endif
+	if a:cmdline[strlen(a:cmdline)-1] ==# ' ' && len(split(a:cmdline)) >= 3
+		return []
+	endif
+	return g:traqvim#command#subcommands.stamp.args->copy()->filter({_, v -> v =~? '^' . a:arglead})
 endfunction
 
 function traqvim#command#pin(args) abort
