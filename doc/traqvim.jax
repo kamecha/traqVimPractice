@@ -258,6 +258,17 @@ type		(string)
 
 
 ==============================================================================
+TELESCOPE					*traqvim-telescope*
+
+    |telescope.nvim|と連携したtraQのチャンネル名のソースを提供します。
+	チャンネルのメッセージをプレビューとして表示します。
+
+>lua
+    local telescope = require('telescope')
+    telescope.load_extension('traqvim')
+<
+
+==============================================================================
 FAQ						*traqvim-faq*
 
 
