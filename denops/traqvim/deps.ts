@@ -1,6 +1,6 @@
-export * as oauth2Client from "https://deno.land/x/oauth2_client@v1.0.0/mod.ts";
-export * as oak from "https://deno.land/x/oak@v6.3.0/mod.ts";
-export * as path from "https://deno.land/std@0.177.0/path/mod.ts";
+export * as oauth2Client from "https://deno.land/x/oauth2_client@v1.0.2/mod.ts";
+export * as oak from "https://deno.land/x/oak@v17.1.3/mod.ts";
+export * as path from "https://deno.land/std@0.224.0/path/mod.ts";
 export {
   assert,
   ensure,
