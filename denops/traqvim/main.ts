@@ -13,6 +13,7 @@ import {
   sendMessage,
 } from "./model.ts";
 import {
+  as,
   assert,
   bufname,
   Denops,
@@ -60,7 +61,7 @@ export async function main(denops: Denops) {
       assert(fileId, is.String);
       assert(
         opts,
-        is.OptionalOf(is.ObjectOf({
+        as.Optional(is.ObjectOf({
           maxWidth: is.Number,
           maxHeight: is.Number,
         })),
