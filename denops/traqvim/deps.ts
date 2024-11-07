@@ -7,11 +7,11 @@ export {
   is,
 } from "https://deno.land/x/unknownutil@v3.18.1/mod.ts";
 export type { Predicate } from "https://deno.land/x/unknownutil@v3.18.1/mod.ts";
-export type { Denops } from "https://deno.land/x/denops_std@v6.5.1/mod.ts";
-export * as fn from "https://deno.land/x/denops_std@v6.5.1/function/mod.ts";
-export * as vars from "https://deno.land/x/denops_std@v6.5.1/variable/mod.ts";
-export * as helper from "https://deno.land/x/denops_std@v6.5.1/helper/mod.ts";
-export * as bufname from "https://deno.land/x/denops_std@v6.5.1/bufname/mod.ts";
+export type { Denops } from "jsr:@denops/std@7.3.0";
+export * as fn from "jsr:@denops/std@7.3.0/function";
+export * as vars from "jsr:@denops/std@7.3.0/variable";
+export * as helper from "jsr:@denops/std@7.3.0/helper";
+export * as bufname from "jsr:@denops/std@7.3.0/bufname";
 export * as ddcVim from "https://deno.land/x/ddc_vim@v6.0.0/types.ts";
 export * as ddcVimSource from "https://deno.land/x/ddc_vim@v6.0.0/base/source.ts";
 export * as dduVim from "https://deno.land/x/ddu_vim@v5.0.0/types.ts";
