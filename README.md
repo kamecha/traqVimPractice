@@ -18,6 +18,7 @@
 - [ddu.vim](https://github.com/Shougo/ddu.vim) (Optional)
 - [ddc.vim](https://github.com/Shougo/ddc.vim) (Optional)
 - [open-browser.vim](https://github.com/tyru/open-browser.vim) (Optional)
+- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (Optional)
 
 ## 他プラグインとの連携
 
@@ -55,6 +56,12 @@ function s:traqvim_setting()
 	nmap <buffer> <LocalLeader>p
 				\ <Plug>(traqvim-operator-pin-toggle)
 endfunction
+```
+
+telescope.nvimとの連携
+
+```lua
+require("telescope").load_extension "traqvim"
 ```
 
 ## 今後の展望
