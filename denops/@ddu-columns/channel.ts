@@ -1,4 +1,4 @@
-import { dduVim, dduVimColumn, ensure, fn, is } from "../traqvim/deps.ts";
+import { dduVimColumn, ensure, fn, is } from "../traqvim/deps.ts";
 
 export type Params = {
   collapsedParentIcon: string;
@@ -7,7 +7,13 @@ export type Params = {
   indentationWidth: number;
 };
 
-export class Column extends dduVim.BaseColumn<Params> {
+export class Column extends dduVimColumn.BaseColumn<Params> {
+  getBaseText(
+    args: dduVimColumn.GetBaseTextArguments<Params>,
+  ): string | Promise<string> {
+    // TODO: どういう意図なのかを理解して、適切に設定しときたい
+    return args.item.word;
+  }
   getLength(
     args: dduVimColumn.GetLengthArguments<Params>,
   ): Promise<number> {

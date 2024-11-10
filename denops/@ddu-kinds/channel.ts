@@ -2,6 +2,7 @@ import {
   as,
   assert,
   dduVim,
+  dduVimKind,
   Denops,
   ensure,
   is,
@@ -32,7 +33,7 @@ const isOpenParams: Predicate<OpenParams> = is.ObjectOf({
   command: as.Optional(is.String),
 });
 
-export class Kind extends dduVim.BaseKind<Params> {
+export class Kind extends dduVimKind.BaseKind<Params> {
   actions: dduVim.Actions<Params> = {
     open: async (args: {
       denops: Denops;
