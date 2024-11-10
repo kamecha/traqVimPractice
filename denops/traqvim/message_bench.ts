@@ -1,13 +1,12 @@
 import { traq } from "./deps.ts";
 import {
-  channelMessageOptions,
   channelTimeline,
   channelUUID,
   getStamp,
   getUser,
   homeChannelId,
 } from "./model.ts";
-import { Message } from "./type.d.ts";
+import { channelMessageOptions, Message } from "./type.d.ts";
 import { api } from "./api.ts";
 
 api.tokenFilePath = "";

@@ -1,9 +1,8 @@
 import { assert, bufname, Denops, fn, helper, is, vars } from "./deps.ts";
-import { ChannelBuffer, Message } from "./type.d.ts";
+import { ChannelBuffer, channelMessageOptions, Message } from "./type.d.ts";
 import {
   activity,
   addMessageStamp,
-  channelMessageOptions,
   channelPath,
   channelTimeline,
   createPin,
