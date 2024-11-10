@@ -1,5 +1,5 @@
 export * as oauth2Client from "https://deno.land/x/oauth2_client@v1.0.2/mod.ts";
-export * as oak from "https://deno.land/x/oak@v17.1.3/mod.ts";
+export * as oak from "jsr:@oak/oak@17.1.3";
 export * as path from "jsr:@std/path@1.0.8";
 export { as, assert, ensure, is } from "jsr:@core/unknownutil@4.3.0";
 export type { Predicate } from "jsr:@core/unknownutil@4.3.0";
