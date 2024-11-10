@@ -45,7 +45,7 @@ export class OAuth {
       try {
         const token = await this.oauth2client.code.getToken(url);
         api.setToken(token);
-        // ctx.response.body = "Success";
+        await helper.echo(this.denops, "oauth2 success!!\n token is setted");
         this.controller.abort();
       } catch (err) {
         console.error(err);
