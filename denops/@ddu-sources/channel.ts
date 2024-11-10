@@ -14,7 +14,7 @@ import { api } from "../traqvim/api.ts";
 
 type Params = Record<never, never>;
 
-export class Source extends dduVim.BaseSource<Params> {
+export class Source extends dduVimSource.BaseSource<Params> {
   kind = "channel";
   async onInit(args: dduVimSource.OnInitArguments<Params>): Promise<void> {
     const path = await vars.globals.get(args.denops, "traqvim#token_file_path");

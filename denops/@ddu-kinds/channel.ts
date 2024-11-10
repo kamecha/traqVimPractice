@@ -1,6 +1,8 @@
 import {
+  as,
   assert,
   dduVim,
+  dduVimKind,
   Denops,
   ensure,
   is,
@@ -28,10 +30,10 @@ type OpenParams = {
 };
 
 const isOpenParams: Predicate<OpenParams> = is.ObjectOf({
-  command: is.OptionalOf(is.String),
+  command: as.Optional(is.String),
 });
 
-export class Kind extends dduVim.BaseKind<Params> {
+export class Kind extends dduVimKind.BaseKind<Params> {
   actions: dduVim.Actions<Params> = {
     open: async (args: {
       denops: Denops;
@@ -94,7 +96,7 @@ export class Kind extends dduVim.BaseKind<Params> {
           ret,
           is.ObjectOf({
             body: is.ArrayOf(is.String),
-            position: is.OptionalOf(is.ObjectOf({
+            position: as.Optional(is.ObjectOf({
               quote: is.ArrayOf(is.ObjectOf({
                 index: is.Number,
                 start: is.Number,
