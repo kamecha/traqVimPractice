@@ -9,9 +9,9 @@ import {
   Predicate,
   vars,
 } from "../traqvim/deps.ts";
-import { channelMessageOptions, channelTimeline } from "../traqvim/model.ts";
+import { channelTimeline } from "../traqvim/model.ts";
 import { actionOpenChannel } from "../traqvim/action.ts";
-import { Message } from "../traqvim/type.d.ts";
+import { channelMessageOptions, Message } from "../traqvim/type.d.ts";
 
 // TODO: unkownutilのアプデしたらtype.d.tsのChannelとかに変更する
 // ChannelとUnreadChannelをUnion型にできなかったので、kindごと分ける
