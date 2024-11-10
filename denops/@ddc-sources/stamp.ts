@@ -14,7 +14,7 @@ import { isDdcItem } from "../traqvim/type_check.ts";
 
 type Params = Record<never, never>;
 
-export class Source extends ddcVim.BaseSource<Params> {
+export class Source extends ddcVimSource.BaseSource<Params> {
   async onInit(args: ddcVimSource.OnInitArguments<Params>): Promise<void> {
     const path = await vars.globals.get(args.denops, "traqvim#token_file_path");
     assert(path, is.String);
