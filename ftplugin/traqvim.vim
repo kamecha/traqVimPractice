@@ -2,6 +2,7 @@
 setlocal noswapfile
 setlocal signcolumn=yes
 setlocal nolist
+setlocal wrap
 setlocal foldmethod=marker
 setlocal foldtext=traqvim#view#folded_stamp_text()
 
