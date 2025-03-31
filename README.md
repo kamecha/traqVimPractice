@@ -1,6 +1,8 @@
 <img src="https://user-images.githubusercontent.com/50443168/221812130-bfbd543b-7199-4999-a93d-7972ea7f4500.png" width="100px">
 ↑なんちゃってロゴ
 
+**作ってた人が†を凍結されちゃったので、アーカイブ中...**
+
 # traQのvimクライアントの練習
 
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20traqvim-orange.svg)](doc/traqvim.jax)
